@@ -1,4 +1,4 @@
-package io.schinzel.s3handler;
+package io.schinzel.basicutils;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -12,10 +12,10 @@ import java.nio.charset.Charset;
  * <p>
  * Created by Schinzel on 2018-01-03
  */
-public class FileReader {
+public class FileRW {
 
     public static String toString(File file) {
-        return FileReader.toString(file, Charsets.UTF_8);
+        return FileRW.toString(file, Charsets.UTF_8);
     }
 
 

@@ -1,4 +1,4 @@
-package io.schinzel.s3handler;
+package io.schinzel.basicutils.s3handler;
 
 
 import com.google.common.collect.ImmutableMap;

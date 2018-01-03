@@ -1,4 +1,4 @@
-package io.schinzel.s3handler;
+package io.schinzel.basicutils.s3handler;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -8,8 +8,10 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
+import io.schinzel.basicutils.FileRW;
 import io.schinzel.basicutils.UTF8;
 import lombok.Builder;
+import lombok.experimental.Accessors;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -20,7 +22,7 @@ import java.io.IOException;
  *
  * @author Schinzel
  */
-@Builder
+@Accessors(prefix = "m")
 public class S3File {
     /** The name of this file. */
     final String mFileName;
@@ -28,6 +30,15 @@ public class S3File {
     final String mBucketName;
     /** Transfers data to/from S3. */
     final TransferManager mTransferManager;
+
+
+    @Builder
+    S3File(String awsAccessKey, String awsSecretKey, String bucketName, String fileName) {
+        mTransferManager = new AwsAccount(awsAccessKey, awsSecretKey)
+                .getTransferManager();
+        mFileName = fileName;
+        mBucketName = bucketName;
+    }
 
 
     /**
@@ -59,7 +70,7 @@ public class S3File {
         }
         try {
             //return FileUtils.readFileToString(downloadFile, Charsets.UTF_8);
-            return FileReader.toString(downloadFile);
+            return FileRW.toString(downloadFile);
         } catch (RuntimeException ex) {
             throw new RuntimeException("Problems when reading tmp file when downloading file '" + mFileName + "' from bucket '" + mBucketName + "'. " + ex.getMessage());
         }
@@ -134,15 +145,12 @@ public class S3File {
             md.setContentType(FileHeaders.getFileHeader(mFileName));
             //Set file to be cached by browser for 30 days
             md.setCacheControl("public, max-age=2592000");
-            Upload upload = mTransferManager.upload(new PutObjectRequest(mBucketName, mFileName, contentsAsStream, md));
+            PutObjectRequest putObjectRequest = new PutObjectRequest(mBucketName, mFileName, contentsAsStream, md);
+            Upload upload = mTransferManager.upload(putObjectRequest);
             if (waitTillDone) {
-                try {
-                    upload.waitForUploadResult();
-                } catch (AmazonClientException | InterruptedException ex) {
-                    throw new RuntimeException("Problems when uploading file. Error message: " + ex.getMessage());
-                }
+                upload.waitForUploadResult();
             }
-        } catch (AmazonClientException ex) {
+        } catch (AmazonClientException | InterruptedException ex) {
             throw new RuntimeException("Problems uploading to S3! " + ex.getMessage());
         }
     }

@@ -1,4 +1,4 @@
-package io.schinzel.s3handler;
+package io.schinzel.basicutils.s3handler;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import io.schinzel.basicutils.collections.Cache;
+import lombok.experimental.Accessors;
 import lombok.val;
 
 /**
@@ -16,6 +17,7 @@ import lombok.val;
  *
  * @author Schinzel
  */
+@Accessors(prefix = "m")
 class TransferManagers {
     /** Holds a collection of transfer managers. Key is AWS access key. */
     private final Cache<String, TransferManager> mTransferManagers = new Cache<>();
@@ -26,7 +28,7 @@ class TransferManagers {
     }
 
 
-    public static TransferManagers getInstance() {
+    static TransferManagers getInstance() {
         return Holder.INSTANCE;
     }
 
