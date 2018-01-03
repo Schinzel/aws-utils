@@ -3,6 +3,8 @@ package io.schinzel.s3handler;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
+import io.schinzel.basicutils.Checker;
+import io.schinzel.basicutils.Thrower;
 
 import java.util.Map;
 
@@ -31,8 +33,13 @@ class FileHeaders {
             .build();
 
 
-    static String getFileHeader(String filename) {
-        String fileExtension = Files.getFileExtension(filename);
+    static String getFileHeader(String fileName) {
+        Thrower.throwIfVarEmpty(fileName, "fileName");
+        String fileExtension = Files.getFileExtension(fileName);
+        Thrower.throwIfTrue(Checker.isEmpty(fileExtension))
+                .message("File extension missing in file name '" + fileName + "'.");
+        Thrower.throwIfFalse(FILE_HEADERS.containsKey(fileExtension))
+                .message("No file header exists for extension '" + fileExtension + "'.");
         return FILE_HEADERS.get(fileExtension);
     }
 
