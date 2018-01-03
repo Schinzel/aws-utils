@@ -9,12 +9,12 @@ import lombok.experimental.Accessors;
  * Created by Schinzel on 2018-01-03
  */
 @Accessors(prefix = "m")
-class AwsAccount {
+public class AwsAccount {
     private final String mAwsAccessKey;
     private final String mAwsSecretKey;
 
 
-    AwsAccount(String awsAccessKey, String awsSecretKey) {
+    public AwsAccount(String awsAccessKey, String awsSecretKey) {
         mAwsAccessKey = awsAccessKey;
         mAwsSecretKey = awsSecretKey;
     }
@@ -23,6 +23,11 @@ class AwsAccount {
     TransferManager getTransferManager() {
         return TransferManagers.getInstance()
                 .getTransferManager(mAwsAccessKey, mAwsSecretKey);
+    }
+
+
+    public Bucket getBucket(String bucketName) {
+        return new Bucket(bucketName, this.getTransferManager());
     }
 
 

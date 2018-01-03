@@ -25,19 +25,24 @@ import java.io.IOException;
 @Accessors(prefix = "m")
 public class S3File {
     /** The name of this file. */
-    final String mFileName;
+    private final String mFileName;
     /** The name of the bucket in which this file resides. */
-    final String mBucketName;
+    private final String mBucketName;
     /** Transfers data to/from S3. */
-    final TransferManager mTransferManager;
+    private final TransferManager mTransferManager;
 
 
     @Builder
     S3File(String awsAccessKey, String awsSecretKey, String bucketName, String fileName) {
-        mTransferManager = new AwsAccount(awsAccessKey, awsSecretKey)
-                .getTransferManager();
+        this(fileName, bucketName,
+                new AwsAccount(awsAccessKey, awsSecretKey).getTransferManager());
+    }
+
+
+    S3File(String bucketName, String fileName, TransferManager transferManager) {
         mFileName = fileName;
         mBucketName = bucketName;
+        mTransferManager = transferManager;
     }
 
 
@@ -142,7 +147,7 @@ public class S3File {
             ByteArrayInputStream contentsAsStream = new ByteArrayInputStream(fileContent);
             ObjectMetadata md = new ObjectMetadata();
             md.setContentLength(fileContent.length);
-            md.setContentType(FileHeaders.getFileHeader(mFileName));
+            md.setContentType(HttpFileHeaders.getFileHeader(mFileName));
             //Set file to be cached by browser for 30 days
             md.setCacheControl("public, max-age=2592000");
             PutObjectRequest putObjectRequest = new PutObjectRequest(mBucketName, mFileName, contentsAsStream, md);

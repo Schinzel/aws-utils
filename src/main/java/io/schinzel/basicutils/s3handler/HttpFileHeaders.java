@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * @author schinzel
  */
-class FileHeaders {
+class HttpFileHeaders {
     private static final Map<String, String> FILE_HEADERS = ImmutableMap.<String, String>builder()
             //Text files
             .put("htm", "text/html charset=UTF-8")

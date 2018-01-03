@@ -13,7 +13,7 @@ public class FileHeadersTest {
     @Test
     public void getFileHeader_Null_Exception() {
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(() ->
-                FileHeaders.getFileHeader(null)
+                HttpFileHeaders.getFileHeader(null)
         );
     }
 
@@ -21,7 +21,7 @@ public class FileHeadersTest {
     @Test
     public void getFileHeader_EmptyString_Exception() {
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(() ->
-                FileHeaders.getFileHeader("")
+                HttpFileHeaders.getFileHeader("")
         );
     }
 
@@ -29,7 +29,7 @@ public class FileHeadersTest {
     @Test
     public void getFileHeader_FileWithoutExtension_Exception() {
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(() ->
-                FileHeaders.getFileHeader("FileNameWithoutExtension")
+                HttpFileHeaders.getFileHeader("FileNameWithoutExtension")
         );
     }
 
@@ -37,14 +37,14 @@ public class FileHeadersTest {
     @Test
     public void getFileHeader_NonExistingExtension_Exception() {
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(() ->
-                FileHeaders.getFileHeader("fileName.apa")
+                HttpFileHeaders.getFileHeader("fileName.apa")
         );
     }
 
 
     @Test
     public void getFileHeader_ExistingExtension_Exception() {
-        String fileHeader = FileHeaders.getFileHeader("fileName.html");
+        String fileHeader = HttpFileHeaders.getFileHeader("fileName.html");
         assertThat(fileHeader).isEqualTo("text/html charset=UTF-8");
     }
 
