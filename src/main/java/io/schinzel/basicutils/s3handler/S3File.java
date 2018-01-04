@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import io.schinzel.basicutils.FileRW;
+import io.schinzel.basicutils.Thrower;
 import io.schinzel.basicutils.UTF8;
 import lombok.Builder;
 import lombok.experimental.Accessors;
@@ -40,6 +41,8 @@ public class S3File {
 
 
     S3File(String bucketName, String fileName, TransferManager transferManager) {
+        Thrower.throwIfFalse(Bucket.doesBucketExist(transferManager, bucketName))
+                .message("No bucket named '" + bucketName + "' exists");
         mFileName = fileName;
         mBucketName = bucketName;
         mTransferManager = transferManager;
@@ -56,7 +59,7 @@ public class S3File {
             String downloadFileNamePrefix = "downloadFile";
             //Creates a file with the suffix .tmp
             downloadFile = File.createTempFile(downloadFileNamePrefix, null);
-            //File will be deleted on exit of vitrual machine.
+            //File will be deleted on exit of virtual machine.
             downloadFile.deleteOnExit();
         } catch (IOException e) {
             throw new RuntimeException("Problems creating temporary file for uploading to S3.");
