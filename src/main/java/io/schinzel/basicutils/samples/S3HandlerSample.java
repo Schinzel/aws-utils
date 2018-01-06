@@ -29,7 +29,8 @@ public class S3HandlerSample {
                 .bucketName(bucketName)
                 .fileName(fileName)
                 .build()
-                .upload(fileContent, true);
+                .upload(fileContent, true)
+                .shutdown();
         System.out.println("Upload file '" + fileName + "' to bucket '" + bucketName + "' with content '" + fileContent + "'");
     }
 

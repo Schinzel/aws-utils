@@ -99,7 +99,7 @@ public class S3File {
      * Delete this file. If file does not exist on S3, method returns
      * gracefully without throwing errors.
      */
-    public void delete() {
+    public S3File delete() {
         //Check if file exists
         try {
             mTransferManager
@@ -107,12 +107,13 @@ public class S3File {
                     .getObjectMetadata(mBucketName, mFileName);
         } catch (AmazonServiceException e) {
             //Ends up here if file does not exist
-            return;
+            return this;
         }
         //Delete file
         mTransferManager
                 .getAmazonS3Client()
                 .deleteObject(mBucketName, mFileName);
+        return this;
     }
 
 
@@ -125,9 +126,9 @@ public class S3File {
      *                     been uploaded. If false, method returns without waiting for the uploadAndGetFilename
      *                     to finish.
      */
-    public void upload(String fileContent, boolean waitTillDone) {
+    public S3File upload(String fileContent, boolean waitTillDone) {
         byte[] contentAsBytes = UTF8.getBytes(fileContent);
-        this.upload(contentAsBytes, waitTillDone);
+        return this.upload(contentAsBytes, waitTillDone);
     }
 
 
@@ -140,7 +141,7 @@ public class S3File {
      *                     been uploaded. If false, method returns without waiting for the uploadAndGetFilename
      *                     to finish.
      */
-    public void upload(byte[] fileContent, boolean waitTillDone) {
+    public S3File upload(byte[] fileContent, boolean waitTillDone) {
         try {
             ByteArrayInputStream contentsAsStream = new ByteArrayInputStream(fileContent);
             ObjectMetadata md = new ObjectMetadata();
@@ -153,9 +154,19 @@ public class S3File {
             if (waitTillDone) {
                 upload.waitForUploadResult();
             }
+            return this;
         } catch (AmazonClientException | InterruptedException ex) {
             throw new RuntimeException("Problems uploading to S3! " + ex.getMessage());
         }
     }
 
+
+    /**
+     * Shuts down the transfer manager. Can be used to make sure
+     * that IDE processes are shutdown.
+     */
+    public S3File shutdown() {
+        mTransferManager.shutdownNow(true);
+        return this;
+    }
 }
