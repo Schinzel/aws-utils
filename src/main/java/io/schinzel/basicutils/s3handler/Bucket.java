@@ -26,7 +26,7 @@ class Bucket {
         //Set if bucket exists on S3 or not
         boolean bucketExistsOnS3 = transferManager
                 .getAmazonS3Client()
-                .doesBucketExist(bucketName);
+                .doesBucketExistV2(bucketName);
         //If bucket did exist on S3
         if (bucketExistsOnS3) {
             //Add it to cache
