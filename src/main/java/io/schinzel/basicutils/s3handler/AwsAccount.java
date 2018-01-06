@@ -24,11 +24,4 @@ public class AwsAccount {
         return TransferManagers.getInstance()
                 .getTransferManager(mAwsAccessKey, mAwsSecretKey);
     }
-
-
-    public Bucket getBucket(String bucketName) {
-        return new Bucket(bucketName, this.getTransferManager());
-    }
-
-
 }
