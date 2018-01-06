@@ -9,8 +9,8 @@ import io.schinzel.basicutils.s3handler.S3File;
  * Created by Schinzel on 2018-01-03
  */
 public class S3HandlerSample {
-    static String AWS_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_ACCESS_KEY");
-    static String AWS_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_SECRET_KEY");
+    private static String AWS_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_ACCESS_KEY");
+    private static String AWS_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_SECRET_KEY");
 
 
     public static void main(String[] args) {
@@ -22,10 +22,11 @@ public class S3HandlerSample {
         S3File.builder()
                 .awsAccessKey(AWS_ACCESS_KEY)
                 .awsSecretKey(AWS_SECRET_KEY)
-                .bucketName("io.schinzel")
+                .bucketName("schinzel.io")
                 .fileName("myfile1.txt")
                 .build()
-                .upload("my content", false);
+                .upload("my content 1", false);
+        System.out.println("Upload file to bucket");
     }
 
 

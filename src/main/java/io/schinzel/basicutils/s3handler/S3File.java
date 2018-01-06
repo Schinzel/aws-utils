@@ -40,7 +40,7 @@ public class S3File {
     }
 
 
-    S3File(String bucketName, String fileName, TransferManager transferManager) {
+    S3File(String fileName, String bucketName, TransferManager transferManager) {
         Thrower.throwIfFalse(Bucket.doesBucketExist(transferManager, bucketName))
                 .message("No bucket named '" + bucketName + "' exists");
         mFileName = fileName;

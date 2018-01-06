@@ -58,9 +58,10 @@ class TransferManagers {
                 .withCredentials(awsStaticCredentialsProvider)
                 .withRegion(Regions.EU_WEST_1)
                 .build();
-        //Request list of buckets to verify authentication
-        s3client.listBuckets();
-        return TransferManagerBuilder.standard().withS3Client(s3client).build();
+        return TransferManagerBuilder
+                .standard()
+                .withS3Client(s3client)
+                .build();
     }
 
 
