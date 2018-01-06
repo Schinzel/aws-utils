@@ -35,17 +35,12 @@ public class S3File {
 
     @Builder
     S3File(String awsAccessKey, String awsSecretKey, String bucketName, String fileName) {
-        this(fileName, bucketName,
-                new AwsAccount(awsAccessKey, awsSecretKey).getTransferManager());
-    }
-
-
-    S3File(String fileName, String bucketName, TransferManager transferManager) {
-        Thrower.throwIfFalse(Bucket.doesBucketExist(transferManager, bucketName))
-                .message("No bucket named '" + bucketName + "' exists");
         mFileName = fileName;
         mBucketName = bucketName;
-        mTransferManager = transferManager;
+        mTransferManager = TransferManagers.getInstance()
+                .getTransferManager(awsAccessKey, awsSecretKey);
+        boolean bucketExists = Bucket.doesBucketExist(mTransferManager, bucketName);
+        Thrower.throwIfFalse(bucketExists).message("No bucket named '" + bucketName + "' exists");
     }
 
 

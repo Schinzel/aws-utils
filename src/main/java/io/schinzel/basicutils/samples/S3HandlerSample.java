@@ -1,5 +1,6 @@
 package io.schinzel.basicutils.samples;
 
+import io.schinzel.basicutils.RandomUtil;
 import io.schinzel.basicutils.configvar.ConfigVar;
 import io.schinzel.basicutils.s3handler.S3File;
 
@@ -19,15 +20,17 @@ public class S3HandlerSample {
 
 
     public static void usage_V1() {
+        String bucketName = "schinzel.io";
+        String fileName = "myfile.txt";
+        String fileContent = "my content " + RandomUtil.getRandomString(5);
         S3File.builder()
                 .awsAccessKey(AWS_ACCESS_KEY)
                 .awsSecretKey(AWS_SECRET_KEY)
-                .bucketName("schinzel.io")
-                .fileName("myfile1.txt")
+                .bucketName(bucketName)
+                .fileName(fileName)
                 .build()
-                .upload("my content 1", false);
-        System.out.println("Upload file to bucket");
+                .upload(fileContent, true);
+        System.out.println("Upload file '" + fileName + "' to bucket '" + bucketName + "' with content '" + fileContent + "'");
     }
-
 
 }
