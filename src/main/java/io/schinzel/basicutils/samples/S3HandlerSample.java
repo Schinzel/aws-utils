@@ -1,8 +1,10 @@
 package io.schinzel.basicutils.samples;
 
+import com.google.common.base.Strings;
 import io.schinzel.basicutils.RandomUtil;
 import io.schinzel.basicutils.configvar.ConfigVar;
 import io.schinzel.basicutils.s3handler.S3File;
+import io.schinzel.basicutils.s3handler.TransferManagers;
 import io.schinzel.basicutils.str.Str;
 
 /**
@@ -16,17 +18,36 @@ public class S3HandlerSample {
 
 
     public static void main(String[] args) {
-        usage_V1();
+        uploadSingleFile();
+        //uploadMultipleFiles(true);
     }
 
 
-    public static void usage_V1() {
+    public static void uploadSingleFile() {
         String bucketName = "schinzel.io";
         String fileName = "myfile.txt";
-        String fileContent = "my content ";
-        for (int i = 0; i < 10; i++) {
-            fileContent += RandomUtil.getRandomString(500) + "\n";
-        }
+        String fileContent = "my content";
+        S3File.builder()
+                .awsAccessKey(AWS_ACCESS_KEY)
+                .awsSecretKey(AWS_SECRET_KEY)
+                .bucketName(bucketName)
+                .fileName(fileName)
+                .build()
+                .upload(fileContent, true);
+        TransferManagers.getInstance().shutdown();
+        Str.create()
+                .a("Uploaded content ").aq(fileContent)
+                .a(" to file ").aq(fileName)
+                .a(" in bucket ").aq(bucketName)
+                .writeToSystemOut();
+    }
+
+
+    public static void uploadMultipleFiles(boolean parallelUploads) {
+        String bucketName = "schinzel.io";
+        String fileName = "myfile.txt";
+        String fileContent = getFileContent();
+        boolean waitTillDone = !parallelUploads;
         long start = System.nanoTime();
         for (int i = 0; i < 10; i++) {
             S3File.builder()
@@ -35,12 +56,25 @@ public class S3HandlerSample {
                     .bucketName(bucketName)
                     .fileName(i + "_" + fileName)
                     .build()
-                    .upload(fileContent + "__" + i, true);
+                    .upload(fileContent + "__" + i, waitTillDone);
+            Str.create("Upload: ").a(i).writeToSystemOut();
         }
-        //TransferManagers.getInstance().shutdown();
+        TransferManagers.getInstance().shutdown();
         long execTime = (System.nanoTime() - start) / 1_000_000;
-        System.out.println("Upload file '" + fileName + "' to bucket '" + bucketName + "' with content '" + fileContent + "'");
-        Str.create("It took ").af(execTime).a(" millis").writeToSystemOut();
+        Str.create()
+                .a("Uploaded content ").aq(fileContent)
+                .a(" to file ").aq(fileName)
+                .a(" in bucket ").aq(bucketName)
+                .a(" and it took ").af(execTime).a(" millis")
+                .writeToSystemOut();
+    }
+
+
+    private static String getFileContent() {
+        return "my content "
+                + RandomUtil.getRandomString(5)
+                + " "
+                + Strings.repeat("*", 500);
     }
 
 }

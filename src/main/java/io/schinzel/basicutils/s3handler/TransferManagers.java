@@ -70,7 +70,6 @@ public class TransferManagers {
         return TransferManagerBuilder
                 .standard()
                 .withS3Client(s3client)
-                .withShutDownThreadPools(true)
                 .build();
     }
 
