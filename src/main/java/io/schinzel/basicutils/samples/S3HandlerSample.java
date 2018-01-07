@@ -18,8 +18,8 @@ public class S3HandlerSample {
 
 
     public static void main(String[] args) {
-        uploadSingleFile();
-        //uploadMultipleFiles(true);
+        //uploadSingleFile();
+        uploadMultipleFiles(true);
     }
 
 

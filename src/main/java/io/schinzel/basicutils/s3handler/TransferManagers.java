@@ -39,7 +39,6 @@ public class TransferManagers {
      * @return A newly created or previously cached transfer manager instance
      */
     TransferManager getTransferManager(String awsAccessKey, String awsSecretKey) {
-        //return createTransferManager(awsAccessKey, awsSecretKey);
         return mTransferManagers.has(awsAccessKey)
                 ? mTransferManagers.get(awsAccessKey)
                 : mTransferManagers.putAndGet(awsAccessKey, createTransferManager(awsAccessKey, awsSecretKey));
@@ -47,7 +46,12 @@ public class TransferManagers {
     }
 
 
-    public TransferManagers shutdown(){
+    /**
+     * Shuts down all transfer managers. Note, this will immediately stop all ongoing file transfers.
+     *
+     * @return This for chaining
+     */
+    public TransferManagers shutdown() {
         mTransferManagers.getKeys().stream()
                 .forEach(k -> mTransferManagers.get(k).shutdownNow(true));
         return this;

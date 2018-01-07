@@ -72,7 +72,6 @@ public class S3File {
             throw new RuntimeException("Problems when downloading file '" + mFileName + "' to bucket '" + mBucketName + "' " + ex.getMessage());
         }
         try {
-            //return FileUtils.readFileToString(downloadFile, Charsets.UTF_8);
             return FileRW.toString(downloadFile);
         } catch (RuntimeException ex) {
             throw new RuntimeException("Problems when reading tmp file when downloading file '" + mFileName + "' from bucket '" + mBucketName + "'. " + ex.getMessage());
