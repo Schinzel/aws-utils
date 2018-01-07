@@ -18,9 +18,12 @@ public class S3HandlerSample {
 
 
     public static void main(String[] args) {
+        //Single file upload sample
         uploadSingleFile();
         boolean parallelUploads = true;
+        //Multiple files upload samples
         uploadMultipleFiles(parallelUploads);
+        //Misc operations sample
         miscOperations();
     }
 
@@ -107,20 +110,24 @@ public class S3HandlerSample {
         Str.create()
                 .a("File exists: ").a(s3File.exists())
                 .writeToSystemOut();
+        //Upload data to file on S3
         s3File.upload(fileContent, true);
         Str.create("Uploaded content to file").writeToSystemOut();
         Str.create()
                 .a("File exists: ").a(s3File.exists())
                 .writeToSystemOut();
+        String downloadedFileContent = s3File.getContentAsString();
         Str.create()
                 .a("File ").aq(fileName)
-                .a(" contains string: ").aq(s3File.getContentAsString())
+                .a(" contains string: ").aq(downloadedFileContent)
                 .writeToSystemOut();
+        //Delete the file
         s3File.delete();
         Str.create("Deleted file").writeToSystemOut();
         Str.create()
                 .a("File exists: ").a(s3File.exists())
                 .writeToSystemOut();
+        //Shut down all instances
         TransferManagers.getInstance().shutdown();
     }
 
