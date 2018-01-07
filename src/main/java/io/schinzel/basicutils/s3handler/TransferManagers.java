@@ -54,6 +54,7 @@ public class TransferManagers {
     public TransferManagers shutdown() {
         mTransferManagers.getKeys().stream()
                 .forEach(k -> mTransferManagers.get(k).shutdownNow(true));
+        mTransferManagers.invalidate();
         return this;
     }
 
