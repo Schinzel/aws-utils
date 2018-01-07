@@ -37,8 +37,7 @@ public class S3File {
     S3File(String awsAccessKey, String awsSecretKey, String bucketName, String fileName) {
         mFileName = fileName;
         mBucketName = bucketName;
-        mTransferManager = TransferManagers.getInstance()
-                .getTransferManager(awsAccessKey, awsSecretKey);
+        mTransferManager = TransferManagers.createTransferManager(awsAccessKey, awsSecretKey);
         boolean bucketExists = Bucket.doesBucketExist(mTransferManager, bucketName);
         Thrower.throwIfFalse(bucketExists).message("No bucket named '" + bucketName + "' exists");
     }
@@ -152,7 +151,8 @@ public class S3File {
             PutObjectRequest putObjectRequest = new PutObjectRequest(mBucketName, mFileName, contentsAsStream, md);
             Upload upload = mTransferManager.upload(putObjectRequest);
             if (waitTillDone) {
-                upload.waitForUploadResult();
+                //upload.waitForUploadResult();
+                upload.waitForCompletion();
             }
             return this;
         } catch (AmazonClientException | InterruptedException ex) {
@@ -160,13 +160,4 @@ public class S3File {
         }
     }
 
-
-    /**
-     * Shuts down the transfer manager. Can be used to make sure
-     * that IDE processes are shutdown.
-     */
-    public S3File shutdown() {
-        mTransferManager.shutdownNow(true);
-        return this;
-    }
 }

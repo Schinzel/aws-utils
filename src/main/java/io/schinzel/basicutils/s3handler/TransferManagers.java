@@ -18,7 +18,7 @@ import lombok.val;
  * @author Schinzel
  */
 @Accessors(prefix = "m")
-class TransferManagers {
+public class TransferManagers {
     /** Holds a collection of transfer managers. Key is AWS access key. */
     private final Cache<String, TransferManager> mTransferManagers = new Cache<>();
 
@@ -28,7 +28,7 @@ class TransferManagers {
     }
 
 
-    static TransferManagers getInstance() {
+    public static TransferManagers getInstance() {
         return Holder.INSTANCE;
     }
 
@@ -39,9 +39,18 @@ class TransferManagers {
      * @return A newly created or previously cached transfer manager instance
      */
     TransferManager getTransferManager(String awsAccessKey, String awsSecretKey) {
+        //return createTransferManager(awsAccessKey, awsSecretKey);
         return mTransferManagers.has(awsAccessKey)
                 ? mTransferManagers.get(awsAccessKey)
                 : mTransferManagers.putAndGet(awsAccessKey, createTransferManager(awsAccessKey, awsSecretKey));
+
+    }
+
+
+    public TransferManagers shutdown(){
+        mTransferManagers.getKeys().stream()
+                .forEach(k -> mTransferManagers.get(k).shutdownNow(true));
+        return this;
     }
 
 
@@ -61,6 +70,7 @@ class TransferManagers {
         return TransferManagerBuilder
                 .standard()
                 .withS3Client(s3client)
+                .withShutDownThreadPools(true)
                 .build();
     }
 
