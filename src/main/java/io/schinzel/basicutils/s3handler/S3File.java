@@ -143,12 +143,8 @@ public class S3File {
     public S3File upload(byte[] fileContent, boolean waitTillDone) {
         try {
             ByteArrayInputStream contentsAsStream = new ByteArrayInputStream(fileContent);
-            ObjectMetadata md = new ObjectMetadata();
-            md.setContentLength(fileContent.length);
-            md.setContentType(HttpFileHeaders.getFileHeader(mFileName));
-            //Set file to be cached by browser for 30 days
-            md.setCacheControl("public, max-age=2592000");
-            PutObjectRequest putObjectRequest = new PutObjectRequest(mBucketName, mFileName, contentsAsStream, md);
+            ObjectMetadata metadata = S3File.getMetaData(mFileName, fileContent.length);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(mBucketName, mFileName, contentsAsStream, metadata);
             Upload upload = mTransferManager.upload(putObjectRequest);
             if (waitTillDone) {
                 upload.waitForCompletion();
@@ -159,4 +155,18 @@ public class S3File {
         }
     }
 
+
+    /**
+     * @param fileName          The name of the file
+     * @param fileContentLength The file content length
+     * @return A file meta data object for setting meta data in uploads
+     */
+    private static ObjectMetadata getMetaData(String fileName, int fileContentLength) {
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(fileContentLength);
+        metadata.setContentType(HttpFileHeaders.getFileHeader(fileName));
+        //Set file to be cached by browser for 30 days
+        metadata.setCacheControl("public, max-age=2592000");
+        return metadata;
+    }
 }
