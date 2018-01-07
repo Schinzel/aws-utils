@@ -21,6 +21,7 @@ public class S3HandlerSample {
         uploadSingleFile();
         boolean parallelUploads = true;
         uploadMultipleFiles(parallelUploads);
+        miscOperations();
     }
 
 
@@ -84,6 +85,43 @@ public class S3HandlerSample {
                 .a(" in bucket ").aq(bucketName)
                 .a(" and it took ").af(execTime).a(" millis")
                 .writeToSystemOut();
+    }
+
+
+    /**
+     * Shows usage of various methods.
+     */
+    public static void miscOperations() {
+        String bucketName = "schinzel.io";
+        String fileName = RandomUtil.getRandomString(5) + ".txt";
+        String fileContent = "my content " + RandomUtil.getRandomString(5);
+        S3File s3File = S3File.builder()
+                .awsAccessKey(AWS_ACCESS_KEY)
+                .awsSecretKey(AWS_SECRET_KEY)
+                .bucketName(bucketName)
+                .fileName(fileName)
+                .build();
+        Str.create()
+                .a("Created object for file ").aq(fileName)
+                .writeToSystemOut();
+        Str.create()
+                .a("File exists: ").a(s3File.exists())
+                .writeToSystemOut();
+        s3File.upload(fileContent, true);
+        Str.create("Uploaded content to file").writeToSystemOut();
+        Str.create()
+                .a("File exists: ").a(s3File.exists())
+                .writeToSystemOut();
+        Str.create()
+                .a("File ").aq(fileName)
+                .a(" contains string: ").aq(s3File.getContentAsString())
+                .writeToSystemOut();
+        s3File.delete();
+        Str.create("Deleted file").writeToSystemOut();
+        Str.create()
+                .a("File exists: ").a(s3File.exists())
+                .writeToSystemOut();
+        TransferManagers.getInstance().shutdown();
     }
 
 
