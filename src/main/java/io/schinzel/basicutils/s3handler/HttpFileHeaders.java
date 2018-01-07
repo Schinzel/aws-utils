@@ -9,9 +9,12 @@ import io.schinzel.basicutils.Thrower;
 import java.util.Map;
 
 /**
+ * The purpose of this class is return HTTP file headers for different file types.
+ *
  * @author schinzel
  */
 class HttpFileHeaders {
+    /** Holds the mapping between file extension and the HTTP header. */
     private static final Map<String, String> FILE_HEADERS = ImmutableMap.<String, String>builder()
             //Text files
             .put("htm", "text/html charset=UTF-8")
@@ -33,6 +36,10 @@ class HttpFileHeaders {
             .build();
 
 
+    /**
+     * @param fileName The name of the file
+     * @return The http header for the argument file.
+     */
     static String getFileHeader(String fileName) {
         Thrower.throwIfVarEmpty(fileName, "fileName");
         String fileExtension = Files.getFileExtension(fileName);

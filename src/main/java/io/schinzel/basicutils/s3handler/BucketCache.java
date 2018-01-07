@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Purpose of this class is ...
+ * Purpose of this class is to check if a bucket exists, and cached the buckets that did exist.
  * <p>
  * Created by Schinzel on 2018-01-03
  */
-class Bucket {
+class BucketCache {
     /**
      * A cache for existing buckets on S3. Is necessary as the doesBucketExist
      * method takes a surprisingly long time (Schinzel 2016).

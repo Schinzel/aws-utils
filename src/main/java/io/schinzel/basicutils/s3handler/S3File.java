@@ -39,7 +39,7 @@ public class S3File {
         mBucketName = bucketName;
         mTransferManager = TransferManagers.getInstance()
                 .getTransferManager(awsAccessKey, awsSecretKey);
-        boolean bucketExists = Bucket.doesBucketExist(mTransferManager, bucketName);
+        boolean bucketExists = BucketCache.doesBucketExist(mTransferManager, bucketName);
         Thrower.throwIfFalse(bucketExists).message("No bucket named '" + bucketName + "' exists");
     }
 
