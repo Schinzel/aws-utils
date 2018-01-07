@@ -151,7 +151,6 @@ public class S3File {
             PutObjectRequest putObjectRequest = new PutObjectRequest(mBucketName, mFileName, contentsAsStream, md);
             Upload upload = mTransferManager.upload(putObjectRequest);
             if (waitTillDone) {
-                //upload.waitForUploadResult();
                 upload.waitForCompletion();
             }
             return this;
