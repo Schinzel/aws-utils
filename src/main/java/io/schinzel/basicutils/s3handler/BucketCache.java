@@ -19,8 +19,8 @@ class BucketCache {
 
 
     static boolean doesBucketExist(TransferManager transferManager, String bucketName) {
-        //If existing buckets cache does not contain the argument bucket name
-        if (!EXISTING_BUCKETS_CACHE.contains(bucketName)) {
+        //If buckets cache contains the argument bucket name
+        if (EXISTING_BUCKETS_CACHE.contains(bucketName)) {
             return true;
         }
         //Set if bucket exists on S3 or not
