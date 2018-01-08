@@ -35,6 +35,10 @@ public class S3File {
 
     @Builder
     S3File(String awsAccessKey, String awsSecretKey, String bucketName, String fileName) {
+        Thrower.throwIfVarEmpty(awsAccessKey, "awsAccessKey");
+        Thrower.throwIfVarEmpty(awsSecretKey, "awsSecretKey");
+        Thrower.throwIfVarEmpty(bucketName, "bucketName");
+        Thrower.throwIfVarEmpty(fileName, "fileName");
         mFileName = fileName;
         mBucketName = bucketName;
         mTransferManager = TransferManagers.getInstance()
