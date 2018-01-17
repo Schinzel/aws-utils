@@ -17,15 +17,15 @@ class HttpFileHeaders {
     /** Holds the mapping between file extension and the HTTP header. */
     private static final Map<String, String> FILE_HEADERS = ImmutableMap.<String, String>builder()
             //Text files
-            .put("htm", "text/html charset=UTF-8")
-            .put("html", "text/html charset=UTF-8")
-            .put("css", "text/css charset=UTF-8")
-            .put("js", "application/javascript charset=UTF-8")
-            .put("json", "application/json charset=UTF-8")
-            .put("map", "text/plain charset=UTF-8")
-            .put("txt", "text/plain charset=UTF-8")
+            .put("htm", "text/html; charset=UTF-8")
+            .put("html", "text/html; charset=UTF-8")
+            .put("css", "text/css; charset=UTF-8")
+            .put("js", "application/javascript; charset=UTF-8")
+            .put("json", "application/json; charset=UTF-8")
+            .put("map", "text/plain; charset=UTF-8")
+            .put("txt", "text/plain; charset=UTF-8")
             //Misc
-            .put("pdf", "application/pdf charset=UTF-8")
+            .put("pdf", "application/pdf; charset=UTF-8")
             //Images
             .put("svg", "image/svg+xml")
             .put("ico", "image/ico")
