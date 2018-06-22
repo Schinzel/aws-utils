@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
+import io.schinzel.basicutils.EmptyObjects;
 import io.schinzel.basicutils.file.FileReader;
 import io.schinzel.basicutils.thrower.Thrower;
 import io.schinzel.basicutils.UTF8;
@@ -69,11 +70,10 @@ public class S3File {
         } catch (AmazonS3Exception as3e) {
             //If there was no such file
             if (as3e.getStatusCode() == 404) {
-                //Return empty string
-                return "";
+                return EmptyObjects.EMPTY_STRING;
             }
         } catch (AmazonClientException | InterruptedException ex) {
-            throw new RuntimeException("Problems when downloading file '" + mFileName + "' to bucket '" + mBucketName + "' " + ex.getMessage());
+            throw new RuntimeException("Problems when downloading file '" + mFileName + "' from bucket '" + mBucketName + "' " + ex.getMessage());
         }
         try {
             return FileReader.read(downloadFile).asString();
