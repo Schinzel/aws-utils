@@ -1,4 +1,4 @@
-package io.schinzel.basicutils.s3handler;
+package io.schinzel.basicutils.s3;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;

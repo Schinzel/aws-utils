@@ -1,16 +1,16 @@
-package io.schinzel.basicutils.s3handler;
+package io.schinzel.basicutils.s3;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
-import io.schinzel.basicutils.FileRW;
-import io.schinzel.basicutils.Thrower;
+import io.schinzel.basicutils.EmptyObjects;
 import io.schinzel.basicutils.UTF8;
+import io.schinzel.basicutils.file.FileReader;
+import io.schinzel.basicutils.thrower.Thrower;
 import lombok.Builder;
 import lombok.experimental.Accessors;
 
@@ -25,11 +25,17 @@ import java.io.IOException;
  */
 @Accessors(prefix = "m")
 public class S3File {
-    /** The name of this file. */
+    /**
+     * The name of this file.
+     */
     private final String mFileName;
-    /** The name of the bucket in which this file resides. */
+    /**
+     * The name of the bucket in which this file resides.
+     */
     private final String mBucketName;
-    /** Transfers data to/from S3. */
+    /**
+     * Transfers data to/from S3.
+     */
     private final TransferManager mTransferManager;
 
 
@@ -49,8 +55,7 @@ public class S3File {
 
 
     /**
-     * @return The content of this file as a string. If there was no such file,
-     * an empty string is returned.
+     * @return The content of this file as a string. If there was no such file, an empty string is returned.
      */
     public String getContentAsString() {
         File downloadFile;
@@ -64,19 +69,19 @@ public class S3File {
             throw new RuntimeException("Problems creating temporary file for uploading to S3.");
         }
         try {
-            Download download = mTransferManager.download(mBucketName, mFileName, downloadFile);
-            download.waitForCompletion();
+            mTransferManager
+                    .download(mBucketName, mFileName, downloadFile)
+                    .waitForCompletion();
         } catch (AmazonS3Exception as3e) {
             //If there was no such file
             if (as3e.getStatusCode() == 404) {
-                //Return empty string
-                return "";
+                return EmptyObjects.EMPTY_STRING;
             }
         } catch (AmazonClientException | InterruptedException ex) {
-            throw new RuntimeException("Problems when downloading file '" + mFileName + "' to bucket '" + mBucketName + "' " + ex.getMessage());
+            throw new RuntimeException("Problems when downloading file '" + mFileName + "' from bucket '" + mBucketName + "' " + ex.getMessage());
         }
         try {
-            return FileRW.toString(downloadFile);
+            return FileReader.read(downloadFile).asString();
         } catch (RuntimeException ex) {
             throw new RuntimeException("Problems when reading tmp file when downloading file '" + mFileName + "' from bucket '" + mBucketName + "'. " + ex.getMessage());
         }

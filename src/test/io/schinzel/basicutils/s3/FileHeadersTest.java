@@ -1,4 +1,4 @@
-package io.schinzel.basicutils.s3handler;
+package io.schinzel.basicutils.s3;
 
 import org.junit.Test;
 
@@ -45,7 +45,7 @@ public class FileHeadersTest {
     @Test
     public void getFileHeader_ExistingExtension_Exception() {
         String fileHeader = HttpFileHeaders.getFileHeader("fileName.html");
-        assertThat(fileHeader).isEqualTo("text/html charset=UTF-8");
+        assertThat(fileHeader).isEqualTo("text/html; charset=UTF-8");
     }
 
 }

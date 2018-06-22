@@ -1,4 +1,4 @@
-package io.schinzel.basicutils.s3handler;
+package io.schinzel.basicutils.s3;
 
 import io.schinzel.basicutils.FunnyChars;
 import io.schinzel.basicutils.RandomUtil;
