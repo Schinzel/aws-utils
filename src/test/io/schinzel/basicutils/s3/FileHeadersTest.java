@@ -1,4 +1,4 @@
-package io.schinzel.basicutils.s3handler;
+package io.schinzel.basicutils.s3;
 
 import org.junit.Test;
 
