@@ -9,7 +9,7 @@ import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import io.schinzel.basicutils.FileRW;
-import io.schinzel.basicutils.Thrower;
+import io.schinzel.basicutils.thrower.Thrower;
 import io.schinzel.basicutils.UTF8;
 import lombok.Builder;
 import lombok.experimental.Accessors;

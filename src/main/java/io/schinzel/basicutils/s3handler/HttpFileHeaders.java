@@ -4,7 +4,7 @@ package io.schinzel.basicutils.s3handler;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import io.schinzel.basicutils.Checker;
-import io.schinzel.basicutils.Thrower;
+import io.schinzel.basicutils.thrower.Thrower;
 
 import java.util.Map;
 
