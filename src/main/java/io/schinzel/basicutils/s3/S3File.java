@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import io.schinzel.basicutils.EmptyObjects;
 import io.schinzel.basicutils.UTF8;
+import io.schinzel.basicutils.file.Bytes;
 import io.schinzel.basicutils.file.FileReader;
 import io.schinzel.basicutils.thrower.Thrower;
 import lombok.Builder;
@@ -57,7 +58,7 @@ public class S3File {
     /**
      * @return The content of this file as a string. If there was no such file, an empty string is returned.
      */
-    public String getContentAsString() {
+    public Bytes read() {
         File downloadFile;
         try {
             String downloadFileNamePrefix = "downloadFile";
@@ -75,13 +76,13 @@ public class S3File {
         } catch (AmazonS3Exception as3e) {
             //If there was no such file
             if (as3e.getStatusCode() == 404) {
-                return EmptyObjects.EMPTY_STRING;
+                return Bytes.EMPTY;
             }
         } catch (AmazonClientException | InterruptedException ex) {
             throw new RuntimeException("Problems when downloading file '" + mFileName + "' from bucket '" + mBucketName + "' " + ex.getMessage());
         }
         try {
-            return FileReader.read(downloadFile).asString();
+            return FileReader.read(downloadFile);
         } catch (RuntimeException ex) {
             throw new RuntimeException("Problems when reading tmp file when downloading file '" + mFileName + "' from bucket '" + mBucketName + "'. " + ex.getMessage());
         }

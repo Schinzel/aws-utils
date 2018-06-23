@@ -116,7 +116,9 @@ public class S3HandlerSample {
         Str.create()
                 .a("File exists: ").a(s3File.exists())
                 .writeToSystemOut();
-        String downloadedFileContent = s3File.getContentAsString();
+        String downloadedFileContent = s3File
+                .read()
+                .asString();
         Str.create()
                 .a("File ").aq(fileName)
                 .a(" contains string: ").aq(downloadedFileContent)

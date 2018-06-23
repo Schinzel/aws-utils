@@ -76,7 +76,7 @@ public class S3FileTest {
                 .collect(Collectors.joining("\n"));
         S3File s3file = this.getFile(getRandomFileName())
                 .upload(fileContentToUpload, true);
-        String downloadedFileContent = s3file.getContentAsString();
+        String downloadedFileContent = s3file.read().asString();
         assertThat(downloadedFileContent).isEqualTo(fileContentToUpload);
         s3file.delete();
     }
@@ -85,7 +85,8 @@ public class S3FileTest {
     @Test
     public void getContentAsString_NonExistingFile_EmptyString() {
         String downloadedFileContent = this.getFile(getRandomFileName())
-                .getContentAsString();
+                .read()
+                .asString();
         assertThat(downloadedFileContent).isEqualTo("");
     }
 
