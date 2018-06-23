@@ -43,7 +43,8 @@ public class S3FileTest {
     @Test
     public void exists_ExistingFile_True() {
         S3File s3file = this.getFile(getRandomFileName())
-                .upload("some content", true);
+                .waitTillUploadDone()
+                .upload("some content");
         boolean exists = s3file.exists();
         s3file.delete();
         assertThat(exists).isTrue();
@@ -53,7 +54,8 @@ public class S3FileTest {
     @Test
     public void delete_ExistingFile_FileShouldNotExist() {
         boolean exists = this.getFile(getRandomFileName())
-                .upload("some content", true)
+                .waitTillUploadDone()
+                .upload("some content")
                 .delete()
                 .exists();
         assertThat(exists).isFalse();
@@ -75,7 +77,8 @@ public class S3FileTest {
                 .map(FunnyChars::getString)
                 .collect(Collectors.joining("\n"));
         S3File s3file = this.getFile(getRandomFileName())
-                .upload(fileContentToUpload, true);
+                .waitTillUploadDone()
+                .upload(fileContentToUpload);
         String downloadedFileContent = s3file.read().asString();
         assertThat(downloadedFileContent).isEqualTo(fileContentToUpload);
         s3file.delete();

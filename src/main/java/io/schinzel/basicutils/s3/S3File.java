@@ -7,7 +7,6 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
-import io.schinzel.basicutils.EmptyObjects;
 import io.schinzel.basicutils.UTF8;
 import io.schinzel.basicutils.file.Bytes;
 import io.schinzel.basicutils.file.FileReader;
@@ -26,18 +25,13 @@ import java.io.IOException;
  */
 @Accessors(prefix = "m")
 public class S3File {
-    /**
-     * The name of this file.
-     */
+    /** The name of this file */
     private final String mFileName;
-    /**
-     * The name of the bucket in which this file resides.
-     */
+    /** The name of the bucket in which this file resides. */
     private final String mBucketName;
-    /**
-     * Transfers data to/from S3.
-     */
+    /** Transfers data to/from S3 */
     private final TransferManager mTransferManager;
+    private boolean mWaitTilUploadDone = false;
 
 
     @Builder
@@ -127,36 +121,30 @@ public class S3File {
 
 
     /**
-     * Uploads the argument content to this S3 file. If a file already exists,
-     * it is overwritten.
+     * Sets subsequent uses of the method {@link #upload(String)} to wait until the upload is done.
      *
-     * @param fileContent  The file content to uploadAndGetFilename.
-     * @param waitTillDone If true, method returns once the argument data has
-     *                     been uploaded. If false, method returns without waiting for the uploadAndGetFilename
-     *                     to finish.
+     * @return This for chaining
      */
-    public S3File upload(String fileContent, boolean waitTillDone) {
-        byte[] contentAsBytes = UTF8.getBytes(fileContent);
-        return this.upload(contentAsBytes, waitTillDone);
+    public S3File waitTillUploadDone() {
+        mWaitTilUploadDone = true;
+        return this;
     }
 
 
     /**
-     * Uploads the argument file to this S3 file. If a file already exists,
+     * Uploads the argument content to this S3 file. If a file already exists,
      * it is overwritten.
      *
-     * @param fileContent  The file content to uploadAndGetFilename.
-     * @param waitTillDone If true, method returns once the argument data has
-     *                     been uploaded. If false, method returns without waiting for the uploadAndGetFilename
-     *                     to finish.
+     * @param fileContent The file content to upload.
      */
-    public S3File upload(byte[] fileContent, boolean waitTillDone) {
+    public S3File upload(String fileContent) {
+        byte[] contentAsBytes = UTF8.getBytes(fileContent);
         try {
-            ByteArrayInputStream contentsAsStream = new ByteArrayInputStream(fileContent);
-            ObjectMetadata metadata = S3File.getMetaData(mFileName, fileContent.length);
+            ByteArrayInputStream contentsAsStream = new ByteArrayInputStream(contentAsBytes);
+            ObjectMetadata metadata = S3File.getMetaData(mFileName, contentAsBytes.length);
             PutObjectRequest putObjectRequest = new PutObjectRequest(mBucketName, mFileName, contentsAsStream, metadata);
             Upload upload = mTransferManager.upload(putObjectRequest);
-            if (waitTillDone) {
+            if (mWaitTilUploadDone) {
                 upload.waitForCompletion();
             }
             return this;
