@@ -24,7 +24,7 @@ import java.io.IOException;
  * @author Schinzel
  */
 @Accessors(prefix = "m")
-public class S3File {
+public class S3File implements IS3File {
     /** The name of this file */
     private final String mFileName;
     /** The name of the bucket in which this file resides. */
@@ -52,6 +52,7 @@ public class S3File {
     /**
      * @return The content of this file as a string. If there was no such file, an empty string is returned.
      */
+    @Override
     public Bytes read() {
         File downloadFile;
         try {
@@ -86,6 +87,7 @@ public class S3File {
     /**
      * @return True if this file exists, else false.
      */
+    @Override
     public boolean exists() {
         try {
             mTransferManager
@@ -102,6 +104,7 @@ public class S3File {
      * Delete this file. If file does not exist on S3, method returns
      * gracefully without throwing errors.
      */
+    @Override
     public S3File delete() {
         //Check if file exists
         try {
@@ -125,6 +128,7 @@ public class S3File {
      *
      * @return This for chaining
      */
+    @Override
     public S3File waitTillUploadDone() {
         mWaitTilUploadDone = true;
         return this;
@@ -137,6 +141,7 @@ public class S3File {
      *
      * @param fileContent The file content to upload.
      */
+    @Override
     public S3File upload(String fileContent) {
         byte[] contentAsBytes = UTF8.getBytes(fileContent);
         try {
