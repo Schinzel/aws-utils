@@ -107,8 +107,7 @@ public class S3File implements IS3File {
 
 
     /**
-     * Delete this file. If file does not exist on S3, method returns
-     * gracefully without throwing errors.
+     * Delete this file. If file does not exist on S3, method returns gracefully without throwing errors.
      */
     @Override
     public S3File delete() {
@@ -124,8 +123,9 @@ public class S3File implements IS3File {
 
     /**
      * Uploads the argument content to this S3 file. If a file already exists, it is overwritten.
-     * If constructor argument backgroundUploads is set to true, the method returns after an write is commenced but
-     * not completed.
+     * If constructor argument backgroundUploads is set to true, the method returns after a write-operation is
+     * commenced but not completed. If backgroundUploads is set to false or not set, this method returns after the
+     * write-operation is complete.
      *
      * @param fileContent The file content to write
      */
