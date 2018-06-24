@@ -32,10 +32,7 @@ public class S3File implements IS3File {
     private final String mBucketName;
     /** Transfers data to/from S3 */
     private final TransferManager mTransferManager;
-    /**
-     * If true the upload method returns after the upload is commenced but not finished.
-     * If false the upload method returns after the upload is completed.
-     */
+    /** If true, upload method does upload in background. */
     private final boolean mBackgroundUpload;
 
 
@@ -132,6 +129,8 @@ public class S3File implements IS3File {
 
     /**
      * Uploads the argument content to this S3 file. If a file already exists, it is overwritten.
+     * If constructor argument backgroundUploads is set to true, the method returns after an upload is commenced but
+     * not completed.
      *
      * @param fileContent The file content to upload
      */
