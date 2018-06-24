@@ -5,7 +5,7 @@ import io.schinzel.basicutils.RandomUtil;
 import io.schinzel.basicutils.configvar.ConfigVar;
 
 /**
- * Purpose of this class is ...
+ * Util class to create S3File instances.
  * <p>
  * Created by Schinzel on 2018-06-24
  */

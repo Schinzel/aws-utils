@@ -60,7 +60,9 @@ public class S3FileTest {
         S3File s3file = S3FileUtil
                 .getS3File()
                 .write(fileContentToUpload);
-        String downloadedFileContent = s3file.read().asString();
+        String downloadedFileContent = s3file
+                .read()
+                .asString();
         assertThat(downloadedFileContent).isEqualTo(fileContentToUpload);
         s3file.delete();
     }
