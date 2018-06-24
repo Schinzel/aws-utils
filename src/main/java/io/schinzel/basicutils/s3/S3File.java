@@ -13,6 +13,7 @@ import io.schinzel.basicutils.file.Bytes;
 import io.schinzel.basicutils.file.FileReader;
 import io.schinzel.basicutils.str.Str;
 import io.schinzel.basicutils.thrower.Thrower;
+import io.schinzel.basicutils.timekeeper.Timekeeper;
 import lombok.Builder;
 import lombok.experimental.Accessors;
 
@@ -53,13 +54,34 @@ public class S3File implements IS3File {
         Thrower.throwIfFalse(bucketExists).message("No bucket named '" + bucketName + "' exists");
     }
 
+    public static void main(String[] args) {
+        String filename = "apa";
+        String bucket = "nucket";
+        Timekeeper tk = Timekeeper.getSingleton();
+        tk.start("Format");
+        for (int i = 0; i < 10000; i++) {
+            String.format("Problems when reading S3 file '%s' from bucket '%s'. ", filename, bucket);
+        }
+        tk.stopAndStart("Str");
+        for (int i = 0; i < 10000; i++) {
+            Str.create()
+                    .a("Problems when reading S3 file ").aq(filename)
+                    .a(" from bucket").aq(bucket)
+                    .getString();
+        }
+        tk.stop().getResults().getStr().writeToSystemOut();
+    }
+
 
     /**
      * @return The content of this file as a string. If there was no such file, an empty string is returned.
      */
     @Override
     public Bytes read() {
-        String exceptionMessage = String.format("Problems when reading S3 file '%s' from bucket '%s'. ", mFileName, mBucketName);
+        String exceptionMessage = Str.create()
+                .a("Problems when reading S3 file ").aq(mFileName)
+                .a(" from bucket").aq(mBucketName).a(". ")
+                .getString();
         File downloadFile;
         try {
             String downloadFileNamePrefix = "s3_destination_temp_file_";
