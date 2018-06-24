@@ -1,0 +1,28 @@
+package io.schinzel.basicutils.s3;
+
+import com.amazonaws.regions.Regions;
+import io.schinzel.basicutils.RandomUtil;
+import io.schinzel.basicutils.configvar.ConfigVar;
+
+/**
+ * Purpose of this class is ...
+ * <p>
+ * Created by Schinzel on 2018-06-24
+ */
+class S3FileUtil {
+    private static final String AWS_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_ACCESS_KEY");
+    private static final String AWS_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_SECRET_KEY");
+    private static final String BUCKET_NAME = "schinzel.io";
+
+    static S3File getS3File() {
+        String fileName = RandomUtil.getRandomString(20) + ".txt";
+        return S3File.builder()
+                .awsAccessKey(AWS_ACCESS_KEY)
+                .awsSecretKey(AWS_SECRET_KEY)
+                .region(Regions.EU_WEST_1)
+                .bucketName(BUCKET_NAME)
+                .fileName(fileName)
+                .build();
+    }
+
+}

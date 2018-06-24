@@ -20,7 +20,7 @@ import lombok.val;
 @Accessors(prefix = "m")
 public class TransferManagers {
     /** Holds a collection of transfer managers. Key is AWS access key and region. */
-    private final Cache<String, TransferManager> mTransferManagers = new Cache<>();
+    final Cache<String, TransferManager> mTransferManagers = new Cache<>();
 
 
     private static class Holder {
