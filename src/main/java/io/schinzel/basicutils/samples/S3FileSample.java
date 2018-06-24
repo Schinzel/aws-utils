@@ -35,14 +35,17 @@ public class S3FileSample {
         String bucketName = "schinzel.io";
         String fileName = "myfile.txt";
         String fileContent = "my content";
-        S3File.builder()
+        S3File file = S3File.builder()
                 .awsAccessKey(AWS_ACCESS_KEY)
                 .awsSecretKey(AWS_SECRET_KEY)
                 .region(Regions.EU_WEST_1)
                 .bucketName(bucketName)
                 .fileName(fileName)
                 .build()
+                //Upload content
                 .upload(fileContent);
+        //Sample clean up, delete file
+        file.delete();
         //Terminates threads for file uploading.
         TransferManagers.getInstance().shutdown();
         Str.create()
@@ -109,7 +112,7 @@ public class S3FileSample {
                     .asStr()
                     .writeToSystemOut();
         }
-        //Delete the file
+        //Sample clean up, delete file
         s3File.delete();
         //Shut down all instances
         TransferManagers.getInstance().shutdown();
