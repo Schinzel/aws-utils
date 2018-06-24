@@ -13,7 +13,7 @@ import io.schinzel.basicutils.str.Str;
  * <p>
  * Created by Schinzel on 2018-01-03
  */
-public class S3HandlerSample {
+public class S3FileSample {
     private static String AWS_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_ACCESS_KEY");
     private static String AWS_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_SECRET_KEY");
 
@@ -92,39 +92,25 @@ public class S3HandlerSample {
     private static void miscOperations() {
         String bucketName = "schinzel.io";
         String fileName = RandomUtil.getRandomString(5) + ".txt";
-        String fileContent = "my content " + RandomUtil.getRandomString(5);
+        String fileContent = getFileContent();
         S3File s3File = S3File.builder()
                 .awsAccessKey(AWS_ACCESS_KEY)
                 .awsSecretKey(AWS_SECRET_KEY)
                 .region(Regions.EU_WEST_1)
                 .bucketName(bucketName)
                 .fileName(fileName)
-                .build();
-        Str.create()
-                .a("Created object for file ").aq(fileName)
-                .writeToSystemOut();
-        Str.create()
-                .a("File exists: ").a(s3File.exists())
-                .writeToSystemOut();
-        //Upload data to file on S3
-        s3File.upload(fileContent);
-        Str.create("Uploaded content to file").writeToSystemOut();
-        Str.create()
-                .a("File exists: ").a(s3File.exists())
-                .writeToSystemOut();
-        String downloadedFileContent = s3File
-                .read()
-                .asString();
-        Str.create()
-                .a("File ").aq(fileName)
-                .a(" contains string: ").aq(downloadedFileContent)
-                .writeToSystemOut();
+                .build()
+                //Upload data to file on S3
+                .upload(fileContent);
+        //If file exists
+        if (s3File.exists()) {
+            //Read file
+            s3File.read()
+                    .asStr()
+                    .writeToSystemOut();
+        }
         //Delete the file
         s3File.delete();
-        Str.create("Deleted file").writeToSystemOut();
-        Str.create()
-                .a("File exists: ").a(s3File.exists())
-                .writeToSystemOut();
         //Shut down all instances
         TransferManagers.getInstance().shutdown();
     }
