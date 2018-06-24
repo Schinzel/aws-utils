@@ -11,6 +11,7 @@ import com.amazonaws.services.s3.transfer.Upload;
 import io.schinzel.basicutils.UTF8;
 import io.schinzel.basicutils.file.Bytes;
 import io.schinzel.basicutils.file.FileReader;
+import io.schinzel.basicutils.str.Str;
 import io.schinzel.basicutils.thrower.Thrower;
 import lombok.Builder;
 import lombok.experimental.Accessors;
@@ -58,6 +59,7 @@ public class S3File implements IS3File {
      */
     @Override
     public Bytes read() {
+        String exceptionMessage = String.format("Problems when reading S3 file '%s' from bucket '%s'. ", mFileName, mBucketName);
         File downloadFile;
         try {
             String downloadFileNamePrefix = "s3_destination_temp_file_";
@@ -66,7 +68,7 @@ public class S3File implements IS3File {
             //File will be deleted on exit of virtual machine
             downloadFile.deleteOnExit();
         } catch (IOException e) {
-            throw new RuntimeException("Problems creating temporary file when downloading from S3. " + e.getMessage());
+            throw new RuntimeException(exceptionMessage + "Problems creating temporary file. " + e.getMessage());
         }
         try {
             mTransferManager
@@ -77,13 +79,13 @@ public class S3File implements IS3File {
             if (as3e.getStatusCode() == 404) {
                 return Bytes.EMPTY;
             }
-        } catch (AmazonClientException | InterruptedException ex) {
-            throw new RuntimeException("Problems when downloading file '" + mFileName + "' from bucket '" + mBucketName + "'. " + ex.getMessage());
+        } catch (AmazonClientException | InterruptedException e) {
+            throw new RuntimeException(exceptionMessage + "Problems downloading file. " + e.getMessage());
         }
         try {
             return FileReader.read(downloadFile);
-        } catch (RuntimeException ex) {
-            throw new RuntimeException("Problems when reading temp file when downloading file '" + mFileName + "' from bucket '" + mBucketName + "'. " + ex.getMessage());
+        } catch (RuntimeException e) {
+            throw new RuntimeException(exceptionMessage + "Problems reading temporary file. " + e.getMessage());
         }
     }
 
