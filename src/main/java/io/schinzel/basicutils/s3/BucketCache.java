@@ -10,7 +10,7 @@ import java.util.List;
  * <p>
  * The purpose of this is so that a clear error message can be thrown if a bucket does not exist.
  * The reason that the existing buckets are cached is that the checking if a bucket exists takes
- * surprisingly long time, much longer than an file upload.
+ * surprisingly long time, much longer than an file write.
  * <p>
  * Below is a performance measurement done 2018-01-07 on an approximately 200 Mbit/s connection
  * which shows how slow the bucket checking operation is. The measurement is done when nothing has

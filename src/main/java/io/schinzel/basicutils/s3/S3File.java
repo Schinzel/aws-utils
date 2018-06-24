@@ -28,16 +28,16 @@ import java.io.IOException;
 public class S3File implements IS3File {
     /** The name of this file */
     private final String mFileName;
-    /** The name of the bucket in which this file resides. */
+    /** The name of the bucket in which this file resides */
     private final String mBucketName;
     /** Transfers data to/from S3 */
     private final TransferManager mTransferManager;
-    /** If true, upload method does upload in background. */
-    private final boolean mBackgroundUpload;
+    /** If true, write method does the write operation in the in background. */
+    private final boolean mBackgroundWrite;
 
 
     @Builder
-    S3File(String awsAccessKey, String awsSecretKey, Regions region, String bucketName, String fileName, boolean backgroundUpload) {
+    S3File(String awsAccessKey, String awsSecretKey, Regions region, String bucketName, String fileName, boolean backgroundWrite) {
         Thrower.throwIfVarEmpty(awsAccessKey, "awsAccessKey");
         Thrower.throwIfVarEmpty(awsSecretKey, "awsSecretKey");
         Thrower.throwIfVarNull(region, "region");
@@ -45,7 +45,7 @@ public class S3File implements IS3File {
         Thrower.throwIfVarEmpty(fileName, "fileName");
         mFileName = fileName;
         mBucketName = bucketName;
-        mBackgroundUpload = backgroundUpload;
+        mBackgroundWrite = backgroundWrite;
         mTransferManager = TransferManagers.getInstance()
                 .getTransferManager(awsAccessKey, awsSecretKey, region);
         boolean bucketExists = BucketCache.doesBucketExist(mTransferManager, bucketName);
@@ -60,13 +60,13 @@ public class S3File implements IS3File {
     public Bytes read() {
         File downloadFile;
         try {
-            String downloadFileNamePrefix = "downloadFile";
+            String downloadFileNamePrefix = "s3_destination_temp_file_";
             //Creates a file with the suffix .tmp
             downloadFile = File.createTempFile(downloadFileNamePrefix, null);
             //File will be deleted on exit of virtual machine.
             downloadFile.deleteOnExit();
         } catch (IOException e) {
-            throw new RuntimeException("Problems creating temporary file for uploading to S3.");
+            throw new RuntimeException("Problems creating temporary file when downloading from S3. " + e.getMessage());
         }
         try {
             mTransferManager
@@ -78,12 +78,12 @@ public class S3File implements IS3File {
                 return Bytes.EMPTY;
             }
         } catch (AmazonClientException | InterruptedException ex) {
-            throw new RuntimeException("Problems when downloading file '" + mFileName + "' from bucket '" + mBucketName + "' " + ex.getMessage());
+            throw new RuntimeException("Problems when downloading file '" + mFileName + "' from bucket '" + mBucketName + "'. " + ex.getMessage());
         }
         try {
             return FileReader.read(downloadFile);
         } catch (RuntimeException ex) {
-            throw new RuntimeException("Problems when reading tmp file when downloading file '" + mFileName + "' from bucket '" + mBucketName + "'. " + ex.getMessage());
+            throw new RuntimeException("Problems when reading temp file when downloading file '" + mFileName + "' from bucket '" + mBucketName + "'. " + ex.getMessage());
         }
     }
 
@@ -96,6 +96,7 @@ public class S3File implements IS3File {
         try {
             mTransferManager
                     .getAmazonS3Client()
+                    //If file does not exists, this throws an exception
                     .getObjectMetadata(mBucketName, mFileName);
         } catch (AmazonServiceException e) {
             return false;
@@ -110,39 +111,32 @@ public class S3File implements IS3File {
      */
     @Override
     public S3File delete() {
-        //Check if file exists
-        try {
+        if (this.exists()) {
+            //Delete file
             mTransferManager
                     .getAmazonS3Client()
-                    .getObjectMetadata(mBucketName, mFileName);
-        } catch (AmazonServiceException e) {
-            //Ends up here if file does not exist
-            return this;
+                    .deleteObject(mBucketName, mFileName);
         }
-        //Delete file
-        mTransferManager
-                .getAmazonS3Client()
-                .deleteObject(mBucketName, mFileName);
         return this;
     }
 
 
     /**
      * Uploads the argument content to this S3 file. If a file already exists, it is overwritten.
-     * If constructor argument backgroundUploads is set to true, the method returns after an upload is commenced but
+     * If constructor argument backgroundUploads is set to true, the method returns after an write is commenced but
      * not completed.
      *
-     * @param fileContent The file content to upload
+     * @param fileContent The file content to write
      */
     @Override
-    public S3File upload(String fileContent) {
+    public S3File write(String fileContent) {
         byte[] contentAsBytes = UTF8.getBytes(fileContent);
         try {
             ByteArrayInputStream contentsAsStream = new ByteArrayInputStream(contentAsBytes);
             ObjectMetadata metadata = S3File.getMetaData(mFileName, contentAsBytes.length);
             PutObjectRequest putObjectRequest = new PutObjectRequest(mBucketName, mFileName, contentsAsStream, metadata);
             Upload upload = mTransferManager.upload(putObjectRequest);
-            if (!mBackgroundUpload) {
+            if (!mBackgroundWrite) {
                 upload.waitForCompletion();
             }
             return this;

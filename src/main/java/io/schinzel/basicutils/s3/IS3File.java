@@ -3,20 +3,19 @@ package io.schinzel.basicutils.s3;
 import io.schinzel.basicutils.file.Bytes;
 
 /**
- * Purpose of this class is
+ * Purpose of this interface is to handle files on S3.
  * <p>
  * Created by Schinzel on 2018-06-23
  */
 public interface IS3File {
 
     /**
-     *
      * @return Returns the content of the  file
      */
     Bytes read();
 
+
     /**
-     *
      * @return True if the file exists, else false
      */
     boolean exists();
@@ -29,11 +28,12 @@ public interface IS3File {
      */
     S3File delete();
 
+
     /**
      * Writes the argument string to the file
      *
-     * @param fileContent The content to write.
+     * @param fileContent The content to write
      * @return This for chaining
      */
-    S3File upload(String fileContent);
+    S3File write(String fileContent);
 }

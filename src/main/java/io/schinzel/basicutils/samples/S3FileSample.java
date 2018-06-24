@@ -19,9 +19,9 @@ public class S3FileSample {
 
 
     public static void main(String[] args) {
-        //Single file upload sample
+        //Single file write sample
         uploadSingleFile();
-        //Multiple files upload samples
+        //Multiple files write samples
         uploadMultipleFiles();
         //Misc operations sample
         miscOperations();
@@ -43,7 +43,7 @@ public class S3FileSample {
                 .fileName(fileName)
                 .build()
                 //Upload content
-                .upload(fileContent);
+                .write(fileContent);
         //Sample clean up, delete file
         file.delete();
         //Terminates threads for file uploading.
@@ -70,10 +70,10 @@ public class S3FileSample {
                     .awsSecretKey(AWS_SECRET_KEY)
                     .region(Regions.EU_WEST_1)
                     .bucketName(bucketName)
-                    .backgroundUpload(true)
+                    .backgroundWrite(true)
                     .fileName(i + "_" + fileName)
                     .build()
-                    .upload(fileContent + "__" + i);
+                    .write(fileContent + "__" + i);
             Str.create("Upload: ").a(i).writeToSystemOut();
         }
         //Terminates threads for file uploading. Note that files that have not been completely
@@ -104,7 +104,7 @@ public class S3FileSample {
                 .fileName(fileName)
                 .build()
                 //Upload data to file on S3
-                .upload(fileContent);
+                .write(fileContent);
         //If file exists
         if (s3File.exists()) {
             //Read file
