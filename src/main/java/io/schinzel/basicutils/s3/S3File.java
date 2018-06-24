@@ -2,9 +2,11 @@ package io.schinzel.basicutils.s3;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.Region;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import io.schinzel.basicutils.UTF8;
@@ -35,15 +37,16 @@ public class S3File implements IS3File {
 
 
     @Builder
-    S3File(String awsAccessKey, String awsSecretKey, String bucketName, String fileName) {
+    S3File(String awsAccessKey, String awsSecretKey, Regions region, String bucketName, String fileName) {
         Thrower.throwIfVarEmpty(awsAccessKey, "awsAccessKey");
         Thrower.throwIfVarEmpty(awsSecretKey, "awsSecretKey");
+        Thrower.throwIfVarNull(region, "region");
         Thrower.throwIfVarEmpty(bucketName, "bucketName");
         Thrower.throwIfVarEmpty(fileName, "fileName");
         mFileName = fileName;
         mBucketName = bucketName;
         mTransferManager = TransferManagers.getInstance()
-                .getTransferManager(awsAccessKey, awsSecretKey);
+                .getTransferManager(awsAccessKey, awsSecretKey, region);
         boolean bucketExists = BucketCache.doesBucketExist(mTransferManager, bucketName);
         Thrower.throwIfFalse(bucketExists).message("No bucket named '" + bucketName + "' exists");
     }

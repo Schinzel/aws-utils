@@ -1,5 +1,6 @@
 package io.schinzel.basicutils.s3;
 
+import com.amazonaws.regions.Regions;
 import io.schinzel.basicutils.FunnyChars;
 import io.schinzel.basicutils.RandomUtil;
 import io.schinzel.basicutils.configvar.ConfigVar;
@@ -22,6 +23,7 @@ public class S3FileTest {
         return S3File.builder()
                 .awsAccessKey(AWS_ACCESS_KEY)
                 .awsSecretKey(AWS_SECRET_KEY)
+                .region(Regions.EU_WEST_1)
                 .bucketName(BUCKET_NAME)
                 .fileName(fileName)
                 .build();

@@ -1,5 +1,6 @@
 package io.schinzel.basicutils.samples;
 
+import com.amazonaws.regions.Regions;
 import com.google.common.base.Strings;
 import io.schinzel.basicutils.RandomUtil;
 import io.schinzel.basicutils.configvar.ConfigVar;
@@ -39,6 +40,7 @@ public class S3HandlerSample {
         S3File.builder()
                 .awsAccessKey(AWS_ACCESS_KEY)
                 .awsSecretKey(AWS_SECRET_KEY)
+                .region(Regions.EU_WEST_1)
                 .bucketName(bucketName)
                 .fileName(fileName)
                 .build()
@@ -66,6 +68,7 @@ public class S3HandlerSample {
             S3File.builder()
                     .awsAccessKey(AWS_ACCESS_KEY)
                     .awsSecretKey(AWS_SECRET_KEY)
+                    .region(Regions.EU_WEST_1)
                     .bucketName(bucketName)
                     .fileName(i + "_" + fileName)
                     .build()
@@ -95,6 +98,7 @@ public class S3HandlerSample {
         S3File s3File = S3File.builder()
                 .awsAccessKey(AWS_ACCESS_KEY)
                 .awsSecretKey(AWS_SECRET_KEY)
+                .region(Regions.EU_WEST_1)
                 .bucketName(bucketName)
                 .fileName(fileName)
                 .build();

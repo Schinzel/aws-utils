@@ -19,12 +19,12 @@ import lombok.val;
  */
 @Accessors(prefix = "m")
 public class TransferManagers {
-    /** Holds a collection of transfer managers. Key is AWS access key. */
+    /** Holds a collection of transfer managers. Key is AWS access key and region. */
     private final Cache<String, TransferManager> mTransferManagers = new Cache<>();
 
 
     private static class Holder {
-        public static TransferManagers INSTANCE = new TransferManagers();
+        static TransferManagers INSTANCE = new TransferManagers();
     }
 
 
@@ -38,10 +38,11 @@ public class TransferManagers {
      * @param awsSecretKey The AWS secret key
      * @return A newly created or previously cached transfer manager instance
      */
-    TransferManager getTransferManager(String awsAccessKey, String awsSecretKey) {
-        return mTransferManagers.has(awsAccessKey)
-                ? mTransferManagers.get(awsAccessKey)
-                : mTransferManagers.putAndGet(awsAccessKey, createTransferManager(awsAccessKey, awsSecretKey));
+    TransferManager getTransferManager(String awsAccessKey, String awsSecretKey, Regions region) {
+        String cache_key = awsAccessKey + "_" + region.getName();
+        return mTransferManagers.has(cache_key)
+                ? mTransferManagers.get(cache_key)
+                : mTransferManagers.putAndGet(cache_key, createTransferManager(awsAccessKey, awsSecretKey, region));
 
     }
 
@@ -64,13 +65,13 @@ public class TransferManagers {
      * @param awsSecretKey The AWS secret key
      * @return An newly created AWS S3 transfer manager
      */
-    static TransferManager createTransferManager(String awsAccessKey, String awsSecretKey) {
+    private static TransferManager createTransferManager(String awsAccessKey, String awsSecretKey, Regions region) {
         val basicAWSCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
         val awsStaticCredentialsProvider = new AWSStaticCredentialsProvider(basicAWSCredentials);
         AmazonS3 s3client = AmazonS3ClientBuilder
                 .standard()
                 .withCredentials(awsStaticCredentialsProvider)
-                .withRegion(Regions.EU_WEST_1)
+                .withRegion(region)
                 .build();
         return TransferManagerBuilder
                 .standard()
