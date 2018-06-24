@@ -38,7 +38,7 @@ class HttpFileHeaders {
 
     /**
      * @param fileName The name of the file
-     * @return The http header for the argument file.
+     * @return The http header for the argument file based on the file extension.
      */
     static String getFileHeader(String fileName) {
         Thrower.throwIfVarEmpty(fileName, "fileName");

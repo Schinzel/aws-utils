@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Purpose of this class is to check if a bucket exists, and cache the buckets that did exist.
+ * Purpose of this class is to check if a bucket exists, and cache the buckets that do exist.
  * <p>
  * The purpose of this is so that a clear error message can be thrown if a bucket does not exist.
  * The reason that the existing buckets are cached is that the checking if a bucket exists takes
@@ -29,9 +29,7 @@ import java.util.List;
  * Created by Schinzel on 2018-01-03
  */
 class BucketCache {
-    /**
-     * Cache for existing buckets on S3.
-     */
+    /** Cache for existing buckets on S3. */
     private static final List<String> EXISTING_BUCKETS_CACHE = new ArrayList<>();
 
 
