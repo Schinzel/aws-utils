@@ -63,7 +63,7 @@ public class S3File implements IS3File {
             String downloadFileNamePrefix = "s3_destination_temp_file_";
             //Creates a file with the suffix .tmp
             downloadFile = File.createTempFile(downloadFileNamePrefix, null);
-            //File will be deleted on exit of virtual machine.
+            //File will be deleted on exit of virtual machine
             downloadFile.deleteOnExit();
         } catch (IOException e) {
             throw new RuntimeException("Problems creating temporary file when downloading from S3. " + e.getMessage());
