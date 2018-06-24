@@ -12,9 +12,8 @@ public class TransferManagersTest {
         S3FileUtil.getS3File()
                 .write("file content")
                 .delete();
-        TransferManagers.getInstance()
-                .shutdown();
         int cacheSize = TransferManagers.getInstance()
+                .shutdown()
                 .mTransferManagers
                 .cacheSize();
         assertThat(cacheSize).isZero();
