@@ -14,7 +14,5 @@ public interface IS3File {
 
     S3File delete();
 
-    S3File waitTillUploadDone();
-
     S3File upload(String fileContent);
 }

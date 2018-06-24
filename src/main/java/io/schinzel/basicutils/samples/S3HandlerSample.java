@@ -35,8 +35,6 @@ public class S3HandlerSample {
         String bucketName = "schinzel.io";
         String fileName = "myfile.txt";
         String fileContent = "my content";
-        //The true for "waitTillUploadDone" argument will stop the code here until the file has been
-        // fully uploaded
         S3File.builder()
                 .awsAccessKey(AWS_ACCESS_KEY)
                 .awsSecretKey(AWS_SECRET_KEY)
@@ -44,7 +42,6 @@ public class S3HandlerSample {
                 .bucketName(bucketName)
                 .fileName(fileName)
                 .build()
-                .waitTillUploadDone()
                 .upload(fileContent);
         //Terminates threads for file uploading.
         TransferManagers.getInstance().shutdown();
@@ -57,7 +54,7 @@ public class S3HandlerSample {
 
 
     /**
-     * Uploads a set of files to S3. As waitTillUploadDone is not used the uploads are done in parallel.
+     * Uploads a set of files to S3. As backgroundUpload is used the uploads are done in parallel.
      */
     private static void uploadMultipleFiles() {
         String bucketName = "schinzel.io";
@@ -70,6 +67,7 @@ public class S3HandlerSample {
                     .awsSecretKey(AWS_SECRET_KEY)
                     .region(Regions.EU_WEST_1)
                     .bucketName(bucketName)
+                    .backgroundUpload(true)
                     .fileName(i + "_" + fileName)
                     .build()
                     .upload(fileContent + "__" + i);
@@ -109,9 +107,7 @@ public class S3HandlerSample {
                 .a("File exists: ").a(s3File.exists())
                 .writeToSystemOut();
         //Upload data to file on S3
-        s3File
-                .waitTillUploadDone()
-                .upload(fileContent);
+        s3File.upload(fileContent);
         Str.create("Uploaded content to file").writeToSystemOut();
         Str.create()
                 .a("File exists: ").a(s3File.exists())

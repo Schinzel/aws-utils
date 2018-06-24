@@ -6,7 +6,6 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.Region;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import io.schinzel.basicutils.UTF8;
@@ -33,11 +32,15 @@ public class S3File implements IS3File {
     private final String mBucketName;
     /** Transfers data to/from S3 */
     private final TransferManager mTransferManager;
-    private boolean mWaitTilUploadDone = false;
+    /**
+     * If true the upload method returns after the upload is commenced but not finished.
+     * If false the upload method returns after the upload is completed.
+     */
+    private final boolean mBackgroundUpload;
 
 
     @Builder
-    S3File(String awsAccessKey, String awsSecretKey, Regions region, String bucketName, String fileName) {
+    S3File(String awsAccessKey, String awsSecretKey, Regions region, String bucketName, String fileName, boolean backgroundUpload) {
         Thrower.throwIfVarEmpty(awsAccessKey, "awsAccessKey");
         Thrower.throwIfVarEmpty(awsSecretKey, "awsSecretKey");
         Thrower.throwIfVarNull(region, "region");
@@ -45,6 +48,7 @@ public class S3File implements IS3File {
         Thrower.throwIfVarEmpty(fileName, "fileName");
         mFileName = fileName;
         mBucketName = bucketName;
+        mBackgroundUpload = backgroundUpload;
         mTransferManager = TransferManagers.getInstance()
                 .getTransferManager(awsAccessKey, awsSecretKey, region);
         boolean bucketExists = BucketCache.doesBucketExist(mTransferManager, bucketName);
@@ -127,22 +131,9 @@ public class S3File implements IS3File {
 
 
     /**
-     * Sets subsequent uses of the method {@link #upload(String)} to wait until the upload is done.
+     * Uploads the argument content to this S3 file. If a file already exists, it is overwritten.
      *
-     * @return This for chaining
-     */
-    @Override
-    public S3File waitTillUploadDone() {
-        mWaitTilUploadDone = true;
-        return this;
-    }
-
-
-    /**
-     * Uploads the argument content to this S3 file. If a file already exists,
-     * it is overwritten.
-     *
-     * @param fileContent The file content to upload.
+     * @param fileContent The file content to upload
      */
     @Override
     public S3File upload(String fileContent) {
@@ -152,7 +143,7 @@ public class S3File implements IS3File {
             ObjectMetadata metadata = S3File.getMetaData(mFileName, contentAsBytes.length);
             PutObjectRequest putObjectRequest = new PutObjectRequest(mBucketName, mFileName, contentsAsStream, metadata);
             Upload upload = mTransferManager.upload(putObjectRequest);
-            if (mWaitTilUploadDone) {
+            if (!mBackgroundUpload) {
                 upload.waitForCompletion();
             }
             return this;
