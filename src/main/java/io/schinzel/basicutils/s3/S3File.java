@@ -17,7 +17,6 @@ import lombok.experimental.Accessors;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 /**
@@ -61,7 +60,7 @@ public class S3File implements IS3File {
     public Bytes read() {
         try {
             File tempFile = S3File.getTempFile();
-            this.downloadFileConentIntoTempFile(tempFile);
+            this.downloadFileContentIntoTempFile(tempFile);
             //Read content in temp file and return it
             return FileReader.read(tempFile);
         } catch (Exception e) {
@@ -71,7 +70,7 @@ public class S3File implements IS3File {
     }
 
 
-    static File getTempFile() throws IOException {
+    private static File getTempFile() throws IOException {
         String downloadFileNamePrefix = "s3_destination_temp_file_";
         //Creates a file with the suffix .tmp
         File downloadFile = File.createTempFile(downloadFileNamePrefix, null);
@@ -81,7 +80,7 @@ public class S3File implements IS3File {
     }
 
 
-    void downloadFileConentIntoTempFile(File tempFile) throws InterruptedException, IOException {
+    private void downloadFileContentIntoTempFile(File tempFile) throws InterruptedException, IOException {
         try {
             mTransferManager
                     .download(mBucketName, mFileName, tempFile)
@@ -90,7 +89,7 @@ public class S3File implements IS3File {
             //If there was no such file
             if (e.getStatusCode() == 404) {
                 //Create empty file
-                tempFile.createNewFile();
+                tempFile.createNewFile()
             }
         }
     }
