@@ -89,7 +89,7 @@ public class S3File implements IS3File {
             //If there was no such file
             if (e.getStatusCode() == 404) {
                 //Create empty file
-                tempFile.createNewFile()
+                tempFile.createNewFile();
             }
         }
     }
