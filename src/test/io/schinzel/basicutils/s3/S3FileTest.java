@@ -52,7 +52,7 @@ public class S3FileTest {
 
 
     @Test
-    public void getContentAsString_FunnyCharsUploaded_DownloadedCharsShouldBeSameAsUploaded() {
+    public void read_FunnyCharsUploaded_DownloadedCharsShouldBeSameAsUploaded() {
         String fileContentToUpload = Arrays
                 .stream(FunnyChars.values())
                 .map(FunnyChars::getString)
@@ -69,7 +69,7 @@ public class S3FileTest {
 
 
     @Test
-    public void getContentAsString_NonExistingFile_EmptyString() {
+    public void read_NonExistingFile_EmptyString() {
         String downloadedFileContent = S3FileUtil
                 .getS3File()
                 .read()
