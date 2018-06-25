@@ -11,13 +11,13 @@ import com.amazonaws.services.s3.transfer.Upload;
 import io.schinzel.basicutils.UTF8;
 import io.schinzel.basicutils.file.Bytes;
 import io.schinzel.basicutils.file.FileReader;
-import io.schinzel.basicutils.str.Str;
 import io.schinzel.basicutils.thrower.Thrower;
 import lombok.Builder;
 import lombok.experimental.Accessors;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 /**
@@ -59,36 +59,39 @@ public class S3File implements IS3File {
      */
     @Override
     public Bytes read() {
-        String exceptionMessage = Str.create()
-                .a("Problems when reading S3 file ").aq(mFileName)
-                .a(" from bucket").aq(mBucketName).a(". ")
-                .getString();
-        File downloadFile;
         try {
-            String downloadFileNamePrefix = "s3_destination_temp_file_";
-            //Creates a file with the suffix .tmp
-            downloadFile = File.createTempFile(downloadFileNamePrefix, null);
-            //File will be deleted on exit of virtual machine
-            downloadFile.deleteOnExit();
-        } catch (IOException e) {
-            throw new RuntimeException(exceptionMessage + "Problems creating temporary file. " + e.getMessage());
+            File tempFile = S3File.getTempFile();
+            this.downloadFileConentIntoTempFile(tempFile);
+            //Read content in temp file and return it
+            return FileReader.read(tempFile);
+        } catch (Exception e) {
+            String exceptionMessage = String.format("Problems when reading S3 file '%s' from bucket '%s'. ", mFileName, mBucketName);
+            throw new RuntimeException(exceptionMessage + e.getMessage());
         }
+    }
+
+
+    static File getTempFile() throws IOException {
+        String downloadFileNamePrefix = "s3_destination_temp_file_";
+        //Creates a file with the suffix .tmp
+        File downloadFile = File.createTempFile(downloadFileNamePrefix, null);
+        //File will be deleted on exit of virtual machine
+        downloadFile.deleteOnExit();
+        return downloadFile;
+    }
+
+
+    void downloadFileConentIntoTempFile(File tempFile) throws InterruptedException, IOException {
         try {
             mTransferManager
-                    .download(mBucketName, mFileName, downloadFile)
+                    .download(mBucketName, mFileName, tempFile)
                     .waitForCompletion();
-        } catch (AmazonS3Exception as3e) {
+        } catch (AmazonS3Exception e) {
             //If there was no such file
-            if (as3e.getStatusCode() == 404) {
-                return Bytes.EMPTY;
+            if (e.getStatusCode() == 404) {
+                //Create empty file
+                tempFile.createNewFile();
             }
-        } catch (AmazonClientException | InterruptedException e) {
-            throw new RuntimeException(exceptionMessage + "Problems downloading file. " + e.getMessage());
-        }
-        try {
-            return FileReader.read(downloadFile);
-        } catch (RuntimeException e) {
-            throw new RuntimeException(exceptionMessage + "Problems reading temporary file. " + e.getMessage());
         }
     }
 
@@ -99,9 +102,7 @@ public class S3File implements IS3File {
     @Override
     public boolean exists() {
         try {
-
-            mTransferManager
-                    .getAmazonS3Client()
+            mTransferManager.getAmazonS3Client()
                     //If file does not exists, this throws an exception
                     .getObjectMetadata(mBucketName, mFileName);
         } catch (AmazonServiceException e) {
@@ -117,9 +118,7 @@ public class S3File implements IS3File {
     @Override
     public S3File delete() {
         if (this.exists()) {
-            //Delete file
-            mTransferManager
-                    .getAmazonS3Client()
+            mTransferManager.getAmazonS3Client()
                     .deleteObject(mBucketName, mFileName);
         }
         return this;
