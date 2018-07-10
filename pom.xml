@@ -5,18 +5,31 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.schinzel</groupId>
-    <artifactId>s3-handler</artifactId>
+    <artifactId>aws-utils</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven-repo>maven-repo.schinzel.io</maven-repo>
     </properties>
+
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>${maven-repo}</id>
+            <url>s3://${maven-repo}/snapshot</url>
+        </snapshotRepository>
+        <repository>
+            <id>${maven-repo}</id>
+            <url>s3://${maven-repo}/release</url>
+        </repository>
+    </distributionManagement>
 
 
     <repositories>
         <repository>
-            <id>maven-repo.schinzel.io</id>
-            <url>http://maven-repo.schinzel.io/release</url>
+            <id>${maven-repo}</id>
+            <url>s3://${maven-repo}/release</url>
         </repository>
     </repositories>
 
@@ -24,17 +37,25 @@
     <dependencies>
         <dependency>
             <!-- Annotations that generates getters, setters and more that
-            are not visible in source code.
+            are not visible in source code
             https://projectlombok.org/index.html -->
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.16</version>
+            <version>1.18.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <!-- Basic utilities. Most commonly less verbose versions of
+            common code snippets -->
             <groupId>io.schinzel</groupId>
             <artifactId>basic-utils</artifactId>
             <version>1.32</version>
+        </dependency>
+        <dependency>
+            <!-- Amazon's S3 client -->
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.11.363</version>
         </dependency>
         <!-- TEST DEPENDENCIES -->
         <dependency>
@@ -50,27 +71,110 @@
             <version>3.8.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.11.257</version>
-        </dependency>
     </dependencies>
 
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <!-- Plug in for attaching sources to deploys -->
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.0.4</version>
+                </plugin>
+                <plugin>
+                    <!-- Plug in for java doc to deploys -->
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.3</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <extensions>
+            <!-- Enables communication between Maven and Amazon S3.
+            Used to transfer deploys to maven repo. -->
+            <extension>
+                <groupId>org.kuali.maven.wagons</groupId>
+                <artifactId>maven-s3-wagon</artifactId>
+                <version>1.2.1</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.2</version>
+                <version>3.6.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
                     <testSource>1.8</testSource>
                     <testTarget>1.8</testTarget>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                        <arg>-Xlint:-processing</arg>
+                    </compilerArgs>
                 </configuration>
+            </plugin>
+            <plugin>
+                <!-- Generates JaCoCo code coverage reports
+                To run locally: mvn test jacoco:report -->
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.9</version>
+                <configuration>
+                    <excludes>
+                        <exclude>io/schinzel/samples/**/*</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- Attach sources -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- Attach java doc -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <quiet>true</quiet>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+
 </project>

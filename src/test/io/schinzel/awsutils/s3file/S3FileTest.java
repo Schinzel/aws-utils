@@ -1,4 +1,4 @@
-package io.schinzel.basicutils.s3;
+package io.schinzel.awsutils.s3file;
 
 import io.schinzel.basicutils.FunnyChars;
 import org.junit.Test;
