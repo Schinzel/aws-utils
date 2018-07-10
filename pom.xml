@@ -37,17 +37,25 @@
     <dependencies>
         <dependency>
             <!-- Annotations that generates getters, setters and more that
-            are not visible in source code.
+            are not visible in source code
             https://projectlombok.org/index.html -->
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.16</version>
+            <version>1.18.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <!-- Basic utilities. Most commonly less verbose versions of
+            common code snippets -->
             <groupId>io.schinzel</groupId>
             <artifactId>basic-utils</artifactId>
             <version>1.32</version>
+        </dependency>
+        <dependency>
+            <!-- Amazon's S3 client -->
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.11.363</version>
         </dependency>
         <!-- TEST DEPENDENCIES -->
         <dependency>
@@ -62,11 +70,6 @@
             <artifactId>assertj-core</artifactId>
             <version>3.8.0</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.11.257</version>
         </dependency>
     </dependencies>
 
