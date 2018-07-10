@@ -4,8 +4,8 @@ import com.amazonaws.regions.Regions;
 import com.google.common.base.Strings;
 import io.schinzel.basicutils.RandomUtil;
 import io.schinzel.basicutils.configvar.ConfigVar;
-import io.schinzel.basicutils.s3.S3File;
-import io.schinzel.basicutils.s3.TransferManagers;
+import io.schinzel.awsutils.s3file.S3File;
+import io.schinzel.awsutils.s3file.TransferManagers;
 import io.schinzel.basicutils.str.Str;
 
 /**

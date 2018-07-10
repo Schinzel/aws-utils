@@ -1,4 +1,4 @@
-package io.schinzel.basicutils.s3;
+package io.schinzel.awsutils.s3file;
 
 
 import com.google.common.collect.ImmutableMap;
