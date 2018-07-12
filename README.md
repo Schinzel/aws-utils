@@ -5,8 +5,8 @@ Add the following lines to a `.env` file in project root.
 The X:es and Y:es are replaced with the actual keys.
 
 ```
-AWS_ACCESS_KEY=XXXX
-AWS_SECRET_KEY=YYYY
+AWS_S3_ACCESS_KEY=XXXX
+AWS_S3_SECRET_KEY=YYYY
 ```
 
 For sample code see:
