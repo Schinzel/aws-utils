@@ -41,7 +41,7 @@ public class SqsProducer {
         sendMsgRequest
                 //Set a group id. As this is not used currently, it is set to a hard coded value
                 .withMessageGroupId(GROUP_ID)
-                //Add a unique if to the message which is used to prevent that the message is duplicated
+                //Add a unique id to the message which is used to prevent that the message is duplicated
                 .withMessageDeduplicationId(getUniqueId());
         sqsClient.sendMessage(sendMsgRequest);
     }
