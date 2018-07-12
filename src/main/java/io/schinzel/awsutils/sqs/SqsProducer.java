@@ -21,7 +21,7 @@ import lombok.Builder;
 public class SqsProducer {
     private static final String GROUP_ID = "my_group_id";
 
-    @Builder
+    @Builder(buildMethodName = "send")
     SqsProducer(String awsAccessKey, String awsSecretKey, Regions region, String queueName, String message) {
         Thrower.throwIfVarEmpty(awsAccessKey, "awsAccessKey");
         Thrower.throwIfVarEmpty(awsSecretKey, "awsSecretKey");

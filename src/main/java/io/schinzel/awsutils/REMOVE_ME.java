@@ -27,7 +27,7 @@ public class REMOVE_ME {
                 .queueName("my_first_queue.fifo")
                 .region(Regions.EU_WEST_1)
                 .message("My message ")
-                .build();
+                .send();
 
     }
 }
