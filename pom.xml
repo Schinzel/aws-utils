@@ -57,6 +57,12 @@
             <artifactId>aws-java-sdk-s3</artifactId>
             <version>1.11.363</version>
         </dependency>
+        <dependency>
+            <!-- Amazon's SQS client -->
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-sqs</artifactId>
+            <version>1.11.365</version>
+        </dependency>
         <!-- TEST DEPENDENCIES -->
         <dependency>
             <groupId>junit</groupId>
