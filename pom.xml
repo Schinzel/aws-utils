@@ -29,7 +29,7 @@
     <repositories>
         <repository>
             <id>${maven-repo}</id>
-            <url>s3://${maven-repo}/release</url>
+            <url>http://${maven-repo}/release</url>
         </repository>
     </repositories>
 
