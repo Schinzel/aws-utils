@@ -22,7 +22,7 @@ public class SqsSenderSample {
     /**
      * This sample simply uses the SqsSender class.
      */
-    public static void sample1() {
+    private static void sample1() {
         String awsSqsAccessKey = ConfigVar.create(".env").getValue("AWS_SQS_ACCESS_KEY");
         String awsSqsSecretKey = ConfigVar.create(".env").getValue("AWS_SQS_SECRET_KEY");
         SqsSender.builder()
@@ -39,10 +39,10 @@ public class SqsSenderSample {
      * sending of messages less verbose, credentials centralised and more fail safe with the
      * different queues in an enum.
      */
-    public static void sample2() {
+    private static void sample2() {
         SqsMyProjectSender.builder()
                 .queue(SqsQueues.SEND_SMS)
-                .message("My messsage")
+                .message("My message")
                 .send();
     }
 
