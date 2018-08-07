@@ -7,6 +7,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import io.schinzel.basicutils.collections.Cache;
+import io.schinzel.basicutils.thrower.Thrower;
 
 /**
  * The purpose of this class to hold a cache of clients.
@@ -21,6 +22,7 @@ import io.schinzel.basicutils.collections.Cache;
  * @author Schinzel
  */
 class ClientCache {
+
     private static class Holder {
         public static ClientCache INSTANCE = new ClientCache();
     }
@@ -30,7 +32,7 @@ class ClientCache {
     }
 
     /** Cache of SQS clients */
-    private Cache<String, AmazonSQS> mSqsClientCache = new Cache<>();
+    private final Cache<String, AmazonSQS> mSqsClientCache = new Cache<>();
 
 
     /**
@@ -40,6 +42,10 @@ class ClientCache {
      * @return An Amazon SQS client.
      */
     AmazonSQS getSqsClient(String awsAccessKey, String awsSecretKey, Regions region) {
+        Thrower.createInstance()
+                .throwIfVarEmpty(awsAccessKey, "awsAccessKey")
+                .throwIfVarEmpty(awsSecretKey, "awsSecretKey")
+                .throwIfVarNull(region, "region");
         //Construct a cache key
         String cacheKey = awsAccessKey + region.getName();
         //If the cache has an entry for the cache key

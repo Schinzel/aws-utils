@@ -1,0 +1,41 @@
+package io.schinzel.awsutils.sqs;
+
+import com.amazonaws.services.sqs.AmazonSQS;
+import io.schinzel.basicutils.collections.Cache;
+
+/**
+ * The purpose of this class to cache AWS SQS queue URLs.
+ * <p>
+ * The cache exists for performance reasons.
+ * <p>
+ * 2018-08-07 With this cache it takes 15 ms to send a message, i.e. to run all the code in the constructor.
+ * Without this cache - and all other code the same - the average send takes 25 ms. Message size 250 chars.
+ * Running the code on a EC2 instance. Caches had data when performance was measured.
+ *
+ * @author Schinzel
+ */
+class QueueCache {
+
+    private static class Holder {
+        public static QueueCache INSTANCE = new QueueCache();
+    }
+
+    public static QueueCache getSingleton() {
+        return QueueCache.Holder.INSTANCE;
+    }
+
+    private final Cache<String, String> mQueueUrlCache = new Cache<>();
+
+    /**
+     * @param queueName The name of the SQS queue
+     * @param sqsClient
+     * @return The URL for the SQS queue with the argument name.
+     */
+    String getQueueUrl(String queueName, AmazonSQS sqsClient) {
+        return mQueueUrlCache.has(queueName)
+                ? mQueueUrlCache.get(queueName)
+                : mQueueUrlCache.putAndGet(queueName, sqsClient.getQueueUrl(queueName).getQueueUrl());
+    }
+
+
+}

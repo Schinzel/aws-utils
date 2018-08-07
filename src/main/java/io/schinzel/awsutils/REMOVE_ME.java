@@ -34,8 +34,9 @@ public class REMOVE_ME {
                     .send();
 
         }
-        Timekeeper.getSingleton().reset();
+        Timekeeper tk = Timekeeper.getSingleton().reset();
         for (int i = 0; i < 10; i++) {
+            tk.start("send");
             SqsSender.builder()
                     .awsAccessKey(AWS_SQS_ACCESS_KEY)
                     .awsSecretKey(AWS_SQS_SECRET_KEY)
@@ -43,8 +44,9 @@ public class REMOVE_ME {
                     .region(Regions.EU_WEST_1)
                     .message(MESSAGE)
                     .send();
+            tk.stop();
         }
-        Timekeeper.getSingleton().getResults().getStr().writeToSystemOut();
+        tk.getResults().getStr().writeToSystemOut();
 
     }
 }
