@@ -19,7 +19,6 @@ public class SqsSender {
     @Builder(buildMethodName = "send")
     SqsSender(String awsAccessKey, String awsSecretKey, Regions region, String queueName, String message) {
         Thrower.createInstance()
-                .throwIfVarEmpty(queueName, "queueName")
                 .throwIfVarEmpty(message, "message")
                 .throwIfFalse(queueName.endsWith(".fifo"), "Queue name must end in '.fifo'. Only fifo queues supported");
         AmazonSQS sqsClient = ClientCache

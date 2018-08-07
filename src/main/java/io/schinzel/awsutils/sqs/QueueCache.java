@@ -2,6 +2,7 @@ package io.schinzel.awsutils.sqs;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import io.schinzel.basicutils.collections.Cache;
+import io.schinzel.basicutils.thrower.Thrower;
 
 /**
  * The purpose of this class to cache AWS SQS queue URLs.
@@ -32,6 +33,9 @@ class QueueCache {
      * @return The URL for the SQS queue with the argument name.
      */
     String getQueueUrl(String queueName, AmazonSQS sqsClient) {
+        Thrower.createInstance()
+                .throwIfVarEmpty(queueName, "queueName")
+                .throwIfVarNull(sqsClient, "sqsClient");
         return mQueueUrlCache.has(queueName)
                 ? mQueueUrlCache.get(queueName)
                 : mQueueUrlCache.putAndGet(queueName, sqsClient.getQueueUrl(queueName).getQueueUrl());
