@@ -29,7 +29,7 @@ public class SqsReader {
                 .getSingleton()
                 .getSqsClient(awsAccessKey, awsSecretKey, region);
         //Get the queue url for the argument queue name.
-        mQueueUrl = QueueCache
+        mQueueUrl = QueueUrlCache
                 .getSingleton()
                 .getQueueUrl(queueName, mSqsClient);
     }

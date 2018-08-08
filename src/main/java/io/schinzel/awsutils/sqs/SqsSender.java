@@ -25,7 +25,7 @@ public class SqsSender {
                 .getSingleton()
                 .getSqsClient(awsAccessKey, awsSecretKey, region);
         //Get the queue url for the argument queue name.
-        String queueUrl = QueueCache
+        String queueUrl = QueueUrlCache
                 .getSingleton()
                 .getQueueUrl(queueName, sqsClient);
         SendMessageRequest sendMsgRequest = new SendMessageRequest()

@@ -15,14 +15,14 @@ import io.schinzel.basicutils.thrower.Thrower;
  *
  * @author Schinzel
  */
-class QueueCache {
+class QueueUrlCache {
 
     private static class Holder {
-        public static QueueCache INSTANCE = new QueueCache();
+        public static QueueUrlCache INSTANCE = new QueueUrlCache();
     }
 
-    public static QueueCache getSingleton() {
-        return QueueCache.Holder.INSTANCE;
+    public static QueueUrlCache getSingleton() {
+        return QueueUrlCache.Holder.INSTANCE;
     }
 
     private final Cache<String, String> mQueueUrlCache = new Cache<>();
