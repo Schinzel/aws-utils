@@ -1,6 +1,7 @@
 package io.schinzel.awsutils;
 
 import com.amazonaws.regions.Regions;
+import io.schinzel.awsutils.sqs.SqsMessage;
 import io.schinzel.awsutils.sqs.SqsReader;
 import io.schinzel.awsutils.sqs.SqsSender;
 import io.schinzel.basicutils.RandomUtil;
@@ -16,7 +17,6 @@ import io.schinzel.basicutils.timekeeper.Timekeeper;
 public class REMOVE_ME {
     private static String AWS_SQS_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_SQS_ACCESS_KEY");
     private static String AWS_SQS_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_SQS_SECRET_KEY");
-    private static boolean WARM_UP = true;
 
     public static void main(String[] args) {
         Str.create()
@@ -24,7 +24,27 @@ public class REMOVE_ME {
                 .anl("Queue time!")
                 .anl("*******************************************")
                 .writeToSystemOut();
+        reader();
+    }
+
+
+    private static void reader() {
         String message = "My message " + RandomUtil.getRandomString(5);
+        send(message);
+        System.out.println("Wrote '" + message + "'");
+        SqsMessage sqsMessage = SqsReader.builder()
+                .awsAccessKey(AWS_SQS_ACCESS_KEY)
+                .awsSecretKey(AWS_SQS_SECRET_KEY)
+                .queueName("my_first_queue.fifo")
+                .region(Regions.EU_WEST_1)
+                .build()
+                .getMessage();
+        System.out.println("Message received '" + sqsMessage.getBody() + "'");
+        sqsMessage.deleteMessageFromQueue();
+    }
+
+
+    private static void send(String message) {
         SqsSender.builder()
                 .awsAccessKey(AWS_SQS_ACCESS_KEY)
                 .awsSecretKey(AWS_SQS_SECRET_KEY)
@@ -32,41 +52,20 @@ public class REMOVE_ME {
                 .region(Regions.EU_WEST_1)
                 .message(message)
                 .send();
-        System.out.println("Wrote '" + message + "'");
-        String messageReceived = SqsReader.builder()
-                .awsAccessKey(AWS_SQS_ACCESS_KEY)
-                .awsSecretKey(AWS_SQS_SECRET_KEY)
-                .queueName("my_first_queue.fifo")
-                .region(Regions.EU_WEST_1)
-                .build()
-                .receive();
-        System.out.println("Message received '" + messageReceived + "'");
-
     }
 
 
-    private static void senderPerformance(){
+    private static void senderPerformance() {
+        boolean warmUp = true;
         String message = "My message " + RandomUtil.getRandomString(5);
-        if (WARM_UP){
-            SqsSender.builder()
-                    .awsAccessKey(AWS_SQS_ACCESS_KEY)
-                    .awsSecretKey(AWS_SQS_SECRET_KEY)
-                    .queueName("my_first_queue.fifo")
-                    .region(Regions.EU_WEST_1)
-                    .message(message)
-                    .send();
+        if (warmUp) {
+            send(message);
 
         }
         Timekeeper tk = Timekeeper.getSingleton().reset();
         for (int i = 0; i < 10; i++) {
             tk.start("send");
-            SqsSender.builder()
-                    .awsAccessKey(AWS_SQS_ACCESS_KEY)
-                    .awsSecretKey(AWS_SQS_SECRET_KEY)
-                    .queueName("my_first_queue.fifo")
-                    .region(Regions.EU_WEST_1)
-                    .message(message)
-                    .send();
+            send(message);
             tk.stop();
         }
         tk.getResults().getStr().writeToSystemOut();

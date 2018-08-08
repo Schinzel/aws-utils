@@ -27,7 +27,7 @@ class ClientCache {
         public static ClientCache INSTANCE = new ClientCache();
     }
 
-    public static ClientCache getSingleton() {
+    static ClientCache getSingleton() {
         return Holder.INSTANCE;
     }
 

@@ -14,15 +14,15 @@ import io.schinzel.samples.sqs.SqsMyProjectSender;
 public class SqsSenderSample {
 
     public static void main(String[] args) {
-        sample1();
-        sample2();
+        sampleVanillaUsage();
+        sampleWithCustomWrapper();
     }
 
 
     /**
      * This sample simply uses the SqsSender class.
      */
-    private static void sample1() {
+    private static void sampleVanillaUsage() {
         String awsSqsAccessKey = ConfigVar.create(".env").getValue("AWS_SQS_ACCESS_KEY");
         String awsSqsSecretKey = ConfigVar.create(".env").getValue("AWS_SQS_SECRET_KEY");
         SqsSender.builder()
@@ -39,7 +39,7 @@ public class SqsSenderSample {
      * sending of messages less verbose, credentials centralised and more fail safe with the
      * different queues in an enum.
      */
-    private static void sample2() {
+    private static void sampleWithCustomWrapper() {
         SqsMyProjectSender.builder()
                 .queue(SqsQueues.SEND_SMS)
                 .message("My message")

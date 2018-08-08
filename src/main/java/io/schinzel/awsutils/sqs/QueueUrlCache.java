@@ -21,7 +21,7 @@ class QueueUrlCache {
         public static QueueUrlCache INSTANCE = new QueueUrlCache();
     }
 
-    public static QueueUrlCache getSingleton() {
+    static QueueUrlCache getSingleton() {
         return QueueUrlCache.Holder.INSTANCE;
     }
 
