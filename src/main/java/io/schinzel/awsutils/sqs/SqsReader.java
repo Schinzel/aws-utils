@@ -39,11 +39,17 @@ public class SqsReader {
         List<Message> messages = Collections.emptyList();
         do {
             ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest()
+                    //URL of the Amazon SQS queue from which messages are received
                     .withQueueUrl(mQueueUrl)
+                    //The maximum number of messages to return.
                     .withMaxNumberOfMessages(1)
+                    //The duration the call waits for a message to arrive in the queue before returning.
                     .withWaitTimeSeconds(20);
             try {
-                messages = mSqsClient.receiveMessage(receiveMessageRequest).getMessages();
+                //Get the messages read. Could be 1 or 0.
+                messages = mSqsClient
+                        .receiveMessage(receiveMessageRequest)
+                        .getMessages();
             } catch (IllegalStateException e) {
                 mAllSystemsWorking = false;
                 return "";
@@ -54,9 +60,12 @@ public class SqsReader {
                     return "";
                 }
             }
-        } while (messages.isEmpty());
+        }//Loop if there was not message
+        while (messages.isEmpty());
+        //If got here there was 1 message. Get this message
         Message message = messages.get(0);
         mSqsClient.deleteMessage(mQueueUrl, message.getReceiptHandle());
+        //Return the body of the message
         return message.getBody();
     }
 }
