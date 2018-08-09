@@ -1,7 +1,9 @@
 package io.schinzel.awsutils.sqs;
 
 import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.amazonaws.services.sqs.model.Message;
+import io.schinzel.basicutils.str.Str;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
@@ -26,11 +28,30 @@ public class SqsMessage {
 
 
     /**
+     * The delete has to be done while the message is invisible in queue. If this method is invoked after
+     * the message has become visible an exception is thrown.
      *
      * @return Deletes the message from the queue.
      */
     public SqsMessage deleteMessageFromQueue() {
-        mSqsClient.deleteMessage(mQueueUrl, mMessage.getReceiptHandle());
+        try {
+            mSqsClient.deleteMessage(mQueueUrl, mMessage.getReceiptHandle());
+        } catch (AmazonSQSException e) {
+            //If the error was that the message has become visible in queue again
+            if (e.getMessage().contains("The receipt handle has expired")) {
+                //Compile a clearer error message 
+                String errorMessage = Str.create()
+                        .a("Could not delete message as it has become visible in queue again. ")
+                        .a("Message id: ").aq(mMessage.getMessageId()).asp()
+                        .a("Body: ").aq(mMessage.getBody()).asp()
+                        .asString();
+                //Throw a clear error message
+                throw new RuntimeException(errorMessage);
+            } else {
+                //rethrow message
+                throw e;
+            }
+        }
         return this;
     }
 

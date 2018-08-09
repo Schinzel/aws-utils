@@ -5,6 +5,7 @@ import io.schinzel.awsutils.sqs.SqsMessage;
 import io.schinzel.awsutils.sqs.SqsReader;
 import io.schinzel.awsutils.sqs.SqsSender;
 import io.schinzel.basicutils.RandomUtil;
+import io.schinzel.basicutils.Sandman;
 import io.schinzel.basicutils.configvar.ConfigVar;
 import io.schinzel.basicutils.str.Str;
 import io.schinzel.basicutils.timekeeper.Timekeeper;
@@ -41,6 +42,7 @@ public class REMOVE_ME {
                 .getMessage();
         System.out.println("Message received '" + sqsMessage.getBody() + "'");
         sqsMessage.deleteMessageFromQueue();
+        System.out.println("Message deleted");
     }
 
 
