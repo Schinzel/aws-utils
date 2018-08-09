@@ -1,4 +1,4 @@
-package io.schinzel.samples.sqs;
+package io.schinzel.samples.sqswrapper;
 
 /**
  * The purpose of this interface is to return the name of a AWS SQS queue.

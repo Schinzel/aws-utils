@@ -3,8 +3,8 @@ package io.schinzel.samples;
 import com.amazonaws.regions.Regions;
 import io.schinzel.awsutils.sqs.SqsSender;
 import io.schinzel.basicutils.configvar.ConfigVar;
-import io.schinzel.samples.sqs.SqsQueues;
-import io.schinzel.samples.sqs.SqsMyProjectSender;
+import io.schinzel.samples.sqswrapper.SqsQueues;
+import io.schinzel.samples.sqswrapper.SqsMyProjectSender;
 
 /**
  * The purpose of this class

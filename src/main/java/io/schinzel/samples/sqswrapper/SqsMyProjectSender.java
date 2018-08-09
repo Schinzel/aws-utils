@@ -1,4 +1,4 @@
-package io.schinzel.samples.sqs;
+package io.schinzel.samples.sqswrapper;
 
 import io.schinzel.awsutils.sqs.SqsSender;
 import io.schinzel.basicutils.configvar.ConfigVar;
