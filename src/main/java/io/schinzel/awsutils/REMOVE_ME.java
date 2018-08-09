@@ -15,8 +15,8 @@ import io.schinzel.basicutils.timekeeper.Timekeeper;
  * Created by Schinzel on 2018-07-12
  */
 public class REMOVE_ME {
-    private static String AWS_SQS_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_SQS_ACCESS_KEY");
-    private static String AWS_SQS_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_SQS_SECRET_KEY");
+    static String AWS_SQS_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_SQS_ACCESS_KEY");
+    static String AWS_SQS_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_SQS_SECRET_KEY");
 
     public static void main(String[] args) {
         Str.create()
@@ -45,7 +45,7 @@ public class REMOVE_ME {
     }
 
 
-    private static void send(String message) {
+    static void send(String message) {
         SqsSender.builder()
                 .awsAccessKey(AWS_SQS_ACCESS_KEY)
                 .awsSecretKey(AWS_SQS_SECRET_KEY)

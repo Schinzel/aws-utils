@@ -38,18 +38,18 @@ public class SqsReader {
      */
     public SqsMessage getMessage() {
         List<Message> messages = Collections.emptyList();
+        ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest()
+                //URL of the Amazon SQS queue from which messages are received
+                .withQueueUrl(mQueueUrl)
+                //The maximum number of messages to return.
+                .withMaxNumberOfMessages(1)
+                //The duration the call waits for a message to arrive in the queue before returning.
+                .withWaitTimeSeconds(20)
+                //Make the message invisible for x seconds
+                .withVisibilityTimeout(VISIBILITY_TIMEOUT_IN_SECONDS);
         do {
-            ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest()
-                    //URL of the Amazon SQS queue from which messages are received
-                    .withQueueUrl(mQueueUrl)
-                    //The maximum number of messages to return.
-                    .withMaxNumberOfMessages(1)
-                    //The duration the call waits for a message to arrive in the queue before returning.
-                    .withWaitTimeSeconds(20)
-                    //Make the message invisible for x seconds
-                    .withVisibilityTimeout(VISIBILITY_TIMEOUT_IN_SECONDS);
             try {
-                //Get the messages read. Could be 1 or 0.
+                //Get messages. Could be 1 or 0. 0 if there was no new message in queue.
                 messages = mSqsClient
                         .receiveMessage(receiveMessageRequest)
                         .getMessages();
