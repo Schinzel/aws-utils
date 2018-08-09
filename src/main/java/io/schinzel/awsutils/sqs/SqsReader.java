@@ -18,6 +18,8 @@ public class SqsReader {
     private static final int VISIBILITY_TIMEOUT_IN_SECONDS = 60;
     private final AmazonSQS mSqsClient;
     private final String mQueueUrl;
+    private final ReceiveMessageRequest mReceiveMessageRequest;
+
 
     @Builder
     SqsReader(String awsAccessKey, String awsSecretKey, Regions region, String queueName) {
@@ -28,6 +30,15 @@ public class SqsReader {
         mQueueUrl = QueueUrlCache
                 .getSingleton()
                 .getQueueUrl(queueName, mSqsClient);
+        mReceiveMessageRequest = new ReceiveMessageRequest()
+                //URL of the Amazon SQS queue from which messages are received
+                .withQueueUrl(mQueueUrl)
+                //The maximum number of messages to return.
+                .withMaxNumberOfMessages(1)
+                //The duration the call waits for a message to arrive in the queue before returning.
+                .withWaitTimeSeconds(20)
+                //Make the message invisible for x seconds
+                .withVisibilityTimeout(VISIBILITY_TIMEOUT_IN_SECONDS);
     }
 
 
@@ -37,20 +48,11 @@ public class SqsReader {
      */
     public SqsMessage getMessage() {
         List<Message> messages;
-        ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest()
-                //URL of the Amazon SQS queue from which messages are received
-                .withQueueUrl(mQueueUrl)
-                //The maximum number of messages to return.
-                .withMaxNumberOfMessages(1)
-                //The duration the call waits for a message to arrive in the queue before returning.
-                .withWaitTimeSeconds(20)
-                //Make the message invisible for x seconds
-                .withVisibilityTimeout(VISIBILITY_TIMEOUT_IN_SECONDS);
         do {
             try {
                 //Get messages. Could be 1 or 0. 0 if there was no new message in queue.
                 messages = mSqsClient
-                        .receiveMessage(receiveMessageRequest)
+                        .receiveMessage(mReceiveMessageRequest)
                         .getMessages();
             } catch (IllegalStateException e) {
                 throw new RuntimeException("Problems reading message from queue '" + mQueueUrl + "'. " + e.getMessage());
@@ -58,7 +60,7 @@ public class SqsReader {
                 //If the queue does not exist anymore
                 if (awsException.getErrorCode().equals("AWS.SimpleQueueService.NonExistentQueue")) {
                     throw new RuntimeException("Queue '" + mQueueUrl + "' does not exist.");
-                }else{
+                } else {
                     throw awsException;
                 }
             }
