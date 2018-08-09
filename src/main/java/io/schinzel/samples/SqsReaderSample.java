@@ -6,7 +6,7 @@ import io.schinzel.awsutils.sqs.SqsReader;
 import io.schinzel.basicutils.configvar.ConfigVar;
 
 /**
- * The purpose of this class
+ * The purpose of this class to show how a message is read from an AWS SQS queue.
  *
  * @author Schinzel
  */
