@@ -39,7 +39,7 @@ public class SqsMessage {
         } catch (AmazonSQSException e) {
             //If the error was that the message has become visible in queue again
             if (e.getMessage().contains("The receipt handle has expired")) {
-                //Compile a clearer error message 
+                //Compile a clearer error message
                 String errorMessage = Str.create()
                         .a("Could not delete message as it has become visible in queue again. ")
                         .a("Message id: ").aq(mMessage.getMessageId()).asp()
