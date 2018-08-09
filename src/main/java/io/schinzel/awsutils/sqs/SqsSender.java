@@ -31,10 +31,13 @@ public class SqsSender {
         SendMessageRequest sendMsgRequest = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
                 .withMessageBody(message)
-                //Set a group id. As this is not used currently, it is set to a hard coded value
-                .withMessageGroupId("my_group_id")
-                //Add a unique id to the message which is used to prevent that the message is duplicated
-                .withMessageDeduplicationId(getUniqueId());
+                //Add a unique id to the message which is used to prevent that the message is duplicated.
+                //This is a required argument if content-based deduplication has been disabled, which is
+                //this class assumes it is.
+                .withMessageDeduplicationId(getUniqueId())
+                //Set a group id. As this is not used currently, it is set to a hard coded value.
+                //This argument is required if MessageDeduplicationId is set.
+                .withMessageGroupId("my_group_id");
         sqsClient.sendMessage(sendMsgRequest);
     }
 
