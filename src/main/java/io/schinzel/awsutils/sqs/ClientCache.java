@@ -24,7 +24,7 @@ import io.schinzel.basicutils.thrower.Thrower;
 class ClientCache {
 
     private static class Holder {
-        public static ClientCache INSTANCE = new ClientCache();
+        static ClientCache INSTANCE = new ClientCache();
     }
 
     static ClientCache getSingleton() {

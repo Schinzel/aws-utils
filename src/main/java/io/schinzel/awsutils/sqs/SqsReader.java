@@ -7,7 +7,6 @@ import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import lombok.Builder;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,7 +36,7 @@ public class SqsReader {
      * queue.
      */
     public SqsMessage getMessage() {
-        List<Message> messages = Collections.emptyList();
+        List<Message> messages;
         ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest()
                 //URL of the Amazon SQS queue from which messages are received
                 .withQueueUrl(mQueueUrl)
@@ -59,6 +58,8 @@ public class SqsReader {
                 //If the queue does not exist anymore
                 if (awsException.getErrorCode().equals("AWS.SimpleQueueService.NonExistentQueue")) {
                     throw new RuntimeException("Queue '" + mQueueUrl + "' does not exist.");
+                }else{
+                    throw awsException;
                 }
             }
         }//Loop if there was not message

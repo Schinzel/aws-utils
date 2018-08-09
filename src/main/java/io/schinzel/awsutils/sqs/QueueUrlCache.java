@@ -18,7 +18,7 @@ import io.schinzel.basicutils.thrower.Thrower;
 class QueueUrlCache {
 
     private static class Holder {
-        public static QueueUrlCache INSTANCE = new QueueUrlCache();
+        static QueueUrlCache INSTANCE = new QueueUrlCache();
     }
 
     static QueueUrlCache getSingleton() {
@@ -29,7 +29,7 @@ class QueueUrlCache {
 
     /**
      * @param queueName The name of the SQS queue
-     * @param sqsClient
+     * @param sqsClient The SQS client
      * @return The URL for the SQS queue with the argument name.
      */
     String getQueueUrl(String queueName, AmazonSQS sqsClient) {
