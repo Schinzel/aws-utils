@@ -22,7 +22,8 @@ public class SqsReaderSample {
                 .queueName("my_first_queue.fifo")
                 .region(Regions.EU_WEST_1)
                 .build();
-        //Get a message from the queue. This will make the message invisible.
+        //Get a message from the queue. If there is no message, code will will wait here until there is one
+        //When a message is returned it will make the message invisible in the queue.
         SqsMessage message = sqsReader.getMessage();
         //Get the body from the message and do something with it
         String body = message.getBody();
