@@ -45,7 +45,9 @@ public class SqsReader {
                     //The maximum number of messages to return.
                     .withMaxNumberOfMessages(1)
                     //The duration the call waits for a message to arrive in the queue before returning.
-                    .withWaitTimeSeconds(20);
+                    .withWaitTimeSeconds(20)
+                    //Make the message invisible for x seconds
+                    .withVisibilityTimeout(VISIBILITY_TIMEOUT_IN_SECONDS);
             try {
                 //Get the messages read. Could be 1 or 0.
                 messages = mSqsClient
@@ -63,8 +65,6 @@ public class SqsReader {
         while (messages.isEmpty());
         //If got here there was 1 message. Get this message
         Message message = messages.get(0);
-        //Make the message invisible for x seconds
-        mSqsClient.changeMessageVisibility(mQueueUrl, message.getReceiptHandle(), VISIBILITY_TIMEOUT_IN_SECONDS);
         //Return the body of the message
         return new SqsMessage(mSqsClient, mQueueUrl, message);
     }
