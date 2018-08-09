@@ -7,7 +7,7 @@ import io.schinzel.samples.sqswrapper.SqsQueues;
 import io.schinzel.samples.sqswrapper.SqsMyProjectSender;
 
 /**
- * The purpose of this class
+ * The purpose of this class is to show how a message is written to an AWS SQS queue.
  *
  * @author Schinzel
  */
