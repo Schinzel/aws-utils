@@ -31,8 +31,15 @@ class ClientCache {
         return Holder.INSTANCE;
     }
 
+
+    /**
+     * Private constructor so that instance cannot be created
+     */
+    private ClientCache() {
+    }
+
     /** Cache of SQS clients */
-    private final Cache<String, AmazonSQS> mSqsClientCache = new Cache<>();
+    final Cache<String, AmazonSQS> mSqsClientCache = new Cache<>();
 
 
     /**
