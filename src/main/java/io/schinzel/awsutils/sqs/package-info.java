@@ -11,6 +11,8 @@
  * content sent within the deduplication interval are treated as duplicates and only one copy of the message is
  * delivered. The deduplication interval is 5 minutes at the time of writing (2018-08-09). But there could be cases when
  * it is a legitimate that messages with identical message bodies are sent within 5 minutes. And as such content-based
- * deduplication should be disabled
+ * deduplication should be disabled.
+ * <p>
+ * The rest of the queue properties can be left default. 
  */
 package io.schinzel.awsutils.sqs;
