@@ -25,7 +25,7 @@ class QueueUrlCache {
         return QueueUrlCache.Holder.INSTANCE;
     }
 
-    private final Cache<String, String> mQueueUrlCache = new Cache<>();
+    final Cache<String, String> mQueueUrlCache = new Cache<>();
 
     /**
      * @param queueName The name of the SQS queue
