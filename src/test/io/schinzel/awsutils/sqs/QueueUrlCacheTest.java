@@ -29,9 +29,11 @@ public class QueueUrlCacheTest {
 
     @Before
     public void before() {
+        //Invalidate the cache
         QueueUrlCache.getSingleton().mQueueUrlCache.invalidate();
+        //Create a queue name that indicates which test created it and has a random element
         mQueueName = QueueUrlCacheTest.class.getSimpleName() + "_" + RandomUtil.getRandomString(5) + ".fifo";
-
+        //Set up AWS credentials
         AWSCredentials credentials = new BasicAWSCredentials(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY);
         AWSStaticCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(credentials);
         //Construct a new sqs client
@@ -40,20 +42,24 @@ public class QueueUrlCacheTest {
                 .withCredentials(credentialsProvider)
                 .withRegion(Regions.EU_WEST_1)
                 .build();
-
+        //Set queue attributes
         Map<String, String> queueAttributes = ImmutableMap.<String, String>builder()
                 .put("FifoQueue", "true")
                 .put("ContentBasedDeduplication", "false")
                 .build();
+        //Create new queue
         CreateQueueRequest createFifoQueueRequest = new CreateQueueRequest(mQueueName)
                 .withAttributes(queueAttributes);
+        //Get the url of the newly created queue
         mQueueUrl = mSqsClient.createQueue(createFifoQueueRequest)
                 .getQueueUrl();
     }
 
     @After
     public void after() {
+        //Delete queue used in test
         mSqsClient.deleteQueue(mQueueUrl);
+        //Clear cache
         QueueUrlCache.getSingleton().mQueueUrlCache.invalidate();
     }
 
