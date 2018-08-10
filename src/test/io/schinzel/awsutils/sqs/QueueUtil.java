@@ -73,6 +73,19 @@ class QueueUtil {
     }
 
 
+    public SqsMessage read() {
+        return SqsReader.builder()
+                .awsAccessKey(PropertiesUtil.AWS_SQS_ACCESS_KEY)
+                .awsSecretKey(PropertiesUtil.AWS_SQS_SECRET_KEY)
+                .queueName(mQueueName)
+                .region(mRegion)
+                .build()
+                .getMessage();
+    }
+
+
+
+
     int getNumberOfMessages() {
         GetQueueAttributesRequest getQueueAttributesRequest
                 = new GetQueueAttributesRequest(mQueueUrl)

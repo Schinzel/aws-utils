@@ -25,33 +25,12 @@ public class SqsReaderSenderTest {
     }
 
 
-    public SqsReaderSenderTest send(String messageToWrite) {
-        SqsSender.builder()
-                .awsAccessKey(PropertiesUtil.AWS_SQS_ACCESS_KEY)
-                .awsSecretKey(PropertiesUtil.AWS_SQS_SECRET_KEY)
-                .queueName(mQueue.getQueueName())
-                .region(mQueue.getRegion())
-                .message(messageToWrite)
-                .send();
-        return this;
-    }
-
-
-    public SqsMessage read() {
-        return SqsReader.builder()
-                .awsAccessKey(PropertiesUtil.AWS_SQS_ACCESS_KEY)
-                .awsSecretKey(PropertiesUtil.AWS_SQS_SECRET_KEY)
-                .queueName(mQueue.getQueueName())
-                .region(mQueue.getRegion())
-                .build()
-                .getMessage();
-    }
 
 
     @Test
     public void sendAndRead_ShortMessage() {
         String messageToWrite = RandomUtil.getRandomString(1);
-        String messageRead = this
+        String messageRead = mQueue
                 .send(messageToWrite)
                 .read()
                 .getBody();
@@ -65,20 +44,20 @@ public class SqsReaderSenderTest {
                 + RandomUtil.getRandomString(5)
                 + " "
                 + Strings.repeat("*", 100_000);
-        String messageRead = this
+        String messageRead = mQueue
                 .send(messageToWrite)
                 .read()
                 .getBody();
         assertThat(messageRead).isEqualTo(messageToWrite);
     }
 
-    
+
     @Test
     public void sendAndRead_FunnyChars() {
         for (FunnyChars funnyChars : FunnyChars.values()) {
             String messageToWrite = funnyChars.getString();
-            this.send(messageToWrite);
-            SqsMessage messageRead = this.read();
+            mQueue.send(messageToWrite);
+            SqsMessage messageRead = mQueue.read();
             assertThat(messageRead.getBody()).isEqualTo(messageToWrite);
             messageRead.deleteMessageFromQueue();
         }
