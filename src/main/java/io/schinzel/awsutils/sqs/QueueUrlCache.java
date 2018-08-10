@@ -29,7 +29,7 @@ class QueueUrlCache {
 
     /**
      * @param queueName The name of the SQS queue
-     * @param sqsClient The SQS client
+     * @param sqsClient The SQS client. Is required as it is used to look up the queue URL if there is no cache hit.
      * @return The URL for the SQS queue with the argument name.
      */
     String getQueueUrl(String queueName, AmazonSQS sqsClient) {

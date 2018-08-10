@@ -13,6 +13,6 @@
  * it is a legitimate that messages with identical message bodies are sent within 5 minutes. And as such content-based
  * deduplication should be disabled.
  * <p>
- * The rest of the queue properties can be left default. 
+ * The rest of the queue properties can be left default.
  */
 package io.schinzel.awsutils.sqs;
