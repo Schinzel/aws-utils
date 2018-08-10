@@ -1,20 +1,8 @@
 package io.schinzel.awsutils.sqs;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
-import com.amazonaws.services.sqs.model.CreateQueueRequest;
-import com.google.common.collect.ImmutableMap;
-import io.schinzel.basicutils.RandomUtil;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,42 +11,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Schinzel
  */
 public class QueueUrlCacheTest {
-    private AmazonSQS mSqsClient;
-    private String mQueueName;
-    private String mQueueUrl;
+    private final QueueUtil mQueue = new QueueUtil(QueueUrlCacheTest.class);
 
-    @Before
-    public void before() {
-        //Invalidate the cache
-        QueueUrlCache.getSingleton().mQueueUrlCache.invalidate();
-        //Create a queue name that indicates which test created it and has a random element
-        mQueueName = QueueUrlCacheTest.class.getSimpleName() + "_" + RandomUtil.getRandomString(5) + ".fifo";
-        //Set up AWS credentials
-        AWSCredentials credentials = new BasicAWSCredentials(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY);
-        AWSStaticCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(credentials);
-        //Construct a new sqs client
-        mSqsClient = AmazonSQSClientBuilder
-                .standard()
-                .withCredentials(credentialsProvider)
-                .withRegion(Regions.EU_WEST_1)
-                .build();
-        //Set queue attributes
-        Map<String, String> queueAttributes = ImmutableMap.<String, String>builder()
-                .put("FifoQueue", "true")
-                .put("ContentBasedDeduplication", "false")
-                .build();
-        //Create new queue
-        CreateQueueRequest createFifoQueueRequest = new CreateQueueRequest(mQueueName)
-                .withAttributes(queueAttributes);
-        //Get the url of the newly created queue
-        mQueueUrl = mSqsClient.createQueue(createFifoQueueRequest)
-                .getQueueUrl();
-    }
 
     @After
     public void after() {
         //Delete queue used in test
-        mSqsClient.deleteQueue(mQueueUrl);
+        mQueue.deleteQueue();
         //Clear cache
         QueueUrlCache.getSingleton().mQueueUrlCache.invalidate();
     }
@@ -66,14 +25,14 @@ public class QueueUrlCacheTest {
 
     @Test
     public void getQueueUrl_OneRequest_CacheSizeOne() {
-        QueueUrlCache.getSingleton().getQueueUrl(mQueueName, mSqsClient);
+        QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
         long cacheSize = QueueUrlCache.getSingleton().mQueueUrlCache.cacheSize();
         assertThat(cacheSize).isEqualTo(1);
     }
 
     @Test
     public void getQueueUrl_OneRequest_CacheHitsZero() {
-        QueueUrlCache.getSingleton().getQueueUrl(mQueueName, mSqsClient);
+        QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
         long cacheHits = QueueUrlCache.getSingleton().mQueueUrlCache.cacheHits();
         assertThat(cacheHits).isEqualTo(0);
     }
@@ -82,7 +41,7 @@ public class QueueUrlCacheTest {
     @Test
     public void getQueueUrl_ThreeRequests_CacheSizeOne() {
         for (int i = 0; i < 3; i++) {
-            QueueUrlCache.getSingleton().getQueueUrl(mQueueName, mSqsClient);
+            QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
         }
         long cacheSize = QueueUrlCache.getSingleton().mQueueUrlCache.cacheSize();
         assertThat(cacheSize).isEqualTo(1);
@@ -92,7 +51,7 @@ public class QueueUrlCacheTest {
     @Test
     public void getQueueUrl_ThreeRequests_CacheHitsTtwo() {
         for (int i = 0; i < 3; i++) {
-            QueueUrlCache.getSingleton().getQueueUrl(mQueueName, mSqsClient);
+            QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
         }
         long cacheHits = QueueUrlCache.getSingleton().mQueueUrlCache.cacheHits();
         assertThat(cacheHits).isEqualTo(2);
@@ -101,17 +60,17 @@ public class QueueUrlCacheTest {
 
     @Test
     public void getQueueUrl_UrlComesFromServer_CorrectUrl() {
-        String queueUrl = QueueUrlCache.getSingleton().getQueueUrl(mQueueName, mSqsClient);
-        assertThat(queueUrl).isEqualTo(mQueueUrl);
+        String queueUrl = QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
+        assertThat(queueUrl).isEqualTo(mQueue.getQueueUrl());
     }
 
 
     @Ignore
     @Test
     public void getQueueUrl_UrlComesFromCache_CorrectUrl() {
-        QueueUrlCache.getSingleton().getQueueUrl(mQueueName, mSqsClient);
-        String queueUrl = QueueUrlCache.getSingleton().getQueueUrl(mQueueName, mSqsClient);
-        assertThat(queueUrl).isEqualTo(mQueueUrl);
+        QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
+        String queueUrl = QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
+        assertThat(queueUrl).isEqualTo(mQueue.getQueueUrl());
     }
 
 }

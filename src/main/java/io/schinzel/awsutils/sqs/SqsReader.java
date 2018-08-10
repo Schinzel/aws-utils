@@ -50,7 +50,7 @@ public class SqsReader {
         List<Message> messages;
         do {
             try {
-                //Get messages. Could be 1 or 0. 0 if there was no new message in queue.
+                //Get messages. Could be 1 or 0. 0 if there was no visible messages in queue.
                 messages = mSqsClient
                         .receiveMessage(mReceiveMessageRequest)
                         .getMessages();
@@ -68,7 +68,7 @@ public class SqsReader {
         while (messages.isEmpty());
         //If got here there was 1 message. Get this message
         Message message = messages.get(0);
-        //Return the body of the message
+        //Create and return message
         return new SqsMessage(mSqsClient, mQueueUrl, message);
     }
 
