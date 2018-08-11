@@ -14,8 +14,7 @@ import io.schinzel.basicutils.thrower.Thrower;
  * <p>
  * The purpose of a client cache is for performance.
  * <p>
- * 2018-08-07 With this cache it takes 15 ms to send a message, i.e. to run all the code in the constructor
- * in the SqsSender.
+ * 2018-08-07 With this cache it takes 15 ms to send a message with SqsSender.
  * Without this cache - and all other code the same - the average send takes 48 ms. Message size 250 chars.
  * Running the code on a EC2 instance. Caches had data when performance was measured.
  *

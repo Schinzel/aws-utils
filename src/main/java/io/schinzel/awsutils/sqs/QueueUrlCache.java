@@ -9,7 +9,7 @@ import io.schinzel.basicutils.thrower.Thrower;
  * <p>
  * The cache exists for performance reasons.
  * <p>
- * 2018-08-07 With this cache it takes 15 ms to send a message, i.e. to run all the code in the constructor.
+ * 2018-08-07 With this cache it takes 15 ms to send a message with SqsSender.
  * Without this cache - and all other code the same - the average send takes 25 ms. Message size 250 chars.
  * Running the code on a EC2 instance. Caches had data when performance was measured.
  *
