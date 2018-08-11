@@ -17,7 +17,8 @@ import lombok.experimental.Accessors;
 import java.util.Map;
 
 /**
- * The purpose of this class is to be a utility class to help create temporary queues for tests.
+ * The purpose of this class is to be a utility class to help create temporary queues for tests. Creates a queue with
+ * a random name.
  *
  * @author Schinzel
  */
@@ -84,8 +85,6 @@ class QueueUtil {
     }
 
 
-
-
     int getNumberOfMessages() {
         GetQueueAttributesRequest getQueueAttributesRequest
                 = new GetQueueAttributesRequest(mQueueUrl)
@@ -98,7 +97,6 @@ class QueueUtil {
 
 
     void deleteQueue() {
-        //Delete queue used in test
         mSqsClient.deleteQueue(mQueueUrl);
     }
 }
