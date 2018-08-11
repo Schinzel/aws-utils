@@ -72,9 +72,5 @@ public class SqsReader {
         return new SqsMessage(mSqsClient, mQueueUrl, message);
     }
 
-    void createQueue(){
-
-    }
-
 
 }
