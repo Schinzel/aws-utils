@@ -25,6 +25,7 @@ class QueueUrlCache {
         return QueueUrlCache.Holder.INSTANCE;
     }
 
+    /** Queue URL cache */
     final Cache<String, String> mQueueUrlCache = new Cache<>();
 
     /**

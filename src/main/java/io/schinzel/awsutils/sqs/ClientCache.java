@@ -36,8 +36,8 @@ class ClientCache {
 
 
     /**
-     * @param awsAccessKey A AWS access key
-     * @param awsSecretKey A AWS secret key
+     * @param awsAccessKey An AWS access key
+     * @param awsSecretKey An AWS secret key
      * @param region       The region in which to
      * @return An Amazon SQS client.
      */
@@ -50,7 +50,7 @@ class ClientCache {
         String cacheKey = awsAccessKey + region.getName();
         //If the cache has an entry for the cache key
         if (mSqsClientCache.has(cacheKey)) {
-            //Get and return the caches instance
+            //Get and return the cached instance
             return mSqsClientCache.get(cacheKey);
         } else {
             AWSCredentials credentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);

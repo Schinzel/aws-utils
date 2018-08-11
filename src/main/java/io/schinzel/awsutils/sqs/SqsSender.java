@@ -35,7 +35,7 @@ public class SqsSender {
                 //This is a required argument if content-based deduplication has been disabled, which is
                 //this class assumes it is.
                 .withMessageDeduplicationId(getUniqueId())
-                //Set a group id. As this is not used currently, it is set to a hard coded value.
+                //Set a group id. As this is not used currently used, it is set to a hard coded value.
                 //This argument is required if MessageDeduplicationId is set.
                 .withMessageGroupId("my_group_id");
         sqsClient.sendMessage(sendMsgRequest);
