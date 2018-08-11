@@ -22,12 +22,13 @@ public class SqsReaderSample {
                 .queueName("my_first_queue.fifo")
                 .region(Regions.EU_WEST_1)
                 .build();
-        //Get a message from the queue. If there is no message, code will will wait here until there is one
+        //Get a message from the queue. If there is no message, code will will wait here until there is one.
         //When a message is returned, that will be made invisible in the queue.
         SqsMessage message = sqsReader.getMessage();
         //Get the body from the message and do something with it
         String body = message.getBody();
-        //Delete the message from the queue
+        //Delete the message from the queue. If not deleted the message will become visible automatically. After how
+        //long time is set by the reader (at time of writing 60 seconds)
         message.deleteMessageFromQueue();
     }
 }
