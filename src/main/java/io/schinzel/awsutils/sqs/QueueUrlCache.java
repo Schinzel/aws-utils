@@ -44,7 +44,8 @@ class QueueUrlCache {
     String getQueueUrl(String queueName, AmazonSQS sqsClient) {
         Thrower.createInstance()
                 .throwIfVarEmpty(queueName, "queueName")
-                .throwIfVarNull(sqsClient, "sqsClient");
+                .throwIfVarNull(sqsClient, "sqsClient")
+                .throwIfFalse(queueName.endsWith(".fifo"), "Queue name must end in '.fifo'. Only fifo queues supported");
         if (mQueueUrlCache.has(queueName)) {
             return mQueueUrlCache.get(queueName);
         } else {

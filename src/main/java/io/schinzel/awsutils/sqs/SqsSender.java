@@ -21,7 +21,6 @@ public class SqsSender implements IQueueSender {
 
     @Builder
     SqsSender(String awsAccessKey, String awsSecretKey, Regions region, String queueName) {
-        Thrower.throwIfFalse(queueName.endsWith(".fifo"), "Queue name must end in '.fifo'. Only fifo queues supported");
         mSqsClient = ClientCache
                 .getSingleton()
                 .getSqsClient(awsAccessKey, awsSecretKey, region);
