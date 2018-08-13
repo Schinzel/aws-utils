@@ -5,6 +5,6 @@ package io.schinzel.samples.sqswrapper;
  *
  * @author Schinzel
  */
-public interface IQueue {
+public interface IQueueName {
     String getQueueName();
 }

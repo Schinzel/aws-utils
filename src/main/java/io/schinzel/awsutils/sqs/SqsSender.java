@@ -15,22 +15,29 @@ import lombok.Builder;
  * <p>
  * Created by Schinzel on 2018-07-12
  */
-public class SqsSender {
+public class SqsSender implements IQueueSender {
+    private final AmazonSQS mSqsClient;
+    private final String mQueueUrl;
 
-    @Builder(buildMethodName = "send")
-    SqsSender(String awsAccessKey, String awsSecretKey, Regions region, String queueName, String message) {
-        Thrower.createInstance()
-                .throwIfVarEmpty(message, "message")
-                .throwIfFalse(queueName.endsWith(".fifo"), "Queue name must end in '.fifo'. Only fifo queues supported");
-        AmazonSQS sqsClient = ClientCache
+    @Builder
+    SqsSender(String awsAccessKey, String awsSecretKey, Regions region, String queueName) {
+        Thrower.throwIfFalse(queueName.endsWith(".fifo"), "Queue name must end in '.fifo'. Only fifo queues supported");
+        mSqsClient = ClientCache
                 .getSingleton()
                 .getSqsClient(awsAccessKey, awsSecretKey, region);
         //Get the queue url for the argument queue name.
-        String queueUrl = QueueUrlCache
+        mQueueUrl = QueueUrlCache
                 .getSingleton()
-                .getQueueUrl(queueName, sqsClient);
+                .getQueueUrl(queueName, mSqsClient);
+
+    }
+
+
+    @Override
+    public SqsSender send(String message) {
+        Thrower.throwIfVarEmpty(message, "message");
         SendMessageRequest sendMsgRequest = new SendMessageRequest()
-                .withQueueUrl(queueUrl)
+                .withQueueUrl(mQueueUrl)
                 .withMessageBody(message)
                 //Add a unique id to the message which is used to prevent that the message is duplicated.
                 //This is a required argument if content-based deduplication has been disabled, which is
@@ -39,14 +46,15 @@ public class SqsSender {
                 //Set a group id. As this is not used currently used, it is set to a hard coded value.
                 //This argument is required if MessageDeduplicationId is set.
                 .withMessageGroupId("my_group_id");
-        sqsClient.sendMessage(sendMsgRequest);
+        mSqsClient.sendMessage(sendMsgRequest);
+        return this;
     }
 
 
     /**
      * @return A random unique id.
      */
-    static String getUniqueId() {
+    private static String getUniqueId() {
         return String.valueOf(System.nanoTime()) + "_" + RandomUtil.getRandomString(10);
     }
 

@@ -41,13 +41,13 @@ class QueueUtil {
                 .awsSecretKey(PropertiesUtil.AWS_SQS_SECRET_KEY)
                 .queueName(mQueueName)
                 .region(Regions.EU_WEST_1)
-                .message(message)
-                .send();
+                .build()
+                .send(message);
         return this;
     }
 
 
-    public SqsMessage read() {
+    SqsMessage read() {
         return SqsReader.builder()
                 .awsAccessKey(PropertiesUtil.AWS_SQS_ACCESS_KEY)
                 .awsSecretKey(PropertiesUtil.AWS_SQS_SECRET_KEY)

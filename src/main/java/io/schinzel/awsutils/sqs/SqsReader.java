@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Schinzel
  */
-public class SqsReader implements ISqsReader {
+public class SqsReader implements IQueueReader {
     private static final int VISIBILITY_TIMEOUT_IN_SECONDS = 60;
     private final AmazonSQS mSqsClient;
     private final String mQueueUrl;

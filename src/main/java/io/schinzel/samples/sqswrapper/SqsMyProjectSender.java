@@ -16,14 +16,14 @@ public class SqsMyProjectSender {
     private static Regions REGION = Regions.EU_WEST_1;
 
     @Builder(buildMethodName = "send")
-    SqsMyProjectSender(IQueue queue, String message) {
+    SqsMyProjectSender(IQueueName queue, String message) {
         SqsSender.builder()
                 .awsAccessKey(AWS_SQS_ACCESS_KEY)
                 .awsSecretKey(AWS_SQS_SECRET_KEY)
                 .region(REGION)
                 .queueName(queue.getQueueName())
-                .message(message)
-                .send();
+                .build()
+                .send(message);
     }
 
 

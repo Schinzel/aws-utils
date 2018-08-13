@@ -30,8 +30,8 @@ public class SqsSenderSample {
                 .awsSecretKey(awsSqsSecretKey)
                 .queueName("my_first_queue.fifo")
                 .region(Regions.EU_WEST_1)
-                .message("My message")
-                .send();
+                .build()
+                .send("My message");
     }
 
     /**
