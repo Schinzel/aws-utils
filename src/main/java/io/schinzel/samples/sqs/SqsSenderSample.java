@@ -1,8 +1,10 @@
 package io.schinzel.samples.sqs;
 
 import com.amazonaws.regions.Regions;
+import io.schinzel.awsutils.sqs.IQueueSender;
 import io.schinzel.awsutils.sqs.SqsSender;
 import io.schinzel.basicutils.configvar.ConfigVar;
+import io.schinzel.basicutils.str.Str;
 import io.schinzel.samples.sqs.wrapper.SqsMyProjectSender;
 import io.schinzel.samples.sqs.wrapper.SqsQueues;
 
@@ -25,13 +27,15 @@ public class SqsSenderSample {
     private static void sampleVanillaUsage() {
         String awsSqsAccessKey = ConfigVar.create(".env").getValue("AWS_SQS_ACCESS_KEY");
         String awsSqsSecretKey = ConfigVar.create(".env").getValue("AWS_SQS_SECRET_KEY");
-        SqsSender.builder()
+        String message = "My message";
+        IQueueSender queueSender = SqsSender.builder()
                 .awsAccessKey(awsSqsAccessKey)
                 .awsSecretKey(awsSqsSecretKey)
                 .queueName("my_first_queue.fifo")
                 .region(Regions.EU_WEST_1)
-                .build()
-                .send("My message");
+                .build();
+        queueSender.send(message);
+        Str.create("Sent message ").aq(message).writeToSystemOut();
     }
 
     /**
@@ -40,9 +44,10 @@ public class SqsSenderSample {
      * different queues in an enum.
      */
     private static void sampleWithCustomWrapper() {
-        SqsMyProjectSender
-                .create(SqsQueues.SEND_SMS)
-                .send("My message");
+        String message = "My message";
+        IQueueSender queueSender = SqsMyProjectSender.create(SqsQueues.SEND_SMS);
+        queueSender.send(message);
+        Str.create("Sent message ").aq(message).writeToSystemOut();
     }
 
 }
