@@ -6,5 +6,10 @@ package io.schinzel.samples.sqs.wrapper;
  * @author Schinzel
  */
 public interface IQueueName {
+
+    /**
+     *
+     * @return The name of the queue
+     */
     String getQueueName();
 }
