@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 @Accessors(prefix = "m")
 @RequiredArgsConstructor
 public enum SqsQueues implements IQueue {
-    SEND_SMS("sms.fifo");
+    SEND_SMS("my_first_queue.fifo");
 
 
     @Getter
