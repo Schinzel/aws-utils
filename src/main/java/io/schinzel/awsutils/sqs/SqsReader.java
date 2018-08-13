@@ -2,7 +2,6 @@ package io.schinzel.awsutils.sqs;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import lombok.Builder;
@@ -49,21 +48,10 @@ public class SqsReader {
     public SqsMessage getMessage() {
         List<Message> messages;
         do {
-            try {
-                //Get messages. Could be 1 or 0. 0 if there was no visible messages in queue.
-                messages = mSqsClient
-                        .receiveMessage(mReceiveMessageRequest)
-                        .getMessages();
-            } catch (IllegalStateException e) {
-                throw new RuntimeException("Problems reading message from queue '" + mQueueUrl + "'. " + e.getMessage());
-            } catch (AmazonSQSException awsException) {
-                //If the queue does not exist anymore
-                if (awsException.getErrorCode().equals("AWS.SimpleQueueService.NonExistentQueue")) {
-                    throw new RuntimeException("Queue '" + mQueueUrl + "' does not exist.");
-                } else {
-                    throw awsException;
-                }
-            }
+            //Get messages. Could be 1 or 0. 0 if there was no visible messages in queue.
+            messages = mSqsClient
+                    .receiveMessage(mReceiveMessageRequest)
+                    .getMessages();
         }//Loop if there was not message
         while (messages.isEmpty());
         //If got here there was 1 message. Get this message
