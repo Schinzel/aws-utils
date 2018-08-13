@@ -65,7 +65,6 @@ public class QueueUrlCacheTest {
     }
 
 
-    @Ignore
     @Test
     public void getQueueUrl_UrlComesFromCache_CorrectUrl() {
         QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
