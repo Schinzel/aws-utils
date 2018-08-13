@@ -3,8 +3,8 @@ package io.schinzel.samples;
 import com.amazonaws.regions.Regions;
 import io.schinzel.awsutils.sqs.SqsSender;
 import io.schinzel.basicutils.configvar.ConfigVar;
-import io.schinzel.samples.sqswrapper.SqsQueues;
 import io.schinzel.samples.sqswrapper.SqsMyProjectSender;
+import io.schinzel.samples.sqswrapper.SqsQueues;
 
 /**
  * The purpose of this class is to show how a message is written to an AWS SQS queue.
@@ -40,10 +40,9 @@ public class SqsSenderSample {
      * different queues in an enum.
      */
     private static void sampleWithCustomWrapper() {
-        SqsMyProjectSender.builder()
-                .queue(SqsQueues.SEND_SMS)
-                .message("My message")
-                .send();
+        SqsMyProjectSender
+                .create(SqsQueues.SEND_SMS)
+                .send("My message");
     }
 
 }

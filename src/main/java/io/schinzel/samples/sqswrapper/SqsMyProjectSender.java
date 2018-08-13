@@ -1,30 +1,38 @@
 package io.schinzel.samples.sqswrapper;
 
+import com.amazonaws.regions.Regions;
+import io.schinzel.awsutils.sqs.IQueueSender;
 import io.schinzel.awsutils.sqs.SqsSender;
 import io.schinzel.basicutils.configvar.ConfigVar;
-import com.amazonaws.regions.Regions;
-import lombok.Builder;
 
 /**
  * The purpose of this class is to show how SqsSender can be wrapped for easier use.
  *
  * @author Schinzel
  */
-public class SqsMyProjectSender {
-    private static String AWS_SQS_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_SQS_ACCESS_KEY");
-    private static String AWS_SQS_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_SQS_SECRET_KEY");
-    private static Regions REGION = Regions.EU_WEST_1;
+public class SqsMyProjectSender implements IQueueSender {
+    private static final String AWS_SQS_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_SQS_ACCESS_KEY");
+    private static final String AWS_SQS_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_SQS_SECRET_KEY");
+    private static final Regions REGION = Regions.EU_WEST_1;
+    private final IQueueSender mQueueSender;
 
-    @Builder(buildMethodName = "send")
-    SqsMyProjectSender(IQueueName queue, String message) {
-        SqsSender.builder()
+
+    public static SqsMyProjectSender create(IQueueName queue) {
+        return new SqsMyProjectSender(queue);
+    }
+
+    private SqsMyProjectSender(IQueueName queue) {
+        mQueueSender = SqsSender.builder()
                 .awsAccessKey(AWS_SQS_ACCESS_KEY)
                 .awsSecretKey(AWS_SQS_SECRET_KEY)
                 .region(REGION)
                 .queueName(queue.getQueueName())
-                .build()
-                .send(message);
+                .build();
     }
 
 
+    @Override
+    public IQueueSender send(String message) {
+        return mQueueSender.send(message);
+    }
 }
