@@ -1,4 +1,4 @@
-package io.schinzel.samples;
+package io.schinzel.samples.s3;
 
 import com.amazonaws.regions.Regions;
 import com.google.common.base.Strings;

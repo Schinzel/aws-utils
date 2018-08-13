@@ -1,10 +1,10 @@
-package io.schinzel.samples;
+package io.schinzel.samples.sqs;
 
 import com.amazonaws.regions.Regions;
 import io.schinzel.awsutils.sqs.SqsSender;
 import io.schinzel.basicutils.configvar.ConfigVar;
-import io.schinzel.samples.sqswrapper.SqsMyProjectSender;
-import io.schinzel.samples.sqswrapper.SqsQueues;
+import io.schinzel.samples.sqs.wrapper.SqsMyProjectSender;
+import io.schinzel.samples.sqs.wrapper.SqsQueues;
 
 /**
  * The purpose of this class is to show how a message is written to an AWS SQS queue.

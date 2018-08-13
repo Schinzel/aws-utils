@@ -1,4 +1,4 @@
-package io.schinzel.samples.sqswrapper;
+package io.schinzel.samples.sqs.wrapper;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

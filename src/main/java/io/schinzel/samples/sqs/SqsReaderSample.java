@@ -1,4 +1,4 @@
-package io.schinzel.samples;
+package io.schinzel.samples.sqs;
 
 import com.amazonaws.regions.Regions;
 import io.schinzel.awsutils.sqs.SqsMessage;

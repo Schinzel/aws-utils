@@ -1,4 +1,4 @@
-package io.schinzel.samples.sqswrapper;
+package io.schinzel.samples.sqs.wrapper;
 
 import com.amazonaws.regions.Regions;
 import io.schinzel.awsutils.sqs.IQueueSender;
@@ -17,11 +17,11 @@ public class SqsMyProjectSender implements IQueueSender {
     private final IQueueSender mQueueSender;
 
 
-    public static SqsMyProjectSender create(IQueueName queue) {
+    public static SqsMyProjectSender create(io.schinzel.samples.sqs.wrapper.IQueueName queue) {
         return new SqsMyProjectSender(queue);
     }
 
-    private SqsMyProjectSender(IQueueName queue) {
+    private SqsMyProjectSender(io.schinzel.samples.sqs.wrapper.IQueueName queue) {
         mQueueSender = SqsSender.builder()
                 .awsAccessKey(AWS_SQS_ACCESS_KEY)
                 .awsSecretKey(AWS_SQS_SECRET_KEY)
