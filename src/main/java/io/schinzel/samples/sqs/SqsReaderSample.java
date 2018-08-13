@@ -21,7 +21,7 @@ public class SqsReaderSample {
         IQueueReader sqsReader = SqsReader.builder()
                 .awsAccessKey(awsSqsAccessKey)
                 .awsSecretKey(awsSqsSecretKey)
-                .queueName("111my_first_queue.fifo")
+                .queueName("my_first_queue.fifo")
                 .region(Regions.EU_WEST_1)
                 .build();
         //Get a message from the queue. If there is no message, code will will wait here until there is one.
