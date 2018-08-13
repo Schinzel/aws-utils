@@ -8,7 +8,8 @@ import io.schinzel.basicutils.thrower.Thrower;
 import lombok.Builder;
 
 /**
- * The purpose of this class is to send a message to an AWS SQS queue.
+ * The purpose of this class is to send a message to an AWS SQS queue. If a queue with the constructor argument name
+ * does not exist, one is created.
  * <p>
  * Fifo queue is assumed.
  * <p>
