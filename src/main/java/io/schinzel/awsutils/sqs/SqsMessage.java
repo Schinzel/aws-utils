@@ -6,14 +6,17 @@ import com.amazonaws.services.sqs.model.Message;
 import io.schinzel.basicutils.str.Str;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.experimental.Accessors;
 
 /**
  * The purpose of this class is to represent an AWS SQS message.
  *
  * @author Schinzel
  */
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class SqsMessage {
+@Builder
+@Accessors(prefix = "m")
+public class SqsMessage implements IMessage {
     private final AmazonSQS mSqsClient;
     private final String mQueueUrl;
     private final Message mMessage;
@@ -22,6 +25,7 @@ public class SqsMessage {
     /**
      * @return The body of the message
      */
+    @Override
     public String getBody() {
         return mMessage.getBody();
     }
@@ -33,6 +37,7 @@ public class SqsMessage {
      *
      * @return Deletes the message from the queue.
      */
+    @Override
     public SqsMessage deleteMessageFromQueue() {
         try {
             mSqsClient.deleteMessage(mQueueUrl, mMessage.getReceiptHandle());

@@ -57,7 +57,11 @@ public class SqsReader implements IQueueReader {
         //If got here there was 1 message. Get this message
         Message message = messages.get(0);
         //Create and return message
-        return new SqsMessage(mSqsClient, mQueueUrl, message);
+        return SqsMessage.builder()
+                .sqsClient(mSqsClient)
+                .queueUrl(mQueueUrl)
+                .message(message)
+                .build();
     }
 
 
