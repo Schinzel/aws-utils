@@ -22,6 +22,11 @@ public class SqsReader implements IQueueReader {
 
     @Builder
     SqsReader(String awsAccessKey, String awsSecretKey, Regions region, String queueName) {
+        this(awsAccessKey, awsSecretKey, region, queueName, VISIBILITY_TIMEOUT_IN_SECONDS);
+    }
+
+    //Exists for testing
+    SqsReader(String awsAccessKey, String awsSecretKey, Regions region, String queueName, int visibilityTimeoutInSeconds) {
         mSqsClient = ClientCache
                 .getSingleton()
                 .getSqsClient(awsAccessKey, awsSecretKey, region);
@@ -37,7 +42,7 @@ public class SqsReader implements IQueueReader {
                 //The duration the call waits for a message to arrive in the queue before returning.
                 .withWaitTimeSeconds(20)
                 //Make the message invisible for x seconds
-                .withVisibilityTimeout(VISIBILITY_TIMEOUT_IN_SECONDS);
+                .withVisibilityTimeout(visibilityTimeoutInSeconds);
     }
 
 

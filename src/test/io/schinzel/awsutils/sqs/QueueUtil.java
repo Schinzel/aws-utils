@@ -72,4 +72,5 @@ class QueueUtil {
     void deleteQueue() {
         mSqsClient.deleteQueue(mQueueUrl);
     }
+
 }

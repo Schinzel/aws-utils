@@ -1,11 +1,13 @@
 package io.schinzel.awsutils.sqs;
 
+import com.amazonaws.regions.Regions;
 import io.schinzel.basicutils.RandomUtil;
+import io.schinzel.basicutils.Sandman;
 import org.junit.After;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * @author Schinzel
@@ -22,14 +24,37 @@ public class SqsMessageTest {
 
     @Test
     public void deleteMessageFromQueue_Add5MessagesDelete1_ShouldBe4Messages() {
+        //Send 5 messages
         mQueue
                 .send(RandomUtil.getRandomString(3))
                 .send(RandomUtil.getRandomString(3))
                 .send(RandomUtil.getRandomString(3))
                 .send(RandomUtil.getRandomString(3))
                 .send(RandomUtil.getRandomString(3));
+        //Delete one message
         mQueue.read().deleteMessageFromQueue();
         assertThat(mQueue.getNumberOfMessages()).isEqualTo(4);
+    }
+
+
+    @Test
+    public void deleteMessageFromQueue_SnoozeUntilAfterVisibilityTimeout_Exception() {
+        QueueUtil queueUtil = new QueueUtil(SqsMessageTest.class)
+                //Add a message to a test queue
+                .send("Any message");
+        //Read a message from the test queue
+        int visibilityTimeoutInSeconds = 1;
+        SqsMessage message = new SqsReader(
+                PropertiesUtil.AWS_SQS_ACCESS_KEY,
+                PropertiesUtil.AWS_SQS_SECRET_KEY,
+                Regions.EU_WEST_1,
+                queueUtil.getQueueName(),
+                visibilityTimeoutInSeconds).getMessage();
+        //Snooze until the after the visibility timeout has expired
+        Sandman.snoozeMillis(1200);
+        assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(() -> message.deleteMessageFromQueue())
+                .withMessageStartingWith("Could not delete message as it has become visible");
     }
 
 
