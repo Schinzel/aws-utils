@@ -1,7 +1,9 @@
 package io.schinzel.awsutils.sqs;
 
+import com.amazonaws.services.sqs.model.GetQueueAttributesRequest;
+import com.amazonaws.services.sqs.model.GetQueueAttributesResult;
+import io.schinzel.basicutils.RandomUtil;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,5 +74,32 @@ public class QueueUrlCacheTest {
         assertThat(queueUrl).isEqualTo(mQueue.getQueueUrl());
     }
 
+    @Test
+    public void createQueue_ContentBasedDeduplicationDisabled() {
+        String contentBasedDeduplicationAsString = this.createQueueAndGetProperty("ContentBasedDeduplication");
+        Boolean contentBasedDeduplication = Boolean.valueOf(contentBasedDeduplicationAsString);
+        assertThat(contentBasedDeduplication).isFalse();
+    }
 
+
+    @Test
+    public void createQueue_IsFifoQueue() {
+        String isFifoAsString = this.createQueueAndGetProperty("FifoQueue");
+        Boolean isFifo = Boolean.valueOf(isFifoAsString);
+        assertThat(isFifo).isTrue();
+    }
+
+
+    private String createQueueAndGetProperty(String propertyKey) {
+        String queueName = QueueUrlCache.class.getSimpleName() + "_" + RandomUtil.getRandomString(5) + ".fifo";
+        String queueUrl = QueueUrlCache.createQueue(queueName, mQueue.getSqsClient());
+        GetQueueAttributesRequest getQueueAttributesRequest
+                = new GetQueueAttributesRequest(queueUrl)
+                .withAttributeNames("All");
+        GetQueueAttributesResult getQueueAttributesResult = mQueue.getSqsClient()
+                .getQueueAttributes(getQueueAttributesRequest);
+        String propertyValue = getQueueAttributesResult.getAttributes().get(propertyKey);
+        mQueue.getSqsClient().deleteQueue(queueUrl);
+        return propertyValue;
+    }
 }
