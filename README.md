@@ -7,7 +7,7 @@ For sample code see:
 
 `aws-utils/src/main/java/io/schinzel/samples/`
 
-To run the S3file samples and tests add the following lines to a `.env` file in project root. 
+To run the S3File samples and tests add the following lines to a `.env` file in project root. 
 The X:es and Y:es are replaced with the actual keys.
 
 ```
