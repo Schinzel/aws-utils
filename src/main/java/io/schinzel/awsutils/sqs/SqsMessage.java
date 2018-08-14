@@ -33,7 +33,7 @@ public class SqsMessage implements IMessage {
      * The delete has to be done while the message is invisible in queue. If this method is invoked after
      * the message has become visible an exception is thrown.
      *
-     * @return Deletes the message from the queue.
+     * @return Deletes the message from the queue
      */
     @Override
     public SqsMessage deleteMessageFromQueue() {
