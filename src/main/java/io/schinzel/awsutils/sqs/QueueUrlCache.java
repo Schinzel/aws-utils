@@ -46,15 +46,22 @@ class QueueUrlCache {
                 .throwIfVarEmpty(queueName, "queueName")
                 .throwIfVarNull(sqsClient, "sqsClient")
                 .throwIfFalse(queueName.endsWith(".fifo"), "Queue name must end in '.fifo'. Only fifo queues supported");
+        //If there was a url for the argument name in the cache
         if (mQueueUrlCache.has(queueName)) {
+            //Return url from cache
             return mQueueUrlCache.get(queueName);
-        } else {
+        } //else, there was no url for argument name in cache
+        else {
             String queueUrl;
             try {
+                //Get the URL from an existing queue
                 queueUrl = sqsClient.getQueueUrl(queueName).getQueueUrl();
             } catch (QueueDoesNotExistException e) {
+                //If there was no queue with the argument name an exception was thrown
+                //Create a queue
                 queueUrl = QueueUrlCache.createQueue(queueName, sqsClient);
             }
+            //Add queue url to cache and return it
             return mQueueUrlCache.putAndGet(queueName, queueUrl);
         }
     }
@@ -67,14 +74,17 @@ class QueueUrlCache {
      * @return The name of the newly created queue
      */
     static synchronized String createQueue(String queueName, AmazonSQS sqsClient) {
+        //Compile attributes for queue
         Map<String, String> queueAttributes = ImmutableMap.<String, String>builder()
                 .put("FifoQueue", "true")
                 .put("ContentBasedDeduplication", "false")
                 .build();
-        CreateQueueRequest createFifoQueueRequest = new CreateQueueRequest(queueName)
+        //Create a queue request
+        CreateQueueRequest createQueueRequest = new CreateQueueRequest(queueName)
                 .withAttributes(queueAttributes);
+        //Create queue and return the url of the newly created queue
         return sqsClient
-                .createQueue(createFifoQueueRequest)
+                .createQueue(createQueueRequest)
                 .getQueueUrl();
     }
 
