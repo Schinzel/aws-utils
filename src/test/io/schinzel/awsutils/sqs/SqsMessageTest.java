@@ -39,19 +39,19 @@ public class SqsMessageTest {
 
     @Test
     public void deleteMessageFromQueue_SnoozeUntilAfterVisibilityTimeout_Exception() {
-        QueueUtil queueUtil = new QueueUtil(SqsMessageTest.class)
-                //Add a message to a test queue
-                .send("Any message");
+        //Add a message to a test queue
+        mQueue.send("Any message");
         //Read a message from the test queue
         int visibilityTimeoutInSeconds = 1;
         SqsMessage message = new SqsReader(
                 PropertiesUtil.AWS_SQS_ACCESS_KEY,
                 PropertiesUtil.AWS_SQS_SECRET_KEY,
                 Regions.EU_WEST_1,
-                queueUtil.getQueueName(),
+                mQueue.getQueueName(),
                 visibilityTimeoutInSeconds).getMessage();
         //Snooze until the after the visibility timeout has expired
         Sandman.snoozeMillis(1200);
+        //An exception should be thrown as we try to delete the message after it has become visible in queue again
         assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() -> message.deleteMessageFromQueue())
                 .withMessageStartingWith("Could not delete message as it has become visible");
