@@ -1,6 +1,8 @@
 package io.schinzel.awsutils.sqs;
 
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
 import io.schinzel.basicutils.RandomUtil;
 import io.schinzel.basicutils.Sandman;
 import org.junit.After;
@@ -59,9 +61,23 @@ public class SqsMessageTest {
 
 
     @Test
+    public void deleteMessageFromQueue_QueueDoesNotExists_Exception(){
+        SqsMessage sqsMessage = SqsMessage.builder()
+                .message(new Message())
+                .sqsClient(mQueue.getSqsClient())
+                .queueUrl("I_do_not_exist")
+                .build();
+        assertThatExceptionOfType(QueueDoesNotExistException.class).isThrownBy(() ->
+                sqsMessage.deleteMessageFromQueue()
+        );
+    }
+
+
+    @Test
     public void getBody_CreateMessageWithRandomString_SameRandomString() {
         String messageToWrite = RandomUtil.getRandomString(10);
         String messageRead = mQueue.send(messageToWrite).read().getBody();
         assertThat(messageRead).isEqualTo(messageToWrite);
     }
+
 }
