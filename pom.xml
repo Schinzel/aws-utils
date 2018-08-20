@@ -29,7 +29,7 @@
     <repositories>
         <repository>
             <id>${maven-repo}</id>
-            <url>s3://${maven-repo}/release</url>
+            <url>http://${maven-repo}/release</url>
         </repository>
     </repositories>
 
@@ -49,13 +49,19 @@
             common code snippets -->
             <groupId>io.schinzel</groupId>
             <artifactId>basic-utils</artifactId>
-            <version>1.32</version>
+            <version>1.34</version>
         </dependency>
         <dependency>
             <!-- Amazon's S3 client -->
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
             <version>1.11.363</version>
+        </dependency>
+        <dependency>
+            <!-- Amazon's SQS client -->
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-sqs</artifactId>
+            <version>1.11.365</version>
         </dependency>
         <!-- TEST DEPENDENCIES -->
         <dependency>

@@ -1,4 +1,4 @@
-package io.schinzel.samples;
+package io.schinzel.samples.s3;
 
 import com.amazonaws.regions.Regions;
 import com.google.common.base.Strings;
@@ -14,8 +14,8 @@ import io.schinzel.basicutils.str.Str;
  * Created by Schinzel on 2018-01-03
  */
 public class S3FileSample {
-    private static String AWS_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_ACCESS_KEY");
-    private static String AWS_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_SECRET_KEY");
+    private static String AWS_S3_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_S3_ACCESS_KEY");
+    private static String AWS_S3_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_S3_SECRET_KEY");
 
 
     public static void main(String[] args) {
@@ -36,8 +36,8 @@ public class S3FileSample {
         String fileName = "myfile.txt";
         String fileContent = "my content";
         S3File file = S3File.builder()
-                .awsAccessKey(AWS_ACCESS_KEY)
-                .awsSecretKey(AWS_SECRET_KEY)
+                .awsAccessKey(AWS_S3_ACCESS_KEY)
+                .awsSecretKey(AWS_S3_SECRET_KEY)
                 .region(Regions.EU_WEST_1)
                 .bucketName(bucketName)
                 .fileName(fileName)
@@ -66,8 +66,8 @@ public class S3FileSample {
         long start = System.nanoTime();
         for (int i = 0; i < 10; i++) {
             S3File.builder()
-                    .awsAccessKey(AWS_ACCESS_KEY)
-                    .awsSecretKey(AWS_SECRET_KEY)
+                    .awsAccessKey(AWS_S3_ACCESS_KEY)
+                    .awsSecretKey(AWS_S3_SECRET_KEY)
                     .region(Regions.EU_WEST_1)
                     .bucketName(bucketName)
                     .backgroundWrite(true)
@@ -97,8 +97,8 @@ public class S3FileSample {
         String fileName = RandomUtil.getRandomString(5) + ".txt";
         String fileContent = getFileContent();
         S3File s3File = S3File.builder()
-                .awsAccessKey(AWS_ACCESS_KEY)
-                .awsSecretKey(AWS_SECRET_KEY)
+                .awsAccessKey(AWS_S3_ACCESS_KEY)
+                .awsSecretKey(AWS_S3_SECRET_KEY)
                 .region(Regions.EU_WEST_1)
                 .bucketName(bucketName)
                 .fileName(fileName)
