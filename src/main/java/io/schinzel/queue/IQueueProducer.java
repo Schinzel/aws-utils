@@ -1,4 +1,4 @@
-package io.schinzel.awsutils.sqs;
+package io.schinzel.queue;
 
 
 /**

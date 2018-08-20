@@ -1,8 +1,8 @@
 package io.schinzel.samples.sqs;
 
 import com.amazonaws.regions.Regions;
-import io.schinzel.awsutils.sqs.IMessage;
-import io.schinzel.awsutils.sqs.IQueueConsumer;
+import io.schinzel.queue.IMessage;
+import io.schinzel.queue.IQueueConsumer;
 import io.schinzel.awsutils.sqs.SqsConsumer;
 import io.schinzel.basicutils.configvar.ConfigVar;
 import io.schinzel.basicutils.str.Str;

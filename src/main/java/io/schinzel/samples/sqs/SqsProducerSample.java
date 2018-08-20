@@ -1,7 +1,7 @@
 package io.schinzel.samples.sqs;
 
 import com.amazonaws.regions.Regions;
-import io.schinzel.awsutils.sqs.IQueueProducer;
+import io.schinzel.queue.IQueueProducer;
 import io.schinzel.awsutils.sqs.SqsProducer;
 import io.schinzel.basicutils.configvar.ConfigVar;
 import io.schinzel.basicutils.str.Str;

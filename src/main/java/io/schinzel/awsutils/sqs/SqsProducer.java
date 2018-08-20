@@ -5,6 +5,7 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import io.schinzel.basicutils.RandomUtil;
 import io.schinzel.basicutils.thrower.Thrower;
+import io.schinzel.queue.IQueueProducer;
 import lombok.Builder;
 
 /**
