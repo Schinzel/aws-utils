@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Schinzel
  */
-public class SqsReader implements IQueueReader {
+public class SqsConsumer implements IQueueConsumer {
     private static final int VISIBILITY_TIMEOUT_IN_SECONDS = 60;
     private final AmazonSQS mSqsClient;
     private final String mQueueUrl;
@@ -21,12 +21,12 @@ public class SqsReader implements IQueueReader {
 
 
     @Builder
-    SqsReader(String awsAccessKey, String awsSecretKey, Regions region, String queueName) {
+    SqsConsumer(String awsAccessKey, String awsSecretKey, Regions region, String queueName) {
         this(awsAccessKey, awsSecretKey, region, queueName, VISIBILITY_TIMEOUT_IN_SECONDS);
     }
 
     //Exists for testing
-    SqsReader(String awsAccessKey, String awsSecretKey, Regions region, String queueName, int visibilityTimeoutInSeconds) {
+    SqsConsumer(String awsAccessKey, String awsSecretKey, Regions region, String queueName, int visibilityTimeoutInSeconds) {
         mSqsClient = ClientCache
                 .getSingleton()
                 .getSqsClient(awsAccessKey, awsSecretKey, region);

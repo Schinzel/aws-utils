@@ -15,8 +15,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Schinzel
  */
-public class SqsReaderSenderTest {
-    private final QueueUtil mQueue = new QueueUtil(SqsSenderTest.class);
+public class SqsProducerConsumerTest {
+    private final QueueUtil mQueue = new QueueUtil(SqsProducerTest.class);
 
     @After
     public void after() {

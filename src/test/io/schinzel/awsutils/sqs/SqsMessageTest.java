@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Schinzel
  */
 public class SqsMessageTest {
-    private final QueueUtil mQueue = new QueueUtil(SqsSenderTest.class);
+    private final QueueUtil mQueue = new QueueUtil(SqsProducerTest.class);
 
     @After
     public void after() {
@@ -45,7 +45,7 @@ public class SqsMessageTest {
         mQueue.send("Any message");
         //Read a message from the test queue
         int visibilityTimeoutInSeconds = 1;
-        SqsMessage message = new SqsReader(
+        SqsMessage message = new SqsConsumer(
                 PropertiesUtil.AWS_SQS_ACCESS_KEY,
                 PropertiesUtil.AWS_SQS_SECRET_KEY,
                 Regions.EU_WEST_1,

@@ -1,28 +1,28 @@
 package io.schinzel.samples.sqs.wrapper;
 
 import com.amazonaws.regions.Regions;
-import io.schinzel.awsutils.sqs.IQueueSender;
-import io.schinzel.awsutils.sqs.SqsSender;
+import io.schinzel.awsutils.sqs.IQueueProducer;
+import io.schinzel.awsutils.sqs.SqsProducer;
 import io.schinzel.basicutils.configvar.ConfigVar;
 
 /**
- * The purpose of this class is to show how SqsSender can be wrapped for easier use.
+ * The purpose of this class is to show how SqsProducer can be wrapped for easier use.
  *
  * @author Schinzel
  */
-public class SqsMyProjectSender implements IQueueSender {
+public class SqsMyProjectProducer implements IQueueProducer {
     private static final String AWS_SQS_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_SQS_ACCESS_KEY");
     private static final String AWS_SQS_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_SQS_SECRET_KEY");
     private static final Regions REGION = Regions.EU_WEST_1;
-    private final IQueueSender mQueueSender;
+    private final IQueueProducer mQueueProducer;
 
 
-    public static SqsMyProjectSender create(io.schinzel.samples.sqs.wrapper.IQueueName queue) {
-        return new SqsMyProjectSender(queue);
+    public static SqsMyProjectProducer create(io.schinzel.samples.sqs.wrapper.IQueueName queue) {
+        return new SqsMyProjectProducer(queue);
     }
 
-    private SqsMyProjectSender(io.schinzel.samples.sqs.wrapper.IQueueName queue) {
-        mQueueSender = SqsSender.builder()
+    private SqsMyProjectProducer(io.schinzel.samples.sqs.wrapper.IQueueName queue) {
+        mQueueProducer = SqsProducer.builder()
                 .awsAccessKey(AWS_SQS_ACCESS_KEY)
                 .awsSecretKey(AWS_SQS_SECRET_KEY)
                 .region(REGION)
@@ -32,7 +32,7 @@ public class SqsMyProjectSender implements IQueueSender {
 
 
     @Override
-    public IQueueSender send(String message) {
-        return mQueueSender.send(message);
+    public IQueueProducer send(String message) {
+        return mQueueProducer.send(message);
     }
 }

@@ -8,8 +8,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Schinzel
  */
-public class SqsSenderTest {
-    private final QueueUtil mQueue = new QueueUtil(SqsSenderTest.class);
+public class SqsProducerTest {
+    private final QueueUtil mQueue = new QueueUtil(SqsProducerTest.class);
 
 
     @After

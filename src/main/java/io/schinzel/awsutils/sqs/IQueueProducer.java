@@ -6,12 +6,12 @@ package io.schinzel.awsutils.sqs;
  *
  * @author Schinzel
  */
-public interface IQueueSender {
+public interface IQueueProducer {
 
     /**
      *
      * @param message The message to send
      * @return This for chaining
      */
-    IQueueSender send(String message);
+    IQueueProducer send(String message);
 }

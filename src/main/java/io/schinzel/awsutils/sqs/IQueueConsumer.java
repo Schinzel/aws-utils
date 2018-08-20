@@ -6,7 +6,7 @@ package io.schinzel.awsutils.sqs;
  *
  * @author Schinzel
  */
-public interface IQueueReader {
+public interface IQueueConsumer {
 
     /**
      * @return A message

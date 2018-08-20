@@ -40,7 +40,7 @@ class QueueUtil {
 
 
     QueueUtil send(String message) {
-        SqsSender.builder()
+        SqsProducer.builder()
                 .awsAccessKey(PropertiesUtil.AWS_SQS_ACCESS_KEY)
                 .awsSecretKey(PropertiesUtil.AWS_SQS_SECRET_KEY)
                 .queueName(mQueueName)
@@ -52,7 +52,7 @@ class QueueUtil {
 
 
     SqsMessage read() {
-        return SqsReader.builder()
+        return SqsConsumer.builder()
                 .awsAccessKey(PropertiesUtil.AWS_SQS_ACCESS_KEY)
                 .awsSecretKey(PropertiesUtil.AWS_SQS_SECRET_KEY)
                 .queueName(mQueueName)

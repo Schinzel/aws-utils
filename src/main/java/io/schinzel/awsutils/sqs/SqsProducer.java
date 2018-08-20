@@ -15,12 +15,12 @@ import lombok.Builder;
  * <p>
  * Created by Schinzel on 2018-07-12
  */
-public class SqsSender implements IQueueSender {
+public class SqsProducer implements IQueueProducer {
     private final AmazonSQS mSqsClient;
     private final String mQueueUrl;
 
     @Builder
-    SqsSender(String awsAccessKey, String awsSecretKey, Regions region, String queueName) {
+    SqsProducer(String awsAccessKey, String awsSecretKey, Regions region, String queueName) {
         mSqsClient = ClientCache
                 .getSingleton()
                 .getSqsClient(awsAccessKey, awsSecretKey, region);
@@ -33,7 +33,7 @@ public class SqsSender implements IQueueSender {
 
 
     @Override
-    public SqsSender send(String message) {
+    public SqsProducer send(String message) {
         Thrower.throwIfVarEmpty(message, "message");
         SendMessageRequest sendMsgRequest = new SendMessageRequest()
                 .withQueueUrl(mQueueUrl)
