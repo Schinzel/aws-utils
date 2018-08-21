@@ -25,12 +25,14 @@ public class SqsConsumerSample {
                 .region(Regions.EU_WEST_1)
                 .build();
         //Get a message from the queue. If there is no message, code will will wait here until there is one.
-        //When a message is returned, that will be made invisible in the queue.
+        //When a message is returned, it will be made invisible in the queue so that the message cannot be read by other threads.
+        //The purpose of the invisibility is that if this thread unexpectedly terminates before handling the message, the
+        //message will become visible after a timeout (at time of writing 60 seconds). With the message visible it
+        //can be handled by an other thread.
         IMessage message = sqsConsumer.getMessage();
         //Get the body from the message and do something with it
         String body = message.getBody();
-        //Delete the message from the queue. If not deleted the message will become visible automatically. After how
-        //long time is set by the consumer (at time of writing 60 seconds)
+        //Delete the message from the queue. If not deleted the message will become visible automatically.
         message.deleteMessageFromQueue();
         Str.create("Read message ").aq(body).writeToSystemOut();
     }
