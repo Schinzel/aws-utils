@@ -26,7 +26,7 @@ public interface IS3File {
      *
      * @return This for chaining.
      */
-    S3File delete();
+    IS3File delete();
 
 
     /**
@@ -35,5 +35,5 @@ public interface IS3File {
      * @param fileContent The content to write
      * @return This for chaining
      */
-    S3File write(String fileContent);
+    IS3File write(String fileContent);
 }

@@ -115,7 +115,7 @@ public class S3File implements IS3File {
      * Delete this file. If file does not exist on S3, method returns gracefully without throwing errors.
      */
     @Override
-    public S3File delete() {
+    public IS3File delete() {
         if (this.exists()) {
             mTransferManager.getAmazonS3Client()
                     .deleteObject(mBucketName, mFileName);
@@ -133,7 +133,7 @@ public class S3File implements IS3File {
      * @param fileContent The file content to write
      */
     @Override
-    public S3File write(String fileContent) {
+    public IS3File write(String fileContent) {
         byte[] contentAsBytes = UTF8.getBytes(fileContent);
         try {
             ByteArrayInputStream contentsAsStream = new ByteArrayInputStream(contentAsBytes);

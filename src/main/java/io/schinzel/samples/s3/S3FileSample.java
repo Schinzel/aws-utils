@@ -2,6 +2,7 @@ package io.schinzel.samples.s3;
 
 import com.amazonaws.regions.Regions;
 import com.google.common.base.Strings;
+import io.schinzel.awsutils.s3file.IS3File;
 import io.schinzel.basicutils.RandomUtil;
 import io.schinzel.basicutils.configvar.ConfigVar;
 import io.schinzel.awsutils.s3file.S3File;
@@ -35,7 +36,7 @@ public class S3FileSample {
         String bucketName = "schinzel.io";
         String fileName = "myfile.txt";
         String fileContent = "my content";
-        S3File file = S3File.builder()
+        IS3File file = S3File.builder()
                 .awsAccessKey(AWS_S3_ACCESS_KEY)
                 .awsSecretKey(AWS_S3_SECRET_KEY)
                 .region(Regions.EU_WEST_1)
@@ -96,7 +97,7 @@ public class S3FileSample {
         String bucketName = "schinzel.io";
         String fileName = RandomUtil.getRandomString(5) + ".txt";
         String fileContent = getFileContent();
-        S3File s3File = S3File.builder()
+        IS3File s3File = S3File.builder()
                 .awsAccessKey(AWS_S3_ACCESS_KEY)
                 .awsSecretKey(AWS_S3_SECRET_KEY)
                 .region(Regions.EU_WEST_1)
