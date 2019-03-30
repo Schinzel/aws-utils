@@ -24,7 +24,7 @@ public class S3FileTest {
 
     @Test
     public void exists_ExistingFile_True() {
-        S3File s3file = S3FileUtil
+        IS3File s3file = S3FileUtil
                 .getS3File()
                 .write("some content");
         boolean exists = s3file.exists();
@@ -57,7 +57,7 @@ public class S3FileTest {
                 .stream(FunnyChars.values())
                 .map(FunnyChars::getString)
                 .collect(Collectors.joining("\n"));
-        S3File s3file = S3FileUtil
+        IS3File s3file = S3FileUtil
                 .getS3File()
                 .write(fileContentToUpload);
         String downloadedFileContent = s3file
