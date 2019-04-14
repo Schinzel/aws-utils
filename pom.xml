@@ -8,6 +8,9 @@
     <artifactId>aws-utils</artifactId>
     <version>0.92</version>
 
+    <name>AWS Utils</name>
+    <description>For easy reading from and writing to AWS S3 and SQS</description>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-repo>maven-repo.schinzel.io</maven-repo>
