@@ -6,7 +6,7 @@
 
     <groupId>io.schinzel</groupId>
     <artifactId>aws-utils</artifactId>
-    <version>0.92</version>
+    <version>0.93</version>
 
     <name>AWS Utils</name>
     <description>For easy reading from and writing to AWS S3 and SQS</description>
@@ -52,19 +52,19 @@
             common code snippets -->
             <groupId>io.schinzel</groupId>
             <artifactId>basic-utils</artifactId>
-            <version>1.36</version>
+            <version>1.38</version>
         </dependency>
         <dependency>
             <!-- Amazon's S3 client -->
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.11.511</version>
+            <version>1.11.596</version>
         </dependency>
         <dependency>
             <!-- Amazon's SQS client -->
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-sqs</artifactId>
-            <version>1.11.511</version>
+            <version>1.11.596</version>
         </dependency>
         <!-- TEST DEPENDENCIES -->
         <dependency>
@@ -77,7 +77,7 @@
             <!-- Fluid assertions http://joel-costigliola.github.io/assertj -->
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.10.0</version>
+            <version>3.12.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
