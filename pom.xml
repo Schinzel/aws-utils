@@ -6,7 +6,7 @@
 
     <groupId>io.schinzel</groupId>
     <artifactId>aws-utils</artifactId>
-    <version>0.93</version>
+    <version>0.94</version>
 
     <name>AWS Utils</name>
     <description>For easy reading from and writing to AWS S3 and SQS</description>
@@ -38,6 +38,27 @@
 
 
     <dependencies>
+        <!-- RUNTIME DEPENDENCIES -->
+        <dependency>
+            <!-- Basic utilities. Most commonly less verbose versions of
+            common code snippets -->
+            <groupId>io.schinzel</groupId>
+            <artifactId>basic-utils</artifactId>
+            <version>1.39</version>
+        </dependency>
+        <dependency>
+            <!-- Amazon's S3 client -->
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.11.699</version>
+        </dependency>
+        <dependency>
+            <!-- Amazon's SQS client -->
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-sqs</artifactId>
+            <version>1.11.699</version>
+        </dependency>
+        <!-- DEV DEPENDENCIES -->
         <dependency>
             <!-- Annotations that generates getters, setters and more that
             are not visible in source code
@@ -46,25 +67,6 @@
             <artifactId>lombok</artifactId>
             <version>1.18.0</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <!-- Basic utilities. Most commonly less verbose versions of
-            common code snippets -->
-            <groupId>io.schinzel</groupId>
-            <artifactId>basic-utils</artifactId>
-            <version>1.38</version>
-        </dependency>
-        <dependency>
-            <!-- Amazon's S3 client -->
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.11.596</version>
-        </dependency>
-        <dependency>
-            <!-- Amazon's SQS client -->
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-sqs</artifactId>
-            <version>1.11.596</version>
         </dependency>
         <!-- TEST DEPENDENCIES -->
         <dependency>
