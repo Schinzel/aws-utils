@@ -19,9 +19,10 @@ import lombok.Builder;
 public class SqsProducer implements IQueueProducer {
     private final AmazonSQS mSqsClient;
     private final String mQueueUrl;
+    boolean mGuaranteedOrder;
 
     @Builder
-    SqsProducer(String awsAccessKey, String awsSecretKey, Regions region, String queueName) {
+    SqsProducer(String awsAccessKey, String awsSecretKey, Regions region, String queueName, Boolean guaranteedOrder) {
         mSqsClient = ClientCache
                 .getSingleton()
                 .getSqsClient(awsAccessKey, awsSecretKey, region);
@@ -29,6 +30,7 @@ public class SqsProducer implements IQueueProducer {
         mQueueUrl = QueueUrlCache
                 .getSingleton()
                 .getQueueUrl(queueName, mSqsClient);
+        mGuaranteedOrder = (guaranteedOrder == null) ? true : guaranteedOrder;
 
     }
 
@@ -36,6 +38,7 @@ public class SqsProducer implements IQueueProducer {
     @Override
     public SqsProducer send(String message) {
         Thrower.throwIfVarEmpty(message, "message");
+        String groupId = mGuaranteedOrder ? "my_group_id" : "random_group_id_" + getUniqueId();
         SendMessageRequest sendMsgRequest = new SendMessageRequest()
                 .withQueueUrl(mQueueUrl)
                 .withMessageBody(message)
@@ -45,7 +48,7 @@ public class SqsProducer implements IQueueProducer {
                 .withMessageDeduplicationId(getUniqueId())
                 //Set a group id. As this is not used currently used, it is set to a hard coded value.
                 //This argument is required if MessageDeduplicationId is set.
-                .withMessageGroupId("my_group_id");
+                .withMessageGroupId(groupId);
         mSqsClient.sendMessage(sendMsgRequest);
         return this;
     }
@@ -54,8 +57,8 @@ public class SqsProducer implements IQueueProducer {
     /**
      * @return A random unique id.
      */
-    private static String getUniqueId() {
-        return String.valueOf(System.nanoTime()) + "_" + RandomUtil.getRandomString(10);
+    static String getUniqueId() {
+        return System.nanoTime() + "_" + RandomUtil.getRandomString(10);
     }
 
 
