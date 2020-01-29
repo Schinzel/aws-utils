@@ -38,7 +38,7 @@ public class SqsProducer implements IQueueProducer {
     @Override
     public SqsProducer send(String message) {
         Thrower.throwIfVarEmpty(message, "message");
-        String groupId = mGuaranteedOrder ? getUniqueId() : "my_group_id";
+        String groupId = mGuaranteedOrder ? "my_group_id" : "random_group_id_" + getUniqueId();
         SendMessageRequest sendMsgRequest = new SendMessageRequest()
                 .withQueueUrl(mQueueUrl)
                 .withMessageBody(message)
