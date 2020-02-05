@@ -13,7 +13,13 @@ public interface IMessage {
     String getBody();
 
     /**
+     * @return The number of times a message has been read from the queue but not deleted
+     */
+    int getNumberOfTimesRead();
+
+    /**
      * @return This for chaining
      */
     IMessage deleteMessageFromQueue();
+
 }

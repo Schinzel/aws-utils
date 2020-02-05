@@ -61,7 +61,7 @@ public class SqsMessageTest {
 
 
     @Test
-    public void deleteMessageFromQueue_QueueDoesNotExists_Exception(){
+    public void deleteMessageFromQueue_QueueDoesNotExists_Exception() {
         SqsMessage sqsMessage = SqsMessage.builder()
                 .message(new Message())
                 .sqsClient(mQueue.getSqsClient())
@@ -79,5 +79,31 @@ public class SqsMessageTest {
         String messageRead = mQueue.send(messageToWrite).read().getBody();
         assertThat(messageRead).isEqualTo(messageToWrite);
     }
+
+
+    @Test
+    public void numberOfTimesRead_ReadOnce_1() {
+        SqsMessage message = mQueue.send("any message").read();
+        assertThat(message.getNumberOfTimesRead()).isEqualTo(1);
+    }
+
+
+    @Test
+    public void numberOfTimesRead_Read3Times_3() {
+        mQueue.send("any message");
+        //Create a consumer with 1 second visibility timeout instead of 60
+        //so that this tests takes 3 seconds instead of 3 minutes
+        SqsConsumer consumer = new SqsConsumer(
+                PropertiesUtil.AWS_SQS_ACCESS_KEY,
+                PropertiesUtil.AWS_SQS_SECRET_KEY,
+                Regions.EU_WEST_1,
+                mQueue.getQueueName(),
+                1);
+        consumer.getMessage();
+        consumer.getMessage();
+        SqsMessage message = consumer.getMessage();
+        assertThat(message.getNumberOfTimesRead()).isEqualTo(3);
+    }
+
 
 }
