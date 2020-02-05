@@ -21,6 +21,7 @@ public class SqsConsumer implements IQueueConsumer {
     private final ReceiveMessageRequest mReceiveMessageRequest;
 
 
+    @SuppressWarnings("unused")
     @Builder
     SqsConsumer(String awsAccessKey, String awsSecretKey, Regions region, String queueName) {
         this(awsAccessKey, awsSecretKey, region, queueName, VISIBILITY_TIMEOUT_IN_SECONDS);
@@ -38,6 +39,9 @@ public class SqsConsumer implements IQueueConsumer {
         mReceiveMessageRequest = new ReceiveMessageRequest()
                 //URL of the Amazon SQS queue from which messages are received
                 .withQueueUrl(mQueueUrl)
+                //Request that returned messages contains the attribute ApproximateReceiveCount
+                //which states the number of times a message has been read from the queue but not deleted
+                .withAttributeNames("ApproximateReceiveCount")
                 //The maximum number of messages to return.
                 .withMaxNumberOfMessages(1)
                 //The duration the call waits for a message to arrive in the queue before returning.
