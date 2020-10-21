@@ -29,3 +29,40 @@ The X:es and Y:es are replaced with the actual keys.
 AWS_SQS_ACCESS_KEY=XXXX
 AWS_SQS_SECRET_KEY=YYYY
 ```
+
+
+# Releases
+
+## Features added for next release
+- Nothing yet
+
+
+## 0.97
+_2020-10-21_
+- Updated dependency
+
+## 0.96
+_2020-02-25_
+- Added `Message` method `getNumberOfTimesRead` which returns the number of times a message has been read from the queue but not deleted. This can be used to handle messages (for example logging and deleting) whos handling has failed X times after being read from queue.
+
+## 0.95
+_2020-01-29_
+- Added `SqsProducer` property `guaranteedOrder`. 
+    - If set to true, all messages have the same group id. As the queues are FIFO queues no message can be read until the first is deleted. 
+    - If set to false, all messages have a unique group id. This allows the message after the first to be read if the first is invisible. But as the queues are FIFO it is guaranteed that there are no duplicate messages as opposed to standard queues. 
+
+## 0.94
+_2020-01-03_
+- Updated dependencies
+
+## 0.93
+_2019-07-24_
+- Updated dependencies
+
+## 0.92
+_2019-03-30_
+- IS3File methods return IS3File instead of S3File
+
+## 0.9
+_2018-07-10_
+- First version with `S3File` for more intuitive and concise S3 file operations.
