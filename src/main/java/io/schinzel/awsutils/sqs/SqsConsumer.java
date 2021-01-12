@@ -7,6 +7,7 @@ import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import io.schinzel.queue.IQueueConsumer;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import java.util.List;
 
 /**
@@ -14,6 +15,7 @@ import java.util.List;
  *
  * @author Schinzel
  */
+@Accessors(prefix = "m")
 public class SqsConsumer implements IQueueConsumer {
     private static final int VISIBILITY_TIMEOUT_IN_SECONDS = 60;
     private final AmazonSQS mSqsClient;
