@@ -37,6 +37,13 @@ AWS_SQS_SECRET_KEY=YYYY
 - Nothing yet
 
 
+## 1.0
+_2021-01-12_
+- Updated dependency
+- New methods added to `SqsConsumer`
+    - `clone`
+    - `close`
+
 ## 0.97
 _2020-10-21_
 - Updated dependency

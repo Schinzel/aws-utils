@@ -6,7 +6,7 @@ import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import io.schinzel.queue.IQueueConsumer;
 import lombok.Builder;
-
+import lombok.Getter;
 import java.util.List;
 
 /**
@@ -17,6 +17,7 @@ import java.util.List;
 public class SqsConsumer implements IQueueConsumer {
     private static final int VISIBILITY_TIMEOUT_IN_SECONDS = 60;
     private final AmazonSQS mSqsClient;
+    @Getter
     private final String mQueueUrl;
     private final ReceiveMessageRequest mReceiveMessageRequest;
 
@@ -50,6 +51,11 @@ public class SqsConsumer implements IQueueConsumer {
                 .withVisibilityTimeout(visibilityTimeoutInSeconds);
     }
 
+    private SqsConsumer(AmazonSQS sqsClient, String queueUrl, ReceiveMessageRequest receiveMessageRequest) {
+        mSqsClient = sqsClient;
+        mQueueUrl = queueUrl;
+        mReceiveMessageRequest = receiveMessageRequest;
+    }
 
     /**
      * @return A message. The message is made invisible for a period of time. Has to explicitly be deleted from the
@@ -75,4 +81,16 @@ public class SqsConsumer implements IQueueConsumer {
     }
 
 
+    /**
+     *
+     * @return A clone of this consumer
+     */
+    public SqsConsumer clone() {
+        return new SqsConsumer(mSqsClient, mQueueUrl, mReceiveMessageRequest);
+    }
+
+
+    public void close() {
+        mSqsClient.shutdown();
+    }
 }
