@@ -43,6 +43,7 @@ _2021-01-12_
 - New methods added to `SqsConsumer`
     - `clone`
     - `close`
+    - `getQueueUrl`
 
 ## 0.97
 _2020-10-21_
