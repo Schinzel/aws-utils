@@ -6,7 +6,7 @@
 
     <groupId>io.schinzel</groupId>
     <artifactId>aws-utils</artifactId>
-    <version>1.0</version>
+    <version>1.0.1</version>
 
     <name>AWS Utils</name>
     <description>For easy reading from and writing to AWS S3 and SQS</description>
@@ -14,6 +14,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-repo>maven-repo.schinzel.io</maven-repo>
+        <!-- For Sonar Cloud integration -->
+        <sonar.organization>schinzel-github</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
 
@@ -31,8 +34,8 @@
 
     <repositories>
         <repository>
-            <id>${maven-repo}</id>
-            <url>http://${maven-repo}/release</url>
+            <id>maven-repo.schinzel.io</id>
+            <url>https://s3-eu-west-1.amazonaws.com/maven-repo.schinzel.io/release</url>
         </repository>
     </repositories>
 
@@ -44,19 +47,19 @@
             common code snippets -->
             <groupId>io.schinzel</groupId>
             <artifactId>basic-utils</artifactId>
-            <version>1.39</version>
+            <version>1.41</version>
         </dependency>
         <dependency>
             <!-- Amazon's S3 client -->
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.11.699</version>
+            <version>1.12.89</version>
         </dependency>
         <dependency>
             <!-- Amazon's SQS client -->
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-sqs</artifactId>
-            <version>1.11.699</version>
+            <version>1.12.89</version>
         </dependency>
         <!-- DEV DEPENDENCIES -->
         <dependency>
@@ -65,21 +68,21 @@
             https://projectlombok.org/index.html -->
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.0</version>
+            <version>1.18.22</version>
             <scope>provided</scope>
         </dependency>
         <!-- TEST DEPENDENCIES -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <!-- Fluid assertions http://joel-costigliola.github.io/assertj -->
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.12.2</version>
+            <version>3.21.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
