@@ -10,6 +10,7 @@
 
     <name>AWS Utils</name>
     <description>For easy reading from and writing to AWS S3 and SQS</description>
+
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
