@@ -95,13 +95,13 @@
                     <!-- Plug in for attaching sources to deploys -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.0.4</version>
+                    <version>3.2.1</version>
                 </plugin>
                 <plugin>
                     <!-- Plug in for java doc to deploys -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.3</version>
+                    <version>3.3.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
