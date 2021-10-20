@@ -1,5 +1,8 @@
 *.class
 
+##### OS X system file ######
+.DS_Store
+
 # Package Files #
 *.jar
 
@@ -12,5 +15,5 @@ hs_err_pid*
 .idea
 *.iml
 
-# Heroku
+# Environment data
 .env

@@ -1,5 +1,4 @@
 # aws-utils
-[![Build Status](https://travis-ci.org/Schinzel/aws-utils.svg?branch=master)](https://travis-ci.org/Schinzel/aws-utils)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Schinzel_aws-utils&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=Schinzel_aws-utils)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Schinzel_aws-utils&metric=coverage)](https://sonarcloud.io/dashboard?id=Schinzel_aws-utils)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Schinzel_aws-utils&metric=security_rating)](https://sonarcloud.io/dashboard?id=Schinzel_aws-utils)
@@ -36,6 +35,9 @@ AWS_SQS_SECRET_KEY=YYYY
 ## Features added for next release
 - Nothing yet
 
+## 1.0.1
+_2021-10-29_
+- Updated dependencies
 
 ## 1.0
 _2021-01-12_
