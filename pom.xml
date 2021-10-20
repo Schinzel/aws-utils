@@ -11,7 +11,6 @@
     <name>AWS Utils</name>
     <description>For easy reading from and writing to AWS S3 and SQS</description>
 
-    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-repo>maven-repo.schinzel.io</maven-repo>
@@ -92,18 +91,18 @@
     <build>
         <pluginManagement>
             <plugins>
-                <!--<plugin>
-                     Plug in for attaching sources to deploys
+                <plugin>
+                    <!-- Plug in for attaching sources to deploys -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>2.0.4</version>
-                </plugin>-->
-                <!--<plugin>
-                     Plug in for java doc to deploys
+                </plugin>
+                <plugin>
+                    <!-- Plug in for java doc to deploys -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>2.3</version>
-                </plugin>-->
+                </plugin>
             </plugins>
         </pluginManagement>
         <extensions>
@@ -160,8 +159,8 @@
                     </execution>
                 </executions>
             </plugin>-->
-            <!-- <plugin>
-                Attach sources
+            <plugin>
+                <!-- Attach sources -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
@@ -172,9 +171,9 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
-            <!--<plugin>
-                 Attach java doc
+            </plugin>
+            <plugin>
+                <!-- Attach java doc -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
@@ -188,7 +187,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin> -->
+            </plugin>
         </plugins>
     </build>
 
