@@ -32,11 +32,12 @@ AWS_SQS_SECRET_KEY=YYYY
 
 # Releases
 
-## Features added for next release
-- Nothing yet
+## 1.0.2
+_2021-10-22_
+- Updated dependencies
 
 ## 1.0.1
-_2021-10-29_
+_2021-10-21_
 - Updated dependencies
 
 ## 1.0
