@@ -32,6 +32,10 @@ AWS_SQS_SECRET_KEY=YYYY
 
 # Releases
 
+## 1.0.3
+_2022-06-30_
+- Updated dependencies
+
 ## 1.0.2
 _2021-10-22_
 - Updated dependencies
