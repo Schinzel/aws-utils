@@ -6,7 +6,7 @@
 
     <groupId>io.schinzel</groupId>
     <artifactId>aws-utils</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
 
     <name>AWS Utils</name>
     <description>For easy reading from and writing to AWS S3 and SQS</description>

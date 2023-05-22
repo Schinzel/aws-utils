@@ -36,4 +36,13 @@ public interface IS3File {
      * @return This for chaining
      */
     IS3File write(String fileContent);
+
+
+    /**
+     * Writes the argument string to the file
+     *
+     * @param fileContent The content to write
+     * @return This for chaining
+     */
+    IS3File write(byte[] fileContent);
 }

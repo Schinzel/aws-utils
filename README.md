@@ -32,6 +32,11 @@ AWS_SQS_SECRET_KEY=YYYY
 
 # Releases
 
+## 1.0.5
+_2023-05-22_
+- New method added to `S3File`
+    - `write(byte[] fileContent)`
+
 ## 1.0.4
 _2023-03-08_
 - Updated dependencies

@@ -14,7 +14,6 @@ import io.schinzel.basicutils.file.FileReader;
 import io.schinzel.basicutils.thrower.Thrower;
 import lombok.Builder;
 import lombok.experimental.Accessors;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -125,6 +124,17 @@ public class S3File implements IS3File {
 
 
     /**
+     * See [write(String fileContent)]
+     *
+     * @param fileContent The file content to write
+     */
+    @Override
+    public IS3File write(String fileContent) {
+        byte[] contentAsBytes = UTF8.getBytes(fileContent);
+        return this.write(contentAsBytes);
+    }
+
+    /**
      * Uploads the argument content to this S3 file. If a file already exists, it is overwritten.
      * If constructor argument backgroundUploads is set to true, the method returns after a write-operation is
      * commenced but not completed. If backgroundUploads is set to false or not set, this method returns after the
@@ -133,11 +143,10 @@ public class S3File implements IS3File {
      * @param fileContent The file content to write
      */
     @Override
-    public IS3File write(String fileContent) {
-        byte[] contentAsBytes = UTF8.getBytes(fileContent);
+    public IS3File write(byte[] fileContent) {
         try {
-            ByteArrayInputStream contentsAsStream = new ByteArrayInputStream(contentAsBytes);
-            ObjectMetadata metadata = S3File.getMetaData(mFileName, contentAsBytes.length);
+            ByteArrayInputStream contentsAsStream = new ByteArrayInputStream(fileContent);
+            ObjectMetadata metadata = S3File.getMetaData(mFileName, fileContent.length);
             PutObjectRequest putObjectRequest = new PutObjectRequest(mBucketName, mFileName, contentsAsStream, metadata);
             Upload upload = mTransferManager.upload(putObjectRequest);
             if (!mBackgroundWrite) {
