@@ -31,6 +31,12 @@ AWS_SQS_SECRET_KEY=YYYY
 
 
 # Releases
+## 1.0.6
+_2024-10-09_
+- Added support for uploading webp files to S3File. Affected methods:
+  - `write(String fileContent)`
+  - `write(byte[] fileContent)`
+- Updated dependencies
 
 ## 1.0.5
 _2023-05-22_
