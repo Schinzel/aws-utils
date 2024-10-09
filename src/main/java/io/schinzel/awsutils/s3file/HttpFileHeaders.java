@@ -33,6 +33,7 @@ class HttpFileHeaders {
             .put("jpg", "image/jpg")
             .put("jpeg", "image/jpeg")
             .put("gif", "image/gif")
+            .put("webp", "image/webp")
             .build();
 
 

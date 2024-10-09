@@ -101,7 +101,7 @@ public class S3File implements IS3File {
     public boolean exists() {
         try {
             mTransferManager.getAmazonS3Client()
-                    //If file does not exists, this throws an exception
+                    //If file does not exist, this throws an exception
                     .getObjectMetadata(mBucketName, mFileName);
         } catch (AmazonServiceException e) {
             return false;
