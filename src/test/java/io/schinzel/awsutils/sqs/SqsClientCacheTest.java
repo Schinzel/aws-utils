@@ -18,19 +18,19 @@ public class SqsClientCacheTest {
 
     @Before
     public void before() {
-        SqsSqsClientCache.getSingleton().mSqsClientCache.invalidate();
+        SqsClientCache.getSingleton().mSqsClientCache.invalidate();
     }
 
     @After
     public void after() {
-        SqsSqsClientCache.getSingleton().mSqsClientCache.invalidate();
+        SqsClientCache.getSingleton().mSqsClientCache.invalidate();
     }
 
 
     @Test
     public void getSingleton_CalledTwice_SameObject() {
-        SqsClientCache clientCache1 = SqsSqsClientCache.getSingleton();
-        SqsClientCache clientCache2 = SqsSqsClientCache.getSingleton();
+        SqsClientCache clientCache1 = SqsClientCache.getSingleton();
+        SqsClientCache clientCache2 = SqsClientCache.getSingleton();
         assertThat(clientCache1).isEqualTo(clientCache2);
     }
 

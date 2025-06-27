@@ -35,7 +35,7 @@ class QueueUtil {
                 .getQueueUrl(mQueueName, mSqsClient);
         QueueUrlCache.getSingleton().mQueueUrlCache
                 .invalidate();
-        SqsClientCache.getSingleton().mSqsSqsClientCache
+        SqsClientCache.getSingleton().mSqsClientCache
                 .invalidate();
     }
 
