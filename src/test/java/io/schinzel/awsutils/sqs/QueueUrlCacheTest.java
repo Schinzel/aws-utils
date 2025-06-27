@@ -22,22 +22,28 @@ public class QueueUrlCacheTest {
         //Delete queue used in test
         mQueue.deleteQueue();
         //Clear cache
-        QueueUrlCache.getSingleton().mQueueUrlCache.invalidate();
+        QueueUrlCache.getSingleton().clearCache();
     }
 
 
     @Test
     public void getQueueUrl_OneRequest_CacheSizeOne() {
         QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
-        long cacheSize = QueueUrlCache.getSingleton().mQueueUrlCache.cacheSize();
+        long cacheSize = QueueUrlCache.getSingleton().getCacheSize();
         assertThat(cacheSize).isEqualTo(1);
     }
 
     @Test
     public void getQueueUrl_OneRequest_CacheHitsZero() {
+        // Get baseline hit count before test
+        long initialHits = QueueUrlCache.getSingleton().getCacheHits();
+        
         QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
-        long cacheHits = QueueUrlCache.getSingleton().mQueueUrlCache.cacheHits();
-        assertThat(cacheHits).isEqualTo(0);
+        
+        // Calculate hits during this test
+        long hitsAfter = QueueUrlCache.getSingleton().getCacheHits();
+        long testHits = hitsAfter - initialHits;
+        assertThat(testHits).isEqualTo(0);
     }
 
 
@@ -46,18 +52,24 @@ public class QueueUrlCacheTest {
         for (int i = 0; i < 3; i++) {
             QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
         }
-        long cacheSize = QueueUrlCache.getSingleton().mQueueUrlCache.cacheSize();
+        long cacheSize = QueueUrlCache.getSingleton().getCacheSize();
         assertThat(cacheSize).isEqualTo(1);
     }
 
 
     @Test
     public void getQueueUrl_ThreeRequests_CacheHitsTwo() {
+        // Get baseline hit count before test
+        long initialHits = QueueUrlCache.getSingleton().getCacheHits();
+        
         for (int i = 0; i < 3; i++) {
             QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
         }
-        long cacheHits = QueueUrlCache.getSingleton().mQueueUrlCache.cacheHits();
-        assertThat(cacheHits).isEqualTo(2);
+        
+        // Calculate hits during this test
+        long hitsAfter = QueueUrlCache.getSingleton().getCacheHits();
+        long testHits = hitsAfter - initialHits;
+        assertThat(testHits).isEqualTo(2);
     }
 
 

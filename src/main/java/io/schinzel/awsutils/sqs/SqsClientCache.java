@@ -4,10 +4,12 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
-import io.schinzel.basicutils.collections.Cache;
 import io.schinzel.basicutils.thrower.Thrower;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The purpose of this class to hold a cache of SQS clients.
@@ -32,7 +34,11 @@ class SqsClientCache {
 
 
     /** Cache of SQS clients */
-    final Cache<String, SqsClient> mSqsClientCache = new Cache<>();
+    private final Cache<String, SqsClient> mSqsClientCache = CacheBuilder.newBuilder()
+            .maximumSize(100)
+            .expireAfterAccess(1, TimeUnit.HOURS)
+            .recordStats()
+            .build();
     
     /** Set to track all created clients for proper shutdown */
     private final Set<SqsClient> mCreatedClients = ConcurrentHashMap.newKeySet();
@@ -51,23 +57,24 @@ class SqsClientCache {
                 .throwIfVarNull(region, "region");
         //Construct a cache key
         String cacheKey = awsAccessKey + region.id();
-        //If the cache has an entry for the cache key
-        if (mSqsClientCache.has(cacheKey)) {
-            //Get and return the cached instance
-            return mSqsClientCache.get(cacheKey);
-        } else {
-            AwsBasicCredentials credentials = AwsBasicCredentials.create(awsAccessKey, awsSecretKey);
-            StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);
-            //Construct a new sqs client
-            SqsClient sqsClient = SqsClient.builder()
-                    .credentialsProvider(credentialsProvider)
-                    .region(region)
-                    .build();
-            //Add client to cache and track for shutdown
-            mSqsClientCache.put(cacheKey, sqsClient);
-            mCreatedClients.add(sqsClient);
-            return sqsClient;
+        //Try to get from cache first
+        SqsClient cachedClient = mSqsClientCache.getIfPresent(cacheKey);
+        if (cachedClient != null) {
+            return cachedClient;
         }
+        
+        //Create new client if not in cache
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(awsAccessKey, awsSecretKey);
+        StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);
+        SqsClient sqsClient = SqsClient.builder()
+                .credentialsProvider(credentialsProvider)
+                .region(region)
+                .build();
+        
+        //Add client to cache and track for shutdown
+        mSqsClientCache.put(cacheKey, sqsClient);
+        mCreatedClients.add(sqsClient);
+        return sqsClient;
     }
 
     /**
@@ -77,7 +84,40 @@ class SqsClientCache {
         // Close all created SQS clients
         mCreatedClients.forEach(SqsClient::close);
         mCreatedClients.clear();
-        // Invalidate the cache
-        mSqsClientCache.invalidate();
+        // Invalidate the cache (this will trigger removal listeners)
+        mSqsClientCache.invalidateAll();
+    }
+    
+    /**
+     * Package-private method for testing purposes.
+     * @return Current cache size
+     */
+    long getCacheSize() {
+        return mSqsClientCache.size();
+    }
+    
+    /**
+     * Package-private method for testing purposes.
+     * @return Number of cache hits
+     */
+    long getCacheHits() {
+        return mSqsClientCache.stats().hitCount();
+    }
+    
+    /**
+     * Package-private method for testing purposes.
+     * Clear the cache without closing clients
+     */
+    void clearCache() {
+        mSqsClientCache.invalidateAll();
+    }
+    
+    /**
+     * Package-private method for testing purposes.
+     * Clear cache stats for test isolation
+     */
+    void clearStats() {
+        // Unfortunately Guava doesn't provide a way to reset stats
+        // We'll need to work around this in tests
     }
 }

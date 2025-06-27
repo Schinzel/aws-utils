@@ -18,12 +18,12 @@ public class SqsClientCacheTest {
 
     @Before
     public void before() {
-        SqsClientCache.getSingleton().mSqsClientCache.invalidate();
+        SqsClientCache.getSingleton().clearCache();
     }
 
     @After
     public void after() {
-        SqsClientCache.getSingleton().mSqsClientCache.invalidate();
+        SqsClientCache.getSingleton().clearCache();
     }
 
 
@@ -37,11 +37,18 @@ public class SqsClientCacheTest {
 
     @Test
     public void getSqsClient_SameClientRequestedThreeTimes_CacheHitTwo() {
+        // Get baseline hit count before test
+        long initialHits = SqsClientCache.getSingleton().getCacheHits();
+        
         for (int i = 0; i < 3; i++) {
             SqsClientCache.getSingleton()
                     .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.EU_WEST_1);
         }
-        assertThat(SqsClientCache.getSingleton().mSqsClientCache.cacheHits()).isEqualTo(2);
+        
+        // Calculate hits during this test
+        long hitsAfter = SqsClientCache.getSingleton().getCacheHits();
+        long testHits = hitsAfter - initialHits;
+        assertThat(testHits).isEqualTo(2);
     }
 
 
@@ -61,7 +68,7 @@ public class SqsClientCacheTest {
             SqsClientCache.getSingleton()
                     .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.EU_WEST_1);
         }
-        assertThat(SqsClientCache.getSingleton().mSqsClientCache.cacheSize()).isEqualTo(1);
+        assertThat(SqsClientCache.getSingleton().getCacheSize()).isEqualTo(1);
     }
 
 
@@ -80,7 +87,7 @@ public class SqsClientCacheTest {
                 .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.EU_WEST_1);
         SqsClientCache.getSingleton()
                 .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.US_EAST_1);
-        assertThat(SqsClientCache.getSingleton().mSqsClientCache.cacheSize()).isEqualTo(2);
+        assertThat(SqsClientCache.getSingleton().getCacheSize()).isEqualTo(2);
     }
 
 
@@ -129,13 +136,13 @@ public class SqsClientCacheTest {
         SqsClientCache.getSingleton()
                 .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.US_EAST_1);
         
-        assertThat(SqsClientCache.getSingleton().mSqsClientCache.cacheSize()).isEqualTo(2);
+        assertThat(SqsClientCache.getSingleton().getCacheSize()).isEqualTo(2);
         
         // Shutdown
         SqsClientCache.getSingleton().shutdown();
         
         // Verify cache is cleared
-        assertThat(SqsClientCache.getSingleton().mSqsClientCache.cacheSize()).isEqualTo(0);
+        assertThat(SqsClientCache.getSingleton().getCacheSize()).isEqualTo(0);
     }
 
     @Test
@@ -172,7 +179,7 @@ public class SqsClientCacheTest {
         
         // Should be different instances (old one was closed)
         assertThat(client1).isNotSameAs(client2);
-        assertThat(SqsClientCache.getSingleton().mSqsClientCache.cacheSize()).isEqualTo(1);
+        assertThat(SqsClientCache.getSingleton().getCacheSize()).isEqualTo(1);
     }
 
 }

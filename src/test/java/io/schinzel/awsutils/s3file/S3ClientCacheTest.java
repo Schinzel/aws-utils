@@ -18,12 +18,12 @@ public class S3ClientCacheTest {
 
     @Before
     public void before() {
-        S3ClientCache.getSingleton().mS3ClientCache.invalidate();
+        S3ClientCache.getSingleton().clearCache();
     }
 
     @After
     public void after() {
-        S3ClientCache.getSingleton().mS3ClientCache.invalidate();
+        S3ClientCache.getSingleton().clearCache();
     }
 
 
@@ -37,11 +37,18 @@ public class S3ClientCacheTest {
 
     @Test
     public void getS3Client_SameClientRequestedThreeTimes_CacheHitTwo() {
+        // Get baseline hit count before test
+        long initialHits = S3ClientCache.getSingleton().getCacheHits();
+        
         for (int i = 0; i < 3; i++) {
             S3ClientCache.getSingleton()
                     .getS3Client("test-access-key", "test-secret-key", Region.EU_WEST_1);
         }
-        assertThat(S3ClientCache.getSingleton().mS3ClientCache.cacheHits()).isEqualTo(2);
+        
+        // Calculate hits during this test
+        long hitsAfter = S3ClientCache.getSingleton().getCacheHits();
+        long testHits = hitsAfter - initialHits;
+        assertThat(testHits).isEqualTo(2);
     }
 
 
@@ -61,7 +68,7 @@ public class S3ClientCacheTest {
             S3ClientCache.getSingleton()
                     .getS3Client("test-access-key", "test-secret-key", Region.EU_WEST_1);
         }
-        assertThat(S3ClientCache.getSingleton().mS3ClientCache.cacheSize()).isEqualTo(1);
+        assertThat(S3ClientCache.getSingleton().getCacheSize()).isEqualTo(1);
     }
 
 
@@ -71,7 +78,7 @@ public class S3ClientCacheTest {
                 .getS3Client("test-access-key", "test-secret-key", Region.EU_WEST_1);
         S3ClientCache.getSingleton()
                 .getS3Client("test-access-key", "test-secret-key", Region.US_EAST_1);
-        assertThat(S3ClientCache.getSingleton().mS3ClientCache.cacheSize()).isEqualTo(2);
+        assertThat(S3ClientCache.getSingleton().getCacheSize()).isEqualTo(2);
     }
 
 
@@ -120,13 +127,13 @@ public class S3ClientCacheTest {
         S3ClientCache.getSingleton()
                 .getS3Client("test-access-key", "test-secret-key", Region.US_EAST_1);
         
-        assertThat(S3ClientCache.getSingleton().mS3ClientCache.cacheSize()).isEqualTo(2);
+        assertThat(S3ClientCache.getSingleton().getCacheSize()).isEqualTo(2);
         
         // Shutdown
         S3ClientCache.getSingleton().shutdown();
         
         // Verify cache is cleared
-        assertThat(S3ClientCache.getSingleton().mS3ClientCache.cacheSize()).isEqualTo(0);
+        assertThat(S3ClientCache.getSingleton().getCacheSize()).isEqualTo(0);
     }
 
     @Test
@@ -163,6 +170,6 @@ public class S3ClientCacheTest {
         
         // Should be different instances (old one was closed)
         assertThat(client1).isNotSameAs(client2);
-        assertThat(S3ClientCache.getSingleton().mS3ClientCache.cacheSize()).isEqualTo(1);
+        assertThat(S3ClientCache.getSingleton().getCacheSize()).isEqualTo(1);
     }
 }

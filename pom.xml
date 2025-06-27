@@ -67,6 +67,12 @@
             <artifactId>sqs</artifactId>
             <version>2.31.71</version>
         </dependency>
+        <dependency>
+            <!-- Google Guava for thread-safe caching -->
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.4.0-jre</version>
+        </dependency>
         <!-- DEV DEPENDENCIES -->
         <dependency>
             <!-- Annotations that generates getters, setters and more that

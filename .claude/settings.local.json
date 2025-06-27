@@ -11,7 +11,8 @@
       "mcp__zen__debug",
       "mcp__zen__thinkdeep",
       "Bash(mv:*)",
-      "mcp__zen__chat"
+      "mcp__zen__chat",
+      "mcp__zen__analyze"
     ],
     "deny": []
   }

@@ -33,10 +33,8 @@ class QueueUtil {
                 .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, REGION);
         mQueueUrl = QueueUrlCache.getSingleton()
                 .getQueueUrl(mQueueName, mSqsClient);
-        QueueUrlCache.getSingleton().mQueueUrlCache
-                .invalidate();
-        SqsClientCache.getSingleton().mSqsClientCache
-                .invalidate();
+        QueueUrlCache.getSingleton().clearCache();
+        SqsClientCache.getSingleton().clearCache();
     }
 
 
