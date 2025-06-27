@@ -1,8 +1,7 @@
 package io.schinzel.awsutils.sqs;
 
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.CreateQueueRequest;
-import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.*;
 import com.google.common.collect.ImmutableMap;
 import io.schinzel.basicutils.collections.Cache;
 import io.schinzel.basicutils.thrower.Thrower;
@@ -41,7 +40,7 @@ class QueueUrlCache {
      * @param sqsClient The SQS client. Is required as it is used to look up the queue URL if there is no cache hit.
      * @return The URL for the SQS queue with the argument name.
      */
-    String getQueueUrl(String queueName, AmazonSQS sqsClient) {
+    String getQueueUrl(String queueName, SqsClient sqsClient) {
         Thrower.createInstance()
                 .throwIfVarEmpty(queueName, "queueName")
                 .throwIfVarNull(sqsClient, "sqsClient")
@@ -55,7 +54,10 @@ class QueueUrlCache {
             String queueUrl;
             try {
                 //Get the URL from an existing queue
-                queueUrl = sqsClient.getQueueUrl(queueName).getQueueUrl();
+                GetQueueUrlResponse response = sqsClient.getQueueUrl(GetQueueUrlRequest.builder()
+                        .queueName(queueName)
+                        .build());
+                queueUrl = response.queueUrl();
             } catch (QueueDoesNotExistException e) {
                 //If there was no queue with the argument name an exception was thrown
                 //Create a queue
@@ -73,19 +75,20 @@ class QueueUrlCache {
      * @param sqsClient An AWS SQS client
      * @return The name of the newly created queue
      */
-    static synchronized String createQueue(String queueName, AmazonSQS sqsClient) {
+    static synchronized String createQueue(String queueName, SqsClient sqsClient) {
         //Compile attributes for queue
-        Map<String, String> queueAttributes = ImmutableMap.<String, String>builder()
-                .put("FifoQueue", "true")
-                .put("ContentBasedDeduplication", "false")
+        Map<QueueAttributeName, String> queueAttributes = ImmutableMap.<QueueAttributeName, String>builder()
+                .put(QueueAttributeName.FIFO_QUEUE, "true")
+                .put(QueueAttributeName.CONTENT_BASED_DEDUPLICATION, "false")
                 .build();
         //Create a queue request
-        CreateQueueRequest createQueueRequest = new CreateQueueRequest(queueName)
-                .withAttributes(queueAttributes);
+        CreateQueueRequest createQueueRequest = CreateQueueRequest.builder()
+                .queueName(queueName)
+                .attributes(queueAttributes)
+                .build();
         //Create queue and return the url of the newly created queue
-        return sqsClient
-                .createQueue(createQueueRequest)
-                .getQueueUrl();
+        CreateQueueResponse response = sqsClient.createQueue(createQueueRequest);
+        return response.queueUrl();
     }
 
 }

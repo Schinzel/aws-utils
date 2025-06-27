@@ -1,11 +1,10 @@
 package io.schinzel.awsutils.sqs;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.sqs.SqsClient;
 import io.schinzel.basicutils.collections.Cache;
 import io.schinzel.basicutils.thrower.Thrower;
 
@@ -32,7 +31,7 @@ class ClientCache {
 
 
     /** Cache of SQS clients */
-    final Cache<String, AmazonSQS> mSqsClientCache = new Cache<>();
+    final Cache<String, SqsClient> mSqsClientCache = new Cache<>();
 
 
     /**
@@ -41,7 +40,7 @@ class ClientCache {
      * @param region       The region in which to
      * @return An Amazon SQS client.
      */
-    AmazonSQS getSqsClient(String awsAccessKey, String awsSecretKey, Regions region) {
+    SqsClient getSqsClient(String awsAccessKey, String awsSecretKey, Regions region) {
         Thrower.createInstance()
                 .throwIfVarEmpty(awsAccessKey, "awsAccessKey")
                 .throwIfVarEmpty(awsSecretKey, "awsSecretKey")
@@ -53,13 +52,14 @@ class ClientCache {
             //Get and return the cached instance
             return mSqsClientCache.get(cacheKey);
         } else {
-            AWSCredentials credentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
-            AWSStaticCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(credentials);
+            AwsBasicCredentials credentials = AwsBasicCredentials.create(awsAccessKey, awsSecretKey);
+            StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);
+            // Convert SDK v1 Regions to SDK v2 Region
+            Region regionV2 = Region.of(region.getName());
             //Construct a new sqs client
-            AmazonSQS sqsClient = AmazonSQSClientBuilder
-                    .standard()
-                    .withCredentials(credentialsProvider)
-                    .withRegion(region)
+            SqsClient sqsClient = SqsClient.builder()
+                    .credentialsProvider(credentialsProvider)
+                    .region(regionV2)
                     .build();
             //Add client to cache
             mSqsClientCache.put(cacheKey, sqsClient);

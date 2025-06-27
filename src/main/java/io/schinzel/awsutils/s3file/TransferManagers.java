@@ -1,12 +1,11 @@
 package io.schinzel.awsutils.s3file;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import io.schinzel.basicutils.collections.Cache;
 import lombok.experimental.Accessors;
 import lombok.val;
@@ -20,7 +19,7 @@ import lombok.val;
 @Accessors(prefix = "m")
 public class TransferManagers {
     /** Holds a collection of transfer managers. Key is AWS access key and region. */
-    final Cache<String, TransferManager> mTransferManagers = new Cache<>();
+    final Cache<String, S3TransferManager> mTransferManagers = new Cache<>();
 
 
     private static class Holder {
@@ -38,8 +37,8 @@ public class TransferManagers {
      * @param awsSecretKey The AWS secret key
      * @return A newly created or previously cached transfer manager instance
      */
-    TransferManager getTransferManager(String awsAccessKey, String awsSecretKey, Regions region) {
-        String cache_key = awsAccessKey + "_" + region.getName();
+    S3TransferManager getTransferManager(String awsAccessKey, String awsSecretKey, Region region) {
+        String cache_key = awsAccessKey + "_" + region.id();
         return mTransferManagers.has(cache_key)
                 ? mTransferManagers.get(cache_key)
                 : mTransferManagers.putAndGet(cache_key, createTransferManager(awsAccessKey, awsSecretKey, region));
@@ -54,7 +53,7 @@ public class TransferManagers {
      */
     public TransferManagers shutdown() {
         mTransferManagers.getKeys().stream()
-                .forEach(k -> mTransferManagers.get(k).shutdownNow(true));
+                .forEach(k -> mTransferManagers.get(k).close());
         mTransferManagers.invalidate();
         return this;
     }
@@ -65,17 +64,15 @@ public class TransferManagers {
      * @param awsSecretKey The AWS secret key
      * @return An newly created AWS S3 transfer manager
      */
-    private static TransferManager createTransferManager(String awsAccessKey, String awsSecretKey, Regions region) {
-        val basicAWSCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
-        val awsStaticCredentialsProvider = new AWSStaticCredentialsProvider(basicAWSCredentials);
-        AmazonS3 s3client = AmazonS3ClientBuilder
-                .standard()
-                .withCredentials(awsStaticCredentialsProvider)
-                .withRegion(region)
+    private static S3TransferManager createTransferManager(String awsAccessKey, String awsSecretKey, Region region) {
+        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(awsAccessKey, awsSecretKey);
+        StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(awsCredentials);
+        S3AsyncClient s3AsyncClient = S3AsyncClient.builder()
+                .credentialsProvider(credentialsProvider)
+                .region(region)
                 .build();
-        return TransferManagerBuilder
-                .standard()
-                .withS3Client(s3client)
+        return S3TransferManager.builder()
+                .s3Client(s3AsyncClient)
                 .build();
     }
 

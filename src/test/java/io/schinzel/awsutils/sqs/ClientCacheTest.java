@@ -1,7 +1,7 @@
 package io.schinzel.awsutils.sqs;
 
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.sqs.AmazonSQS;
+import software.amazon.awssdk.services.sqs.SqsClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,9 +47,9 @@ public class ClientCacheTest {
 
     @Test
     public void getSqsClient_SameClientRequestedTwice_SameObject() {
-        AmazonSQS amazonSQS1 = ClientCache.getSingleton()
+        SqsClient amazonSQS1 = ClientCache.getSingleton()
                 .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Regions.EU_WEST_1);
-        AmazonSQS amazonSQS2 = ClientCache.getSingleton()
+        SqsClient amazonSQS2 = ClientCache.getSingleton()
                 .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Regions.EU_WEST_1);
         assertThat(amazonSQS1).isEqualTo(amazonSQS2);
     }

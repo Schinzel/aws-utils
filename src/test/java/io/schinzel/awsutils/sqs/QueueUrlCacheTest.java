@@ -1,7 +1,8 @@
 package io.schinzel.awsutils.sqs;
 
-import com.amazonaws.services.sqs.model.GetQueueAttributesRequest;
-import com.amazonaws.services.sqs.model.GetQueueAttributesResult;
+import software.amazon.awssdk.services.sqs.model.GetQueueAttributesRequest;
+import software.amazon.awssdk.services.sqs.model.GetQueueAttributesResponse;
+import software.amazon.awssdk.services.sqs.model.QueueAttributeName;
 import io.schinzel.basicutils.RandomUtil;
 import org.junit.After;
 import org.junit.Test;
@@ -93,13 +94,14 @@ public class QueueUrlCacheTest {
     private String createQueueAndGetProperty(String propertyKey) {
         String queueName = QueueUrlCache.class.getSimpleName() + "_" + RandomUtil.getRandomString(5) + ".fifo";
         String queueUrl = QueueUrlCache.createQueue(queueName, mQueue.getSqsClient());
-        GetQueueAttributesRequest getQueueAttributesRequest
-                = new GetQueueAttributesRequest(queueUrl)
-                .withAttributeNames("All");
-        GetQueueAttributesResult getQueueAttributesResult = mQueue.getSqsClient()
+        GetQueueAttributesRequest getQueueAttributesRequest = GetQueueAttributesRequest.builder()
+                .queueUrl(queueUrl)
+                .attributeNames(QueueAttributeName.ALL)
+                .build();
+        GetQueueAttributesResponse getQueueAttributesResult = mQueue.getSqsClient()
                 .getQueueAttributes(getQueueAttributesRequest);
-        String propertyValue = getQueueAttributesResult.getAttributes().get(propertyKey);
-        mQueue.getSqsClient().deleteQueue(queueUrl);
+        String propertyValue = getQueueAttributesResult.attributes().get(QueueAttributeName.fromValue(propertyKey));
+        mQueue.getSqsClient().deleteQueue(builder -> builder.queueUrl(queueUrl));
         return propertyValue;
     }
 }

@@ -1,6 +1,8 @@
 package io.schinzel.awsutils.s3file;
 
-import com.amazonaws.services.s3.transfer.TransferManager;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,15 +40,21 @@ class BucketCache {
      * @param bucketName      The name of a bucket
      * @return True if the argument bucket exists, else false
      */
-    static boolean doesBucketExist(TransferManager transferManager, String bucketName) {
+    static boolean doesBucketExist(S3Client s3Client, String bucketName) {
         //If buckets cache contains the argument bucket name
         if (EXISTING_BUCKETS_CACHE.contains(bucketName)) {
             return true;
         }
         //Set if bucket exists on S3 or not
-        boolean bucketExistsOnS3 = transferManager
-                .getAmazonS3Client()
-                .doesBucketExistV2(bucketName);
+        boolean bucketExistsOnS3;
+        try {
+            s3Client.headBucket(HeadBucketRequest.builder()
+                    .bucket(bucketName)
+                    .build());
+            bucketExistsOnS3 = true;
+        } catch (NoSuchBucketException e) {
+            bucketExistsOnS3 = false;
+        }
         //If bucket did exist on S3
         if (bucketExistsOnS3) {
             //Add it to cache

@@ -26,6 +26,12 @@ AWS_SQS_SECRET_KEY=YYYY
 
 
 # Releases
+
+## 1.0.7
+_2025-06-27_
+- Migrated from AWS SDK v1 to v2
+- Updated all dependencies
+
 ## 1.0.6
 _2024-10-09_
 - Added support for uploading webp files to S3File. Affected methods:

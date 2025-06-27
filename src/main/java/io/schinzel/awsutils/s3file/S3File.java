@@ -1,14 +1,19 @@
 package io.schinzel.awsutils.s3file;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.Upload;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.async.AsyncRequestBody;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.exception.SdkServiceException;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.transfer.s3.S3TransferManager;
+import software.amazon.awssdk.transfer.s3.model.*;
 import io.schinzel.basicutils.UTF8;
+import java.util.concurrent.CompletionException;
 import io.schinzel.basicutils.file.Bytes;
 import io.schinzel.basicutils.file.FileReader;
 import io.schinzel.basicutils.thrower.Thrower;
@@ -30,7 +35,9 @@ public class S3File implements IS3File {
     /** The name of the bucket in which this file resides */
     private final String mBucketName;
     /** Transfers data to/from S3 */
-    private final TransferManager mTransferManager;
+    private final S3TransferManager mTransferManager;
+    /** S3 client for non-transfer operations */
+    private final S3Client mS3Client;
     /** If true, write method does the write operation in the in background. */
     private final boolean mBackgroundWrite;
 
@@ -45,9 +52,17 @@ public class S3File implements IS3File {
         mFileName = fileName;
         mBucketName = bucketName;
         mBackgroundWrite = backgroundWrite;
+        // Convert SDK v1 Regions to SDK v2 Region
+        Region regionV2 = Region.of(region.getName());
         mTransferManager = TransferManagers.getInstance()
-                .getTransferManager(awsAccessKey, awsSecretKey, region);
-        boolean bucketExists = BucketCache.doesBucketExist(mTransferManager, bucketName);
+                .getTransferManager(awsAccessKey, awsSecretKey, regionV2);
+        // Create S3Client for non-transfer operations
+        mS3Client = S3Client.builder()
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(awsAccessKey, awsSecretKey)))
+                .region(regionV2)
+                .build();
+        boolean bucketExists = BucketCache.doesBucketExist(mS3Client, bucketName);
         Thrower.throwIfFalse(bucketExists).message("No bucket named '" + bucketName + "' exists");
     }
 
@@ -81,14 +96,22 @@ public class S3File implements IS3File {
 
     private void downloadFileContentIntoTempFile(File tempFile) throws InterruptedException, IOException {
         try {
-            mTransferManager
-                    .download(mBucketName, mFileName, tempFile)
-                    .waitForCompletion();
-        } catch (AmazonS3Exception e) {
-            //If there was no such file
-            if (e.getStatusCode() == 404) {
+            DownloadFileRequest downloadFileRequest = DownloadFileRequest.builder()
+                    .getObjectRequest(GetObjectRequest.builder()
+                            .bucket(mBucketName)
+                            .key(mFileName)
+                            .build())
+                    .destination(tempFile.toPath())
+                    .build();
+            FileDownload download = mTransferManager.downloadFile(downloadFileRequest);
+            download.completionFuture().join();
+        } catch (CompletionException e) {
+            if (e.getCause() instanceof NoSuchKeyException) {
+                //If there was no such file
                 //Create empty file
                 tempFile.createNewFile();
+            } else {
+                throw e;
             }
         }
     }
@@ -100,10 +123,11 @@ public class S3File implements IS3File {
     @Override
     public boolean exists() {
         try {
-            mTransferManager.getAmazonS3Client()
-                    //If file does not exist, this throws an exception
-                    .getObjectMetadata(mBucketName, mFileName);
-        } catch (AmazonServiceException e) {
+            mS3Client.headObject(HeadObjectRequest.builder()
+                    .bucket(mBucketName)
+                    .key(mFileName)
+                    .build());
+        } catch (NoSuchKeyException e) {
             return false;
         }
         return true;
@@ -116,8 +140,10 @@ public class S3File implements IS3File {
     @Override
     public IS3File delete() {
         if (this.exists()) {
-            mTransferManager.getAmazonS3Client()
-                    .deleteObject(mBucketName, mFileName);
+            mS3Client.deleteObject(DeleteObjectRequest.builder()
+                    .bucket(mBucketName)
+                    .key(mFileName)
+                    .build());
         }
         return this;
     }
@@ -145,31 +171,27 @@ public class S3File implements IS3File {
     @Override
     public IS3File write(byte[] fileContent) {
         try {
-            ByteArrayInputStream contentsAsStream = new ByteArrayInputStream(fileContent);
-            ObjectMetadata metadata = S3File.getMetaData(mFileName, fileContent.length);
-            PutObjectRequest putObjectRequest = new PutObjectRequest(mBucketName, mFileName, contentsAsStream, metadata);
-            Upload upload = mTransferManager.upload(putObjectRequest);
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(mBucketName)
+                    .key(mFileName)
+                    .contentType(HttpFileHeaders.getFileHeader(mFileName))
+                    .cacheControl("public, max-age=2592000")
+                    .contentLength((long) fileContent.length)
+                    .build();
+            
+            Upload upload = mTransferManager.upload(UploadRequest.builder()
+                    .putObjectRequest(putObjectRequest)
+                    .requestBody(AsyncRequestBody.fromBytes(fileContent))
+                    .build());
+            
             if (!mBackgroundWrite) {
-                upload.waitForCompletion();
+                upload.completionFuture().join();
             }
             return this;
-        } catch (AmazonClientException | InterruptedException ex) {
+        } catch (SdkClientException ex) {
             throw new RuntimeException("Problems uploading to S3! " + ex.getMessage());
         }
     }
 
 
-    /**
-     * @param fileName          The name of the file
-     * @param fileContentLength The file content length
-     * @return A file meta data object for setting meta data in uploads
-     */
-    private static ObjectMetadata getMetaData(String fileName, int fileContentLength) {
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(fileContentLength);
-        metadata.setContentType(HttpFileHeaders.getFileHeader(fileName));
-        //Set file to be cached by browser for 30 days
-        metadata.setCacheControl("public, max-age=2592000");
-        return metadata;
-    }
 }

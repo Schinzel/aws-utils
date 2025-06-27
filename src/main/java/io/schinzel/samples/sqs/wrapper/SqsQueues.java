@@ -13,11 +13,13 @@ import lombok.experimental.Accessors;
  * @author Schinzel
  */
 @Accessors(prefix = "m")
-@RequiredArgsConstructor
 public enum SqsQueues implements IQueueName {
     SEND_SMS("my_first_queue.fifo");
 
-
     @Getter
     private final String mQueueName;
+
+    SqsQueues(String queueName) {
+        this.mQueueName = queueName;
+    }
 }

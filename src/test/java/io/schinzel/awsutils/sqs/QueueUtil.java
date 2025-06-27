@@ -1,9 +1,10 @@
 package io.schinzel.awsutils.sqs;
 
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.GetQueueAttributesRequest;
-import com.amazonaws.services.sqs.model.GetQueueAttributesResult;
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.GetQueueAttributesRequest;
+import software.amazon.awssdk.services.sqs.model.GetQueueAttributesResponse;
+import software.amazon.awssdk.services.sqs.model.QueueAttributeName;
 import io.schinzel.basicutils.RandomUtil;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -18,7 +19,7 @@ import lombok.experimental.Accessors;
 class QueueUtil {
     private static final Regions REGION = Regions.EU_WEST_1;
     @Getter
-    private final AmazonSQS mSqsClient;
+    private final SqsClient mSqsClient;
     @Getter
     private final String mQueueName;
     @Getter
@@ -63,18 +64,19 @@ class QueueUtil {
 
 
     int getNumberOfMessages() {
-        GetQueueAttributesRequest getQueueAttributesRequest
-                = new GetQueueAttributesRequest(mQueueUrl)
-                .withAttributeNames("All");
-        GetQueueAttributesResult getQueueAttributesResult = mSqsClient
+        GetQueueAttributesRequest getQueueAttributesRequest = GetQueueAttributesRequest.builder()
+                .queueUrl(mQueueUrl)
+                .attributeNames(QueueAttributeName.ALL)
+                .build();
+        GetQueueAttributesResponse getQueueAttributesResult = mSqsClient
                 .getQueueAttributes(getQueueAttributesRequest);
-        String numberOfMessage = getQueueAttributesResult.getAttributes().get("ApproximateNumberOfMessages");
+        String numberOfMessage = getQueueAttributesResult.attributes().get(QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES);
         return Integer.valueOf(numberOfMessage);
     }
 
 
     void deleteQueue() {
-        mSqsClient.deleteQueue(mQueueUrl);
+        mSqsClient.deleteQueue(builder -> builder.queueUrl(mQueueUrl));
     }
 
 }

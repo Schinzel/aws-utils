@@ -1,8 +1,8 @@
 package io.schinzel.awsutils.sqs;
 
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.sqs.model.Message;
-import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
+import software.amazon.awssdk.services.sqs.model.Message;
+import software.amazon.awssdk.services.sqs.model.QueueDoesNotExistException;
 import io.schinzel.basicutils.RandomUtil;
 import io.schinzel.basicutils.Sandman;
 import org.junit.After;
@@ -63,7 +63,7 @@ public class SqsMessageTest {
     @Test
     public void deleteMessageFromQueue_QueueDoesNotExists_Exception() {
         SqsMessage sqsMessage = SqsMessage.builder()
-                .message(new Message())
+                .message(Message.builder().build())
                 .sqsClient(mQueue.getSqsClient())
                 .queueUrl("I_do_not_exist")
                 .build();
