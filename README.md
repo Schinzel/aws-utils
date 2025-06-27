@@ -1,9 +1,4 @@
 # aws-utils
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Schinzel_aws-utils&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=Schinzel_aws-utils)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Schinzel_aws-utils&metric=coverage)](https://sonarcloud.io/dashboard?id=Schinzel_aws-utils)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Schinzel_aws-utils&metric=security_rating)](https://sonarcloud.io/dashboard?id=Schinzel_aws-utils)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=Schinzel_aws-utils&metric=sqale_index)](https://sonarcloud.io/dashboard?id=Schinzel_aws-utils)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Schinzel_aws-utils&metric=ncloc)](https://sonarcloud.io/dashboard?id=Schinzel_aws-utils)
 
 More intuitive and concise code for AWS S3 and SQS operations.
 
