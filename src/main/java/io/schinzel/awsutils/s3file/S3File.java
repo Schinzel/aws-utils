@@ -82,9 +82,15 @@ public class S3File implements IS3File {
             this.downloadFileContentIntoTempFile(tempFile);
             //Read content in temp file and return it
             return FileReader.read(tempFile);
+        } catch (S3Exception e) {
+            String exceptionMessage = String.format("S3 error when reading file '%s' from bucket '%s': ", mFileName, mBucketName);
+            throw new RuntimeException(exceptionMessage + e.getMessage(), e);
+        } catch (IOException e) {
+            String exceptionMessage = String.format("IO error when reading S3 file '%s' from bucket '%s': ", mFileName, mBucketName);
+            throw new RuntimeException(exceptionMessage + e.getMessage(), e);
         } catch (Exception e) {
-            String exceptionMessage = String.format("Problems when reading S3 file '%s' from bucket '%s'. ", mFileName, mBucketName);
-            throw new RuntimeException(exceptionMessage + e.getMessage());
+            String exceptionMessage = String.format("Unexpected error when reading S3 file '%s' from bucket '%s': ", mFileName, mBucketName);
+            throw new RuntimeException(exceptionMessage + e.getMessage(), e);
         }
     }
 
@@ -193,8 +199,15 @@ public class S3File implements IS3File {
                 upload.completionFuture().join();
             }
             return this;
-        } catch (SdkClientException ex) {
-            throw new RuntimeException("Problems uploading to S3! " + ex.getMessage());
+        } catch (S3Exception e) {
+            String exceptionMessage = String.format("S3 error when uploading file '%s' to bucket '%s': ", mFileName, mBucketName);
+            throw new RuntimeException(exceptionMessage + e.getMessage(), e);
+        } catch (SdkClientException e) {
+            String exceptionMessage = String.format("SDK error when uploading file '%s' to bucket '%s': ", mFileName, mBucketName);
+            throw new RuntimeException(exceptionMessage + e.getMessage(), e);
+        } catch (Exception e) {
+            String exceptionMessage = String.format("Unexpected error when uploading file '%s' to bucket '%s': ", mFileName, mBucketName);
+            throw new RuntimeException(exceptionMessage + e.getMessage(), e);
         }
     }
 
