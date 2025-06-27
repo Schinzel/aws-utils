@@ -36,7 +36,6 @@ class BucketCache {
 
 
     /**
-     * @param transferManager An Amazon transfer manager
      * @param bucketName      The name of a bucket
      * @return True if the argument bucket exists, else false
      */

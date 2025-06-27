@@ -1,6 +1,6 @@
 package io.schinzel.samples.sqs;
 
-import com.amazonaws.regions.Regions;
+import software.amazon.awssdk.regions.Region;
 import io.schinzel.queue.IQueueProducer;
 import io.schinzel.awsutils.sqs.SqsProducer;
 import io.schinzel.basicutils.configvar.ConfigVar;
@@ -32,7 +32,7 @@ public class SqsProducerSample {
                 .awsAccessKey(awsSqsAccessKey)
                 .awsSecretKey(awsSqsSecretKey)
                 .queueName("my_first_queue.fifo")
-                .region(Regions.EU_WEST_1)
+                .region(Region.EU_WEST_1)
                 .build();
         queueProducer.send(message);
         Str.create("Sent message ").aq(message).writeToSystemOut();

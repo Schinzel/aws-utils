@@ -1,6 +1,6 @@
 package io.schinzel.awsutils.sqs;
 
-import com.amazonaws.regions.Regions;
+import software.amazon.awssdk.regions.Region;
 import org.junit.After;
 import org.junit.Test;
 
@@ -61,7 +61,7 @@ public class SqsProducerTest {
         boolean guaranteedOrder = SqsProducer.builder()
                 .awsAccessKey(PropertiesUtil.AWS_SQS_ACCESS_KEY)
                 .awsSecretKey(PropertiesUtil.AWS_SQS_SECRET_KEY)
-                .region(Regions.EU_WEST_1)
+                .region(Region.EU_WEST_1)
                 .queueName("any_name.fifo")
                 .guaranteedOrder(true)
                 .build()
@@ -74,7 +74,7 @@ public class SqsProducerTest {
         boolean guaranteedOrder = SqsProducer.builder()
                 .awsAccessKey(PropertiesUtil.AWS_SQS_ACCESS_KEY)
                 .awsSecretKey(PropertiesUtil.AWS_SQS_SECRET_KEY)
-                .region(Regions.EU_WEST_1)
+                .region(Region.EU_WEST_1)
                 .queueName("any_name.fifo")
                 .guaranteedOrder(false)
                 .build()
@@ -88,7 +88,7 @@ public class SqsProducerTest {
         boolean guaranteedOrder = SqsProducer.builder()
                 .awsAccessKey(PropertiesUtil.AWS_SQS_ACCESS_KEY)
                 .awsSecretKey(PropertiesUtil.AWS_SQS_SECRET_KEY)
-                .region(Regions.EU_WEST_1)
+                .region(Region.EU_WEST_1)
                 .queueName("any_name.fifo")
                 .build()
                 .mGuaranteedOrder;

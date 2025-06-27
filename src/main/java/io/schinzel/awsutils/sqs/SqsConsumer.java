@@ -1,6 +1,6 @@
 package io.schinzel.awsutils.sqs;
 
-import com.amazonaws.regions.Regions;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.Message;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
@@ -27,12 +27,12 @@ public class SqsConsumer implements IQueueConsumer {
 
     @SuppressWarnings("unused")
     @Builder
-    SqsConsumer(String awsAccessKey, String awsSecretKey, Regions region, String queueName) {
+    SqsConsumer(String awsAccessKey, String awsSecretKey, Region region, String queueName) {
         this(awsAccessKey, awsSecretKey, region, queueName, VISIBILITY_TIMEOUT_IN_SECONDS);
     }
 
     //Exists for testing
-    SqsConsumer(String awsAccessKey, String awsSecretKey, Regions region, String queueName, int visibilityTimeoutInSeconds) {
+    SqsConsumer(String awsAccessKey, String awsSecretKey, Region region, String queueName, int visibilityTimeoutInSeconds) {
         mSqsClient = ClientCache
                 .getSingleton()
                 .getSqsClient(awsAccessKey, awsSecretKey, region);

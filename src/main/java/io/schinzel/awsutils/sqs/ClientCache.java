@@ -1,6 +1,5 @@
 package io.schinzel.awsutils.sqs;
 
-import com.amazonaws.regions.Regions;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -40,13 +39,13 @@ class ClientCache {
      * @param region       The region in which to
      * @return An Amazon SQS client.
      */
-    SqsClient getSqsClient(String awsAccessKey, String awsSecretKey, Regions region) {
+    SqsClient getSqsClient(String awsAccessKey, String awsSecretKey, Region region) {
         Thrower.createInstance()
                 .throwIfVarEmpty(awsAccessKey, "awsAccessKey")
                 .throwIfVarEmpty(awsSecretKey, "awsSecretKey")
                 .throwIfVarNull(region, "region");
         //Construct a cache key
-        String cacheKey = awsAccessKey + region.getName();
+        String cacheKey = awsAccessKey + region.id();
         //If the cache has an entry for the cache key
         if (mSqsClientCache.has(cacheKey)) {
             //Get and return the cached instance
@@ -54,12 +53,10 @@ class ClientCache {
         } else {
             AwsBasicCredentials credentials = AwsBasicCredentials.create(awsAccessKey, awsSecretKey);
             StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);
-            // Convert SDK v1 Regions to SDK v2 Region
-            Region regionV2 = Region.of(region.getName());
             //Construct a new sqs client
             SqsClient sqsClient = SqsClient.builder()
                     .credentialsProvider(credentialsProvider)
-                    .region(regionV2)
+                    .region(region)
                     .build();
             //Add client to cache
             mSqsClientCache.put(cacheKey, sqsClient);

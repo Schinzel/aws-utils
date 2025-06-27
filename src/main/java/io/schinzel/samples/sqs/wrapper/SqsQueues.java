@@ -1,7 +1,6 @@
 package io.schinzel.samples.sqs.wrapper;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**

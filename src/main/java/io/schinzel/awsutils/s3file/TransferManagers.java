@@ -4,11 +4,9 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
-import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import io.schinzel.basicutils.collections.Cache;
 import lombok.experimental.Accessors;
-import lombok.val;
 
 /**
  * The purpose of this class is to create and cache AWS S3 transfer managers.

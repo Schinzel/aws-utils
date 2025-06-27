@@ -6,7 +6,7 @@
 
     <groupId>io.schinzel</groupId>
     <artifactId>aws-utils</artifactId>
-    <version>1.0.7</version>
+    <version>2.0.0</version>
 
     <name>AWS Utils</name>
     <description>For easy reading from and writing to AWS S3 and SQS</description>
@@ -48,12 +48,6 @@
             <groupId>io.schinzel</groupId>
             <artifactId>basic-utils</artifactId>
             <version>1.6.4</version>
-        </dependency>
-        <dependency>
-            <!-- Amazon's SDK v1 core for backward compatibility with Regions -->
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-core</artifactId>
-            <version>1.12.773</version>
         </dependency>
         <dependency>
             <!-- Amazon's S3 client SDK v2 -->

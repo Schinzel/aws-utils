@@ -24,8 +24,38 @@ AWS_SQS_ACCESS_KEY=XXXX
 AWS_SQS_SECRET_KEY=YYYY
 ```
 
+## Migration Guide (v1.x to v2.0)
+
+Version 2.0 completely removes AWS SDK v1 dependencies. The main breaking change is the Region enum:
+
+**Before (v1.x):**
+```java
+import com.amazonaws.regions.Regions;
+
+S3File.builder()
+    .region(Regions.EU_WEST_1)
+    .build();
+```
+
+**After (v2.0):**
+```java
+import software.amazon.awssdk.regions.Region;
+
+S3File.builder()
+    .region(Region.EU_WEST_1)
+    .build();
+```
+
+The region names remain the same (e.g., `EU_WEST_1`, `US_EAST_1`), only the import and class name change.
+
 
 # Releases
+
+## 2.0.0
+_2025-06-27_
+- **BREAKING CHANGE**: Completely migrated from AWS SDK v1 to v2
+  - Changed from `com.amazonaws.regions.Regions` to `software.amazon.awssdk.regions.Region`
+- Updated all dependencies to latest versions
 
 ## 1.0.7
 _2025-06-27_

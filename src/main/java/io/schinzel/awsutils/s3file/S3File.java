@@ -1,12 +1,10 @@
 package io.schinzel.awsutils.s3file;
 
-import com.amazonaws.regions.Regions;
+
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.exception.SdkClientException;
-import software.amazon.awssdk.core.exception.SdkServiceException;
-import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -19,7 +17,6 @@ import io.schinzel.basicutils.file.FileReader;
 import io.schinzel.basicutils.thrower.Thrower;
 import lombok.Builder;
 import lombok.experimental.Accessors;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -43,7 +40,7 @@ public class S3File implements IS3File {
 
 
     @Builder
-    S3File(String awsAccessKey, String awsSecretKey, Regions region, String bucketName, String fileName, boolean backgroundWrite) {
+    S3File(String awsAccessKey, String awsSecretKey, Region region, String bucketName, String fileName, boolean backgroundWrite) {
         Thrower.throwIfVarEmpty(awsAccessKey, "awsAccessKey");
         Thrower.throwIfVarEmpty(awsSecretKey, "awsSecretKey");
         Thrower.throwIfVarNull(region, "region");
@@ -52,15 +49,13 @@ public class S3File implements IS3File {
         mFileName = fileName;
         mBucketName = bucketName;
         mBackgroundWrite = backgroundWrite;
-        // Convert SDK v1 Regions to SDK v2 Region
-        Region regionV2 = Region.of(region.getName());
         mTransferManager = TransferManagers.getInstance()
-                .getTransferManager(awsAccessKey, awsSecretKey, regionV2);
+                .getTransferManager(awsAccessKey, awsSecretKey, region);
         // Create S3Client for non-transfer operations
         mS3Client = S3Client.builder()
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(awsAccessKey, awsSecretKey)))
-                .region(regionV2)
+                .region(region)
                 .build();
         boolean bucketExists = BucketCache.doesBucketExist(mS3Client, bucketName);
         Thrower.throwIfFalse(bucketExists).message("No bucket named '" + bucketName + "' exists");
@@ -94,7 +89,7 @@ public class S3File implements IS3File {
     }
 
 
-    private void downloadFileContentIntoTempFile(File tempFile) throws InterruptedException, IOException {
+    private void downloadFileContentIntoTempFile(File tempFile) throws IOException {
         try {
             DownloadFileRequest downloadFileRequest = DownloadFileRequest.builder()
                     .getObjectRequest(GetObjectRequest.builder()

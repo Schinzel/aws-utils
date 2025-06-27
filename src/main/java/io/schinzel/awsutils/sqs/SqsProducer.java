@@ -1,6 +1,6 @@
 package io.schinzel.awsutils.sqs;
 
-import com.amazonaws.regions.Regions;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import io.schinzel.basicutils.RandomUtil;
@@ -22,7 +22,7 @@ public class SqsProducer implements IQueueProducer {
     boolean mGuaranteedOrder;
 
     @Builder
-    SqsProducer(String awsAccessKey, String awsSecretKey, Regions region, String queueName, Boolean guaranteedOrder) {
+    SqsProducer(String awsAccessKey, String awsSecretKey, Region region, String queueName, Boolean guaranteedOrder) {
         mSqsClient = ClientCache
                 .getSingleton()
                 .getSqsClient(awsAccessKey, awsSecretKey, region);

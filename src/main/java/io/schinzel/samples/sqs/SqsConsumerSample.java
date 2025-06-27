@@ -1,6 +1,6 @@
 package io.schinzel.samples.sqs;
 
-import com.amazonaws.regions.Regions;
+import software.amazon.awssdk.regions.Region;
 import io.schinzel.queue.IMessage;
 import io.schinzel.queue.IQueueConsumer;
 import io.schinzel.awsutils.sqs.SqsConsumer;
@@ -22,7 +22,7 @@ public class SqsConsumerSample {
                 .awsAccessKey(awsSqsAccessKey)
                 .awsSecretKey(awsSqsSecretKey)
                 .queueName("my_first_queue.fifo")
-                .region(Regions.EU_WEST_1)
+                .region(Region.EU_WEST_1)
                 .build();
         //Get a message from the queue. If there is no message, code will will wait here until there is one.
         //When a message is returned, it will be made invisible in the queue so that the message cannot be read by other threads.

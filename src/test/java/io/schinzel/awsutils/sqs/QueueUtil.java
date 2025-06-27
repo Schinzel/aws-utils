@@ -1,6 +1,6 @@
 package io.schinzel.awsutils.sqs;
 
-import com.amazonaws.regions.Regions;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.GetQueueAttributesRequest;
 import software.amazon.awssdk.services.sqs.model.GetQueueAttributesResponse;
@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  */
 @Accessors(prefix = "m")
 class QueueUtil {
-    private static final Regions REGION = Regions.EU_WEST_1;
+    private static final Region REGION = Region.EU_WEST_1;
     @Getter
     private final SqsClient mSqsClient;
     @Getter
@@ -45,7 +45,7 @@ class QueueUtil {
                 .awsAccessKey(PropertiesUtil.AWS_SQS_ACCESS_KEY)
                 .awsSecretKey(PropertiesUtil.AWS_SQS_SECRET_KEY)
                 .queueName(mQueueName)
-                .region(Regions.EU_WEST_1)
+                .region(REGION)
                 .build()
                 .send(message);
         return this;

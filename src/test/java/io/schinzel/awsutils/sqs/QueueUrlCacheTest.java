@@ -52,7 +52,7 @@ public class QueueUrlCacheTest {
 
 
     @Test
-    public void getQueueUrl_ThreeRequests_CacheHitsTtwo() {
+    public void getQueueUrl_ThreeRequests_CacheHitsTwo() {
         for (int i = 0; i < 3; i++) {
             QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
         }

@@ -1,6 +1,6 @@
 package io.schinzel.awsutils.s3file;
 
-import com.amazonaws.regions.Regions;
+import software.amazon.awssdk.regions.Region;
 import io.schinzel.basicutils.RandomUtil;
 import io.schinzel.basicutils.configvar.ConfigVar;
 
@@ -19,7 +19,7 @@ class S3FileUtil {
         return S3File.builder()
                 .awsAccessKey(AWS_S3_ACCESS_KEY)
                 .awsSecretKey(AWS_S3_SECRET_KEY)
-                .region(Regions.EU_WEST_1)
+                .region(Region.EU_WEST_1)
                 .bucketName(BUCKET_NAME)
                 .fileName(fileName)
                 .build();
