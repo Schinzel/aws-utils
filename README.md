@@ -26,7 +26,11 @@ AWS_SQS_SECRET_KEY=YYYY
 
 ## Migration Guide (v1.x to v2.0)
 
-Version 2.0 completely removes AWS SDK v1 dependencies. The only breaking change is the Region enum:
+Version 2.0 completely removes AWS SDK v1 dependencies and includes breaking changes:
+
+### Breaking Changes
+
+1. **Region enum change:**
 
 **Before (v1.x):**
 ```java
@@ -48,6 +52,24 @@ S3File.builder()
 
 The region names remain the same (e.g., `EU_WEST_1`, `US_EAST_1`), only the import and class name change.
 
+2. **SqsConsumer.close() method removed:**
+
+The `close()` method has been removed from `SqsConsumer` as it was causing resource leaks by closing shared SQS clients. SQS clients are now managed automatically by the internal cache.
+
+**Before (v1.x):**
+```java
+SqsConsumer consumer = SqsConsumer.builder().build();
+// ... use consumer
+consumer.close(); // This method no longer exists
+```
+
+**After (v2.0):**
+```java
+SqsConsumer consumer = SqsConsumer.builder().build();
+// ... use consumer
+// No need to call close() - resources are managed automatically
+```
+
 
 # Releases
 
@@ -55,6 +77,7 @@ The region names remain the same (e.g., `EU_WEST_1`, `US_EAST_1`), only the impo
 _2025-06-27_
 - **BREAKING CHANGE**: Completely migrated from AWS SDK v1 to v2
   - Changed from `com.amazonaws.regions.Regions` to `software.amazon.awssdk.regions.Region`
+  - Removed `SqsConsumer.close()` method to fix resource leak issues
 - Updated all dependencies to latest versions
 
 ## 1.0.7

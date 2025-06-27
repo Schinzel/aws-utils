@@ -94,7 +94,4 @@ public class SqsConsumer implements IQueueConsumer {
     }
 
 
-    public void close() {
-        mSqsClient.close();
-    }
 }
