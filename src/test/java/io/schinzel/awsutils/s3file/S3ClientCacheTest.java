@@ -111,4 +111,58 @@ public class S3ClientCacheTest {
         assertThatCode(() -> S3ClientCache.getSingleton().shutdown())
                 .doesNotThrowAnyException();
     }
+
+    @Test
+    public void shutdown_AfterShutdown_CacheIsEmpty() {
+        // Create some clients first
+        S3ClientCache.getSingleton()
+                .getS3Client("test-access-key", "test-secret-key", Region.EU_WEST_1);
+        S3ClientCache.getSingleton()
+                .getS3Client("test-access-key", "test-secret-key", Region.US_EAST_1);
+        
+        assertThat(S3ClientCache.getSingleton().mS3ClientCache.cacheSize()).isEqualTo(2);
+        
+        // Shutdown
+        S3ClientCache.getSingleton().shutdown();
+        
+        // Verify cache is cleared
+        assertThat(S3ClientCache.getSingleton().mS3ClientCache.cacheSize()).isEqualTo(0);
+    }
+
+    @Test
+    public void shutdown_WithNoClients_DoesNotThrowException() {
+        // Call shutdown when no clients have been created
+        assertThatCode(() -> S3ClientCache.getSingleton().shutdown())
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void shutdown_CalledTwice_DoesNotThrowException() {
+        S3ClientCache.getSingleton()
+                .getS3Client("test-access-key", "test-secret-key", Region.EU_WEST_1);
+        
+        // Call shutdown twice
+        assertThatCode(() -> {
+            S3ClientCache.getSingleton().shutdown();
+            S3ClientCache.getSingleton().shutdown();
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void getS3Client_AfterShutdown_CreatesNewClient() {
+        // Create client
+        S3Client client1 = S3ClientCache.getSingleton()
+                .getS3Client("test-access-key", "test-secret-key", Region.EU_WEST_1);
+        
+        // Shutdown
+        S3ClientCache.getSingleton().shutdown();
+        
+        // Create client again - should be a new instance
+        S3Client client2 = S3ClientCache.getSingleton()
+                .getS3Client("test-access-key", "test-secret-key", Region.EU_WEST_1);
+        
+        // Should be different instances (old one was closed)
+        assertThat(client1).isNotSameAs(client2);
+        assertThat(S3ClientCache.getSingleton().mS3ClientCache.cacheSize()).isEqualTo(1);
+    }
 }

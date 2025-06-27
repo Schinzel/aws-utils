@@ -121,4 +121,58 @@ public class SqsClientCacheTest {
                 .doesNotThrowAnyException();
     }
 
+    @Test
+    public void shutdown_AfterShutdown_CacheIsEmpty() {
+        // Create some clients first
+        SqsClientCache.getSingleton()
+                .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.EU_WEST_1);
+        SqsClientCache.getSingleton()
+                .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.US_EAST_1);
+        
+        assertThat(SqsClientCache.getSingleton().mSqsClientCache.cacheSize()).isEqualTo(2);
+        
+        // Shutdown
+        SqsClientCache.getSingleton().shutdown();
+        
+        // Verify cache is cleared
+        assertThat(SqsClientCache.getSingleton().mSqsClientCache.cacheSize()).isEqualTo(0);
+    }
+
+    @Test
+    public void shutdown_WithNoClients_DoesNotThrowException() {
+        // Call shutdown when no clients have been created
+        assertThatCode(() -> SqsClientCache.getSingleton().shutdown())
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void shutdown_CalledTwice_DoesNotThrowException() {
+        SqsClientCache.getSingleton()
+                .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.EU_WEST_1);
+        
+        // Call shutdown twice
+        assertThatCode(() -> {
+            SqsClientCache.getSingleton().shutdown();
+            SqsClientCache.getSingleton().shutdown();
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void getSqsClient_AfterShutdown_CreatesNewClient() {
+        // Create client
+        SqsClient client1 = SqsClientCache.getSingleton()
+                .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.EU_WEST_1);
+        
+        // Shutdown
+        SqsClientCache.getSingleton().shutdown();
+        
+        // Create client again - should be a new instance
+        SqsClient client2 = SqsClientCache.getSingleton()
+                .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.EU_WEST_1);
+        
+        // Should be different instances (old one was closed)
+        assertThat(client1).isNotSameAs(client2);
+        assertThat(SqsClientCache.getSingleton().mSqsClientCache.cacheSize()).isEqualTo(1);
+    }
+
 }
