@@ -26,7 +26,7 @@ AWS_SQS_SECRET_KEY=YYYY
 
 ## Migration Guide (v1.x to v2.0)
 
-Version 2.0 completely removes AWS SDK v1 dependencies. The main breaking change is the Region enum:
+Version 2.0 completely removes AWS SDK v1 dependencies. The only breaking change is the Region enum:
 
 **Before (v1.x):**
 ```java
