@@ -1,9 +1,4 @@
 # aws-utils
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Schinzel_aws-utils&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=Schinzel_aws-utils)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Schinzel_aws-utils&metric=coverage)](https://sonarcloud.io/dashboard?id=Schinzel_aws-utils)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Schinzel_aws-utils&metric=security_rating)](https://sonarcloud.io/dashboard?id=Schinzel_aws-utils)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=Schinzel_aws-utils&metric=sqale_index)](https://sonarcloud.io/dashboard?id=Schinzel_aws-utils)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Schinzel_aws-utils&metric=ncloc)](https://sonarcloud.io/dashboard?id=Schinzel_aws-utils)
 
 More intuitive and concise code for AWS S3 and SQS operations.
 
@@ -29,8 +24,67 @@ AWS_SQS_ACCESS_KEY=XXXX
 AWS_SQS_SECRET_KEY=YYYY
 ```
 
+## Migration Guide (v1.x to v2.0)
+
+Version 2.0 completely removes AWS SDK v1 dependencies and includes breaking changes:
+
+### Breaking Changes
+
+1. **Region enum change:**
+
+**Before (v1.x):**
+```java
+import com.amazonaws.regions.Regions;
+
+S3File.builder()
+    .region(Regions.EU_WEST_1)
+    .build();
+```
+
+**After (v2.0):**
+```java
+import software.amazon.awssdk.regions.Region;
+
+S3File.builder()
+    .region(Region.EU_WEST_1)
+    .build();
+```
+
+The region names remain the same (e.g., `EU_WEST_1`, `US_EAST_1`), only the import and class name change.
+
+2. **SqsConsumer.close() method removed:**
+
+The `close()` method has been removed from `SqsConsumer` as it was causing resource leaks by closing shared SQS clients. SQS clients are now managed automatically by the internal cache.
+
+**Before (v1.x):**
+```java
+SqsConsumer consumer = SqsConsumer.builder().build();
+// ... use consumer
+consumer.close(); // This method no longer exists
+```
+
+**After (v2.0):**
+```java
+SqsConsumer consumer = SqsConsumer.builder().build();
+// ... use consumer
+// No need to call close() - resources are managed automatically
+```
+
 
 # Releases
+
+## 2.0.0
+_2025-06-27_
+- **BREAKING CHANGE**: Completely migrated from AWS SDK v1 to v2
+  - Changed from `com.amazonaws.regions.Regions` to `software.amazon.awssdk.regions.Region`
+  - Removed `SqsConsumer.close()` method to fix resource leak issues
+- Updated all dependencies to latest versions
+
+## 1.0.7
+_2025-06-27_
+- Migrated from AWS SDK v1 to v2
+- Updated all dependencies
+
 ## 1.0.6
 _2024-10-09_
 - Added support for uploading webp files to S3File. Affected methods:

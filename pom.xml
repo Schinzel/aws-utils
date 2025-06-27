@@ -6,7 +6,7 @@
 
     <groupId>io.schinzel</groupId>
     <artifactId>aws-utils</artifactId>
-    <version>1.0.6</version>
+    <version>2.0.0</version>
 
     <name>AWS Utils</name>
     <description>For easy reading from and writing to AWS S3 and SQS</description>
@@ -50,16 +50,28 @@
             <version>1.6.4</version>
         </dependency>
         <dependency>
-            <!-- Amazon's S3 client -->
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.12.773</version>
+            <!-- Amazon's S3 client SDK v2 -->
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.31.71</version>
         </dependency>
         <dependency>
-            <!-- Amazon's SQS client -->
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-sqs</artifactId>
-            <version>1.12.773</version>
+            <!-- Amazon's S3 Transfer Manager SDK v2 -->
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3-transfer-manager</artifactId>
+            <version>2.31.71</version>
+        </dependency>
+        <dependency>
+            <!-- Amazon's SQS client SDK v2 -->
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sqs</artifactId>
+            <version>2.31.71</version>
+        </dependency>
+        <dependency>
+            <!-- Google Guava for thread-safe caching -->
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.4.0-jre</version>
         </dependency>
         <!-- DEV DEPENDENCIES -->
         <dependency>
@@ -68,7 +80,7 @@
             https://projectlombok.org/index.html -->
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.34</version>
+            <version>1.18.38</version>
             <scope>provided</scope>
         </dependency>
         <!-- TEST DEPENDENCIES -->
@@ -82,7 +94,7 @@
             <!-- Fluid assertions http://joel-costigliola.github.io/assertj -->
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.23.1</version>
+            <version>3.27.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -101,7 +113,7 @@
                     <!-- Plug in for java doc to deploys -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.3.1</version>
+                    <version>3.11.2</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -118,7 +130,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>3.14.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -130,6 +142,13 @@
                         <arg>-Xlint:all</arg>
                         <arg>-Xlint:-processing</arg>
                     </compilerArgs>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.38</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
              <plugin>
@@ -137,7 +156,7 @@
                 To run locally: mvn test jacoco:report -->
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.7</version>
+                <version>0.8.13</version>
                 <configuration>
                     <excludes>
                         <exclude>io/schinzel/samples/**/*</exclude>

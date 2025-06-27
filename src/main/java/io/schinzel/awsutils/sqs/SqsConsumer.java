@@ -1,9 +1,10 @@
 package io.schinzel.awsutils.sqs;
 
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.Message;
-import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.Message;
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
+import software.amazon.awssdk.services.sqs.model.MessageSystemAttributeName;
 import io.schinzel.queue.IQueueConsumer;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import java.util.List;
 @Accessors(prefix = "m")
 public class SqsConsumer implements IQueueConsumer {
     private static final int VISIBILITY_TIMEOUT_IN_SECONDS = 60;
-    private final AmazonSQS mSqsClient;
+    private final SqsClient mSqsClient;
     @Getter
     private final String mQueueUrl;
     private final ReceiveMessageRequest mReceiveMessageRequest;
@@ -26,34 +27,35 @@ public class SqsConsumer implements IQueueConsumer {
 
     @SuppressWarnings("unused")
     @Builder
-    SqsConsumer(String awsAccessKey, String awsSecretKey, Regions region, String queueName) {
+    SqsConsumer(String awsAccessKey, String awsSecretKey, Region region, String queueName) {
         this(awsAccessKey, awsSecretKey, region, queueName, VISIBILITY_TIMEOUT_IN_SECONDS);
     }
 
     //Exists for testing
-    SqsConsumer(String awsAccessKey, String awsSecretKey, Regions region, String queueName, int visibilityTimeoutInSeconds) {
-        mSqsClient = ClientCache
+    SqsConsumer(String awsAccessKey, String awsSecretKey, Region region, String queueName, int visibilityTimeoutInSeconds) {
+        mSqsClient = SqsClientCache
                 .getSingleton()
                 .getSqsClient(awsAccessKey, awsSecretKey, region);
         //Get the queue url for the argument queue name.
         mQueueUrl = QueueUrlCache
                 .getSingleton()
                 .getQueueUrl(queueName, mSqsClient);
-        mReceiveMessageRequest = new ReceiveMessageRequest()
+        mReceiveMessageRequest = ReceiveMessageRequest.builder()
                 //URL of the Amazon SQS queue from which messages are received
-                .withQueueUrl(mQueueUrl)
+                .queueUrl(mQueueUrl)
                 //Request that returned messages contains the attribute ApproximateReceiveCount
                 //which states the number of times a message has been read from the queue but not deleted
-                .withAttributeNames("ApproximateReceiveCount")
+                .messageSystemAttributeNames(MessageSystemAttributeName.APPROXIMATE_RECEIVE_COUNT)
                 //The maximum number of messages to return.
-                .withMaxNumberOfMessages(1)
+                .maxNumberOfMessages(1)
                 //The duration the call waits for a message to arrive in the queue before returning.
-                .withWaitTimeSeconds(20)
+                .waitTimeSeconds(20)
                 //Make the message invisible for x seconds
-                .withVisibilityTimeout(visibilityTimeoutInSeconds);
+                .visibilityTimeout(visibilityTimeoutInSeconds)
+                .build();
     }
 
-    private SqsConsumer(AmazonSQS sqsClient, String queueUrl, ReceiveMessageRequest receiveMessageRequest) {
+    private SqsConsumer(SqsClient sqsClient, String queueUrl, ReceiveMessageRequest receiveMessageRequest) {
         mSqsClient = sqsClient;
         mQueueUrl = queueUrl;
         mReceiveMessageRequest = receiveMessageRequest;
@@ -69,7 +71,7 @@ public class SqsConsumer implements IQueueConsumer {
             //Get messages. Could be 1 or 0. 0 if there was no visible messages in queue.
             messages = mSqsClient
                     .receiveMessage(mReceiveMessageRequest)
-                    .getMessages();
+                    .messages();
         }//Loop if there was not message
         while (messages.isEmpty());
         //If got here there was 1 message. Get this message
@@ -92,7 +94,4 @@ public class SqsConsumer implements IQueueConsumer {
     }
 
 
-    public void close() {
-        mSqsClient.shutdown();
-    }
 }

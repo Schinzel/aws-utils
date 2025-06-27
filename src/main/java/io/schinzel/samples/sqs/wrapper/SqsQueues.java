@@ -1,7 +1,6 @@
 package io.schinzel.samples.sqs.wrapper;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -13,11 +12,13 @@ import lombok.experimental.Accessors;
  * @author Schinzel
  */
 @Accessors(prefix = "m")
-@RequiredArgsConstructor
 public enum SqsQueues implements IQueueName {
     SEND_SMS("my_first_queue.fifo");
 
-
     @Getter
     private final String mQueueName;
+
+    SqsQueues(String queueName) {
+        this.mQueueName = queueName;
+    }
 }

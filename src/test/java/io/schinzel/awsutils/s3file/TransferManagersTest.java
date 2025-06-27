@@ -12,10 +12,9 @@ public class TransferManagersTest {
         S3FileUtil.getS3File()
                 .write("file content")
                 .delete();
-        int cacheSize = TransferManagers.getInstance()
+        long cacheSize = TransferManagers.getInstance()
                 .shutdown()
-                .mTransferManagers
-                .cacheSize();
+                .getCacheSize();
         assertThat(cacheSize).isZero();
     }
 }

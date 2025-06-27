@@ -1,6 +1,6 @@
 package io.schinzel.samples.s3;
 
-import com.amazonaws.regions.Regions;
+import software.amazon.awssdk.regions.Region;
 import com.google.common.base.Strings;
 import io.schinzel.awsutils.s3file.IS3File;
 import io.schinzel.basicutils.RandomUtil;
@@ -15,8 +15,8 @@ import io.schinzel.basicutils.str.Str;
  * Created by Schinzel on 2018-01-03
  */
 public class S3FileSample {
-    private static String AWS_S3_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_S3_ACCESS_KEY");
-    private static String AWS_S3_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_S3_SECRET_KEY");
+    private static final String AWS_S3_ACCESS_KEY = ConfigVar.create(".env").getValue("AWS_S3_ACCESS_KEY");
+    private static final String AWS_S3_SECRET_KEY = ConfigVar.create(".env").getValue("AWS_S3_SECRET_KEY");
 
 
     public static void main(String[] args) {
@@ -39,7 +39,7 @@ public class S3FileSample {
         IS3File file = S3File.builder()
                 .awsAccessKey(AWS_S3_ACCESS_KEY)
                 .awsSecretKey(AWS_S3_SECRET_KEY)
-                .region(Regions.EU_WEST_1)
+                .region(Region.EU_WEST_1)
                 .bucketName(bucketName)
                 .fileName(fileName)
                 .build()
@@ -69,7 +69,7 @@ public class S3FileSample {
             S3File.builder()
                     .awsAccessKey(AWS_S3_ACCESS_KEY)
                     .awsSecretKey(AWS_S3_SECRET_KEY)
-                    .region(Regions.EU_WEST_1)
+                    .region(Region.EU_WEST_1)
                     .bucketName(bucketName)
                     .backgroundWrite(true)
                     .fileName(i + "_" + fileName)
@@ -100,7 +100,7 @@ public class S3FileSample {
         IS3File s3File = S3File.builder()
                 .awsAccessKey(AWS_S3_ACCESS_KEY)
                 .awsSecretKey(AWS_S3_SECRET_KEY)
-                .region(Regions.EU_WEST_1)
+                .region(Region.EU_WEST_1)
                 .bucketName(bucketName)
                 .fileName(fileName)
                 .build()

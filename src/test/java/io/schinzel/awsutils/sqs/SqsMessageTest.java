@@ -1,8 +1,8 @@
 package io.schinzel.awsutils.sqs;
 
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.sqs.model.Message;
-import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.sqs.model.Message;
+import software.amazon.awssdk.services.sqs.model.QueueDoesNotExistException;
 import io.schinzel.basicutils.RandomUtil;
 import io.schinzel.basicutils.Sandman;
 import org.junit.After;
@@ -48,7 +48,7 @@ public class SqsMessageTest {
         SqsMessage message = new SqsConsumer(
                 PropertiesUtil.AWS_SQS_ACCESS_KEY,
                 PropertiesUtil.AWS_SQS_SECRET_KEY,
-                Regions.EU_WEST_1,
+                Region.EU_WEST_1,
                 mQueue.getQueueName(),
                 visibilityTimeoutInSeconds).getMessage();
         //Snooze until the after the visibility timeout has expired
@@ -63,7 +63,7 @@ public class SqsMessageTest {
     @Test
     public void deleteMessageFromQueue_QueueDoesNotExists_Exception() {
         SqsMessage sqsMessage = SqsMessage.builder()
-                .message(new Message())
+                .message(Message.builder().build())
                 .sqsClient(mQueue.getSqsClient())
                 .queueUrl("I_do_not_exist")
                 .build();
@@ -96,7 +96,7 @@ public class SqsMessageTest {
         SqsConsumer consumer = new SqsConsumer(
                 PropertiesUtil.AWS_SQS_ACCESS_KEY,
                 PropertiesUtil.AWS_SQS_SECRET_KEY,
-                Regions.EU_WEST_1,
+                Region.EU_WEST_1,
                 mQueue.getQueueName(),
                 1);
         consumer.getMessage();

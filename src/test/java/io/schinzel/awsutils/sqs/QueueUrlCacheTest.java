@@ -1,7 +1,8 @@
 package io.schinzel.awsutils.sqs;
 
-import com.amazonaws.services.sqs.model.GetQueueAttributesRequest;
-import com.amazonaws.services.sqs.model.GetQueueAttributesResult;
+import software.amazon.awssdk.services.sqs.model.GetQueueAttributesRequest;
+import software.amazon.awssdk.services.sqs.model.GetQueueAttributesResponse;
+import software.amazon.awssdk.services.sqs.model.QueueAttributeName;
 import io.schinzel.basicutils.RandomUtil;
 import org.junit.After;
 import org.junit.Test;
@@ -21,22 +22,28 @@ public class QueueUrlCacheTest {
         //Delete queue used in test
         mQueue.deleteQueue();
         //Clear cache
-        QueueUrlCache.getSingleton().mQueueUrlCache.invalidate();
+        QueueUrlCache.getSingleton().clearCache();
     }
 
 
     @Test
     public void getQueueUrl_OneRequest_CacheSizeOne() {
         QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
-        long cacheSize = QueueUrlCache.getSingleton().mQueueUrlCache.cacheSize();
+        long cacheSize = QueueUrlCache.getSingleton().getCacheSize();
         assertThat(cacheSize).isEqualTo(1);
     }
 
     @Test
     public void getQueueUrl_OneRequest_CacheHitsZero() {
+        // Get baseline hit count before test
+        long initialHits = QueueUrlCache.getSingleton().getCacheHits();
+        
         QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
-        long cacheHits = QueueUrlCache.getSingleton().mQueueUrlCache.cacheHits();
-        assertThat(cacheHits).isEqualTo(0);
+        
+        // Calculate hits during this test
+        long hitsAfter = QueueUrlCache.getSingleton().getCacheHits();
+        long testHits = hitsAfter - initialHits;
+        assertThat(testHits).isEqualTo(0);
     }
 
 
@@ -45,18 +52,24 @@ public class QueueUrlCacheTest {
         for (int i = 0; i < 3; i++) {
             QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
         }
-        long cacheSize = QueueUrlCache.getSingleton().mQueueUrlCache.cacheSize();
+        long cacheSize = QueueUrlCache.getSingleton().getCacheSize();
         assertThat(cacheSize).isEqualTo(1);
     }
 
 
     @Test
-    public void getQueueUrl_ThreeRequests_CacheHitsTtwo() {
+    public void getQueueUrl_ThreeRequests_CacheHitsTwo() {
+        // Get baseline hit count before test
+        long initialHits = QueueUrlCache.getSingleton().getCacheHits();
+        
         for (int i = 0; i < 3; i++) {
             QueueUrlCache.getSingleton().getQueueUrl(mQueue.getQueueName(), mQueue.getSqsClient());
         }
-        long cacheHits = QueueUrlCache.getSingleton().mQueueUrlCache.cacheHits();
-        assertThat(cacheHits).isEqualTo(2);
+        
+        // Calculate hits during this test
+        long hitsAfter = QueueUrlCache.getSingleton().getCacheHits();
+        long testHits = hitsAfter - initialHits;
+        assertThat(testHits).isEqualTo(2);
     }
 
 
@@ -93,13 +106,14 @@ public class QueueUrlCacheTest {
     private String createQueueAndGetProperty(String propertyKey) {
         String queueName = QueueUrlCache.class.getSimpleName() + "_" + RandomUtil.getRandomString(5) + ".fifo";
         String queueUrl = QueueUrlCache.createQueue(queueName, mQueue.getSqsClient());
-        GetQueueAttributesRequest getQueueAttributesRequest
-                = new GetQueueAttributesRequest(queueUrl)
-                .withAttributeNames("All");
-        GetQueueAttributesResult getQueueAttributesResult = mQueue.getSqsClient()
+        GetQueueAttributesRequest getQueueAttributesRequest = GetQueueAttributesRequest.builder()
+                .queueUrl(queueUrl)
+                .attributeNames(QueueAttributeName.ALL)
+                .build();
+        GetQueueAttributesResponse getQueueAttributesResult = mQueue.getSqsClient()
                 .getQueueAttributes(getQueueAttributesRequest);
-        String propertyValue = getQueueAttributesResult.getAttributes().get(propertyKey);
-        mQueue.getSqsClient().deleteQueue(queueUrl);
+        String propertyValue = getQueueAttributesResult.attributes().get(QueueAttributeName.fromValue(propertyKey));
+        mQueue.getSqsClient().deleteQueue(builder -> builder.queueUrl(queueUrl));
         return propertyValue;
     }
 }
