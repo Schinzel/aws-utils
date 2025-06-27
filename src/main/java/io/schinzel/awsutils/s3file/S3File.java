@@ -1,24 +1,26 @@
 package io.schinzel.awsutils.s3file;
 
 
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import io.schinzel.basicutils.UTF8;
+import io.schinzel.basicutils.file.Bytes;
+import io.schinzel.basicutils.file.FileReader;
+import io.schinzel.basicutils.thrower.Thrower;
+import lombok.Builder;
+import lombok.experimental.Accessors;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
-import software.amazon.awssdk.transfer.s3.model.*;
-import io.schinzel.basicutils.UTF8;
-import java.util.concurrent.CompletionException;
-import io.schinzel.basicutils.file.Bytes;
-import io.schinzel.basicutils.file.FileReader;
-import io.schinzel.basicutils.thrower.Thrower;
-import lombok.Builder;
-import lombok.experimental.Accessors;
+import software.amazon.awssdk.transfer.s3.model.DownloadFileRequest;
+import software.amazon.awssdk.transfer.s3.model.FileDownload;
+import software.amazon.awssdk.transfer.s3.model.Upload;
+import software.amazon.awssdk.transfer.s3.model.UploadRequest;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CompletionException;
 
 /**
  * The purpose of this class is to offer operations on S3 files.
@@ -27,36 +29,44 @@ import java.io.IOException;
  */
 @Accessors(prefix = "m")
 public class S3File implements IS3File {
-    /** The name of this file */
+    /**
+     * The name of this file
+     */
     private final String mFileName;
-    /** The name of the bucket in which this file resides */
+    /**
+     * The name of the bucket in which this file resides
+     */
     private final String mBucketName;
-    /** Transfers data to/from S3 */
+    /**
+     * Transfers data to/from S3
+     */
     private final S3TransferManager mTransferManager;
-    /** S3 client for non-transfer operations */
+    /**
+     * S3 client for non-transfer operations
+     */
     private final S3Client mS3Client;
-    /** If true, write method does the write operation in the in background. */
+    /**
+     * If true, write method does the write operation in the in background.
+     */
     private final boolean mBackgroundWrite;
 
 
     @Builder
     S3File(String awsAccessKey, String awsSecretKey, Region region, String bucketName, String fileName, boolean backgroundWrite) {
-        Thrower.throwIfVarEmpty(awsAccessKey, "awsAccessKey");
-        Thrower.throwIfVarEmpty(awsSecretKey, "awsSecretKey");
-        Thrower.throwIfVarNull(region, "region");
-        Thrower.throwIfVarEmpty(bucketName, "bucketName");
-        Thrower.throwIfVarEmpty(fileName, "fileName");
+        Thrower.createInstance()
+                .throwIfVarEmpty(awsAccessKey, "awsAccessKey")
+                .throwIfVarEmpty(awsSecretKey, "awsSecretKey")
+                .throwIfVarNull(region, "region")
+                .throwIfVarEmpty(bucketName, "bucketName")
+                .throwIfVarEmpty(fileName, "fileName");
         mFileName = fileName;
         mBucketName = bucketName;
         mBackgroundWrite = backgroundWrite;
         mTransferManager = TransferManagers.getInstance()
                 .getTransferManager(awsAccessKey, awsSecretKey, region);
-        // Create S3Client for non-transfer operations
-        mS3Client = S3Client.builder()
-                .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(awsAccessKey, awsSecretKey)))
-                .region(region)
-                .build();
+        // Get cached S3Client for non-transfer operations
+        mS3Client = S3ClientCache.getSingleton()
+                .getS3Client(awsAccessKey, awsSecretKey, region);
         boolean bucketExists = BucketCache.doesBucketExist(mS3Client, bucketName);
         Thrower.throwIfFalse(bucketExists).message("No bucket named '" + bucketName + "' exists");
     }
@@ -173,12 +183,12 @@ public class S3File implements IS3File {
                     .cacheControl("public, max-age=2592000")
                     .contentLength((long) fileContent.length)
                     .build();
-            
+
             Upload upload = mTransferManager.upload(UploadRequest.builder()
                     .putObjectRequest(putObjectRequest)
                     .requestBody(AsyncRequestBody.fromBytes(fileContent))
                     .build());
-            
+
             if (!mBackgroundWrite) {
                 upload.completionFuture().join();
             }
