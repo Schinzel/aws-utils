@@ -4,8 +4,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Purpose of this class is to check if a bucket exists, and cache the buckets that do exist.
@@ -32,7 +32,7 @@ import java.util.List;
  */
 class BucketCache {
     /** Cache for existing buckets on S3. */
-    private static final List<String> EXISTING_BUCKETS_CACHE = new ArrayList<>();
+    private static final Set<String> EXISTING_BUCKETS_CACHE = ConcurrentHashMap.newKeySet();
 
 
     /**
