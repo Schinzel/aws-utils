@@ -14,23 +14,23 @@ import static org.assertj.core.api.Assertions.*;
 /**
  * @author Schinzel
  */
-public class ClientCacheTest {
+public class SqsClientCacheTest {
 
     @Before
     public void before() {
-        ClientCache.getSingleton().mSqsClientCache.invalidate();
+        SqsSqsClientCache.getSingleton().mSqsClientCache.invalidate();
     }
 
     @After
     public void after() {
-        ClientCache.getSingleton().mSqsClientCache.invalidate();
+        SqsSqsClientCache.getSingleton().mSqsClientCache.invalidate();
     }
 
 
     @Test
     public void getSingleton_CalledTwice_SameObject() {
-        ClientCache clientCache1 = ClientCache.getSingleton();
-        ClientCache clientCache2 = ClientCache.getSingleton();
+        SqsClientCache clientCache1 = SqsSqsClientCache.getSingleton();
+        SqsClientCache clientCache2 = SqsSqsClientCache.getSingleton();
         assertThat(clientCache1).isEqualTo(clientCache2);
     }
 
@@ -38,18 +38,18 @@ public class ClientCacheTest {
     @Test
     public void getSqsClient_SameClientRequestedThreeTimes_CacheHitTwo() {
         for (int i = 0; i < 3; i++) {
-            ClientCache.getSingleton()
+            SqsClientCache.getSingleton()
                     .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.EU_WEST_1);
         }
-        assertThat(ClientCache.getSingleton().mSqsClientCache.cacheHits()).isEqualTo(2);
+        assertThat(SqsClientCache.getSingleton().mSqsClientCache.cacheHits()).isEqualTo(2);
     }
 
 
     @Test
     public void getSqsClient_SameClientRequestedTwice_SameObject() {
-        SqsClient amazonSQS1 = ClientCache.getSingleton()
+        SqsClient amazonSQS1 = SqsClientCache.getSingleton()
                 .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.EU_WEST_1);
-        SqsClient amazonSQS2 = ClientCache.getSingleton()
+        SqsClient amazonSQS2 = SqsClientCache.getSingleton()
                 .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.EU_WEST_1);
         assertThat(amazonSQS1).isEqualTo(amazonSQS2);
     }
@@ -58,17 +58,17 @@ public class ClientCacheTest {
     @Test
     public void getSqsClient_SameClientRequestedThreeTime_CacheSizeOne() {
         for (int i = 0; i < 3; i++) {
-            ClientCache.getSingleton()
+            SqsClientCache.getSingleton()
                     .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.EU_WEST_1);
         }
-        assertThat(ClientCache.getSingleton().mSqsClientCache.cacheSize()).isEqualTo(1);
+        assertThat(SqsClientCache.getSingleton().mSqsClientCache.cacheSize()).isEqualTo(1);
     }
 
 
     @Test
     public void getSqsClient_IncorrectCredentials_NoException() {
         assertThatCode(() ->
-                ClientCache.getSingleton()
+                SqsClientCache.getSingleton()
                         .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, "Apa", Region.EU_WEST_1)
         ).doesNotThrowAnyException();
     }
@@ -76,11 +76,11 @@ public class ClientCacheTest {
 
     @Test
     public void getSqsClient_TwoRequestDifferentRegions_CacheSizeTwo() {
-        ClientCache.getSingleton()
+        SqsClientCache.getSingleton()
                 .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.EU_WEST_1);
-        ClientCache.getSingleton()
+        SqsClientCache.getSingleton()
                 .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.US_EAST_1);
-        assertThat(ClientCache.getSingleton().mSqsClientCache.cacheSize()).isEqualTo(2);
+        assertThat(SqsClientCache.getSingleton().mSqsClientCache.cacheSize()).isEqualTo(2);
     }
 
 
@@ -88,7 +88,7 @@ public class ClientCacheTest {
     public void getSqsClient_EmptyAccessKey_Exception() {
         assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() ->
-                        ClientCache.getSingleton()
+                        SqsClientCache.getSingleton()
                                 .getSqsClient("", PropertiesUtil.AWS_SQS_SECRET_KEY, null)
                 );
     }
@@ -97,7 +97,7 @@ public class ClientCacheTest {
     public void getSqsClient_EmptySecretKey_Exception() {
         assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() ->
-                        ClientCache.getSingleton()
+                        SqsClientCache.getSingleton()
                                 .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, "", null)
                 );
     }
@@ -107,9 +107,18 @@ public class ClientCacheTest {
     public void getSqsClient_NullRegion_Exception() {
         assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() ->
-                        ClientCache.getSingleton()
+                        SqsClientCache.getSingleton()
                                 .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, null)
                 );
+    }
+
+    @Test
+    public void shutdown_AfterCreatingClients_DoesNotThrowException() {
+        SqsClientCache.getSingleton()
+                .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, Region.EU_WEST_1);
+        
+        assertThatCode(() -> SqsClientCache.getSingleton().shutdown())
+                .doesNotThrowAnyException();
     }
 
 }

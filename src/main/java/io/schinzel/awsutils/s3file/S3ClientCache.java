@@ -6,6 +6,8 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import io.schinzel.basicutils.collections.Cache;
 import io.schinzel.basicutils.thrower.Thrower;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The purpose of this class to hold a cache of S3 clients.
@@ -29,6 +31,9 @@ class S3ClientCache {
 
     /** Cache of S3 clients */
     final Cache<String, S3Client> mS3ClientCache = new Cache<>();
+    
+    /** Set to track all created clients for proper shutdown */
+    private final Set<S3Client> mCreatedClients = ConcurrentHashMap.newKeySet();
 
 
     /**
@@ -56,8 +61,9 @@ class S3ClientCache {
                     .credentialsProvider(credentialsProvider)
                     .region(region)
                     .build();
-            //Add client to cache
+            //Add client to cache and track for shutdown
             mS3ClientCache.put(cacheKey, s3Client);
+            mCreatedClients.add(s3Client);
             return s3Client;
         }
     }
@@ -66,8 +72,10 @@ class S3ClientCache {
      * Shutdown all cached S3 clients. Call this during application shutdown.
      */
     void shutdown() {
-        // Note: basic-utils Cache doesn't expose values() method
-        // For now, just invalidate the cache - clients will be garbage collected
+        // Close all created S3 clients
+        mCreatedClients.forEach(S3Client::close);
+        mCreatedClients.clear();
+        // Invalidate the cache
         mS3ClientCache.invalidate();
     }
 }

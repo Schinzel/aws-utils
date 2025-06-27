@@ -23,7 +23,7 @@ public class SqsProducer implements IQueueProducer {
 
     @Builder
     SqsProducer(String awsAccessKey, String awsSecretKey, Region region, String queueName, Boolean guaranteedOrder) {
-        mSqsClient = ClientCache
+        mSqsClient = SqsClientCache
                 .getSingleton()
                 .getSqsClient(awsAccessKey, awsSecretKey, region);
         //Get the queue url for the argument queue name.

@@ -6,9 +6,11 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import io.schinzel.basicutils.collections.Cache;
 import io.schinzel.basicutils.thrower.Thrower;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * The purpose of this class to hold a cache of clients.
+ * The purpose of this class to hold a cache of SQS clients.
  * <p>
  * The purpose of a client cache is for performance.
  * <p>
@@ -18,19 +20,22 @@ import io.schinzel.basicutils.thrower.Thrower;
  *
  * @author Schinzel
  */
-class ClientCache {
+class SqsClientCache {
 
     private static class Holder {
-        static ClientCache INSTANCE = new ClientCache();
+        static SqsClientCache INSTANCE = new SqsClientCache();
     }
 
-    static ClientCache getSingleton() {
+    static SqsClientCache getSingleton() {
         return Holder.INSTANCE;
     }
 
 
     /** Cache of SQS clients */
     final Cache<String, SqsClient> mSqsClientCache = new Cache<>();
+    
+    /** Set to track all created clients for proper shutdown */
+    private final Set<SqsClient> mCreatedClients = ConcurrentHashMap.newKeySet();
 
 
     /**
@@ -58,8 +63,9 @@ class ClientCache {
                     .credentialsProvider(credentialsProvider)
                     .region(region)
                     .build();
-            //Add client to cache
+            //Add client to cache and track for shutdown
             mSqsClientCache.put(cacheKey, sqsClient);
+            mCreatedClients.add(sqsClient);
             return sqsClient;
         }
     }
@@ -68,8 +74,10 @@ class ClientCache {
      * Shutdown all cached SQS clients. Call this during application shutdown.
      */
     void shutdown() {
-        // Note: basic-utils Cache doesn't expose values() method
-        // For now, just invalidate the cache - clients will be garbage collected
+        // Close all created SQS clients
+        mCreatedClients.forEach(SqsClient::close);
+        mCreatedClients.clear();
+        // Invalidate the cache
         mSqsClientCache.invalidate();
     }
 }

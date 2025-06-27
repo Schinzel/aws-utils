@@ -29,13 +29,13 @@ class QueueUtil {
     QueueUtil(Class testClass) {
         //Create a queue name that indicates which test created it and has a random element
         mQueueName = testClass.getSimpleName() + "_" + RandomUtil.getRandomString(5) + ".fifo";
-        mSqsClient = ClientCache.getSingleton()
+        mSqsClient = SqsClientCache.getSingleton()
                 .getSqsClient(PropertiesUtil.AWS_SQS_ACCESS_KEY, PropertiesUtil.AWS_SQS_SECRET_KEY, REGION);
         mQueueUrl = QueueUrlCache.getSingleton()
                 .getQueueUrl(mQueueName, mSqsClient);
         QueueUrlCache.getSingleton().mQueueUrlCache
                 .invalidate();
-        ClientCache.getSingleton().mSqsClientCache
+        SqsClientCache.getSingleton().mSqsSqsClientCache
                 .invalidate();
     }
 

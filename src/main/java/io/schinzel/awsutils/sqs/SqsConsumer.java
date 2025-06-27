@@ -33,7 +33,7 @@ public class SqsConsumer implements IQueueConsumer {
 
     //Exists for testing
     SqsConsumer(String awsAccessKey, String awsSecretKey, Region region, String queueName, int visibilityTimeoutInSeconds) {
-        mSqsClient = ClientCache
+        mSqsClient = SqsClientCache
                 .getSingleton()
                 .getSqsClient(awsAccessKey, awsSecretKey, region);
         //Get the queue url for the argument queue name.
